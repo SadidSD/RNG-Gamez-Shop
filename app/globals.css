@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: #F1F1F1;
   --foreground: #171717;
 }
 
@@ -23,4 +23,11 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+@font-face {
+  font-family: 'Europa Grotesk SH';
+  src: url('/fonts/Europa Grotesk SH DemBol.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
 }
