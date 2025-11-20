@@ -30,7 +30,7 @@ export default function Home() {
 
         {/* Gradient Box Overlay */}
         <div
-          className="absolute top-1/2 right-20 transform -translate-y-1/2 w-[300px] h-[300px] rounded-[30px]"
+          className="absolute top-[80%] right-20 transform -translate-y-1/2 w-[250px] h-[200px] rounded-[30px]"
           style={{
             background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 100%)',
             backdropFilter: 'blur(10px)',
