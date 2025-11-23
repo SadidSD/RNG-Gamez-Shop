@@ -9,13 +9,13 @@ interface CardProps {
 
 const Card: React.FC<CardProps> = ({ title, price, imageSrc }) => {
     return (
-        <div className="group bg-[#FAFAFA] rounded-[30px] p-2 shadow-[0px_1px_2px_0px_rgba(4,13,36,0.23)] w-[350px] h-[467px] flex flex-col overflow-hidden hover:shadow-[0px_4px_12px_rgba(4,13,36,0.15)] transition-shadow duration-300">
+        <div className="group/card bg-[#FAFAFA] rounded-[30px] p-2 shadow-[0px_1px_2px_0px_rgba(4,13,36,0.23)] w-[350px] h-[467px] flex flex-col overflow-hidden hover:shadow-[0px_4px_12px_rgba(4,13,36,0.15)] transition-shadow duration-300">
             <div className="bg-[#FAFAFA] rounded-[30px] shadow-[2px_2px_5px_2px_rgba(4,13,36,0.15)] mb-4 overflow-hidden flex-1 relative">
                 <Image
                     src={imageSrc}
                     alt={title}
                     fill
-                    className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+                    className="object-cover transition-transform duration-500 ease-out group-hover/card:scale-110"
                 />
             </div>
             <div className="flex flex-col gap-4">
@@ -27,9 +27,9 @@ const Card: React.FC<CardProps> = ({ title, price, imageSrc }) => {
                         {price}
                     </p>
                 </div>
-                <button className="group relative overflow-hidden bg-[#B266FF] text-black font-bold py-4 rounded-r-full flex items-center justify-between transition-colors duration-300 hover:text-white -ml-2 mr-2 px-8 pr-6">
+                <button className="group/button relative overflow-hidden bg-[#B266FF] text-black font-bold py-4 rounded-r-full flex items-center justify-between transition-colors duration-300 hover:text-white -ml-2 mr-2 px-8 pr-6">
                     <span className="absolute inset-0 flex items-center justify-center overflow-hidden rounded-r-full">
-                        <span className="absolute top-full left-1/2 h-[30rem] w-[30rem] -translate-x-1/2 rounded-full bg-[#9933FF] transition-all duration-500 ease-out group-hover:top-1/2 group-hover:-translate-y-1/2"></span>
+                        <span className="absolute top-full left-1/2 h-[30rem] w-[30rem] -translate-x-1/2 rounded-full bg-[#9933FF] transition-all duration-500 ease-out group-hover/button:top-1/2 group-hover/button:-translate-y-1/2"></span>
                     </span>
                     <span className="relative z-10">ADD TO CART</span>
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">

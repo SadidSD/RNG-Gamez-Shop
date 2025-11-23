@@ -1,0 +1,53 @@
+import React from 'react';
+import Image from 'next/image';
+
+const CategoryGrid = () => {
+    return (
+        <div className="w-full min-h-screen bg-[#F1F1F1] p-10 flex items-center justify-center">
+            <div className="w-full max-w-[1600px] h-[800px] flex gap-6">
+                {/* Left Column */}
+                <div className="w-2/3 flex flex-col gap-6">
+                    {/* Top Row */}
+                    <div className="h-1/2 flex gap-6">
+                        <div className="relative w-1/2 h-full rounded-[30px] overflow-hidden group shadow-lg">
+                            <Image src="/graded.jpg" alt="Graded Cards" fill className="object-cover transition-transform duration-500 group-hover:scale-110" />
+                            <button className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-white text-black font-bold py-3 px-8 rounded-xl shadow-lg hover:bg-gray-100 transition-colors uppercase tracking-wider text-sm whitespace-nowrap">
+                                GRADED CARDS
+                            </button>
+                        </div>
+                        <div className="relative w-1/2 h-full rounded-[30px] overflow-hidden group shadow-lg">
+                            <Image src="/YuGiOh.jpg" alt="Yu-Gi-Oh" fill className="object-cover transition-transform duration-500 group-hover:scale-110" />
+                            <button className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-white text-black font-bold py-3 px-8 rounded-xl shadow-lg hover:bg-gray-100 transition-colors uppercase tracking-wider text-sm whitespace-nowrap">
+                                YU-GI-OH
+                            </button>
+                        </div>
+                    </div>
+                    {/* Bottom Row */}
+                    <div className="relative h-1/2 w-full rounded-[30px] overflow-hidden group shadow-lg">
+                        <Image src="/pokemon.jpg" alt="Pokemon" fill className="object-cover transition-transform duration-500 group-hover:scale-110" />
+                        <button className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-white text-black font-bold py-3 px-8 rounded-xl shadow-lg hover:bg-gray-100 transition-colors uppercase tracking-wider text-sm whitespace-nowrap">
+                            POKEMON
+                        </button>
+                    </div>
+                </div>
+
+                {/* Right Column */}
+                <div className="w-1/3 flex flex-col gap-6">
+                    <div className="relative flex-grow rounded-[30px] overflow-hidden group shadow-lg">
+                        <Image src="/magic.jpg" alt="Magic The Gathering" fill className="object-cover transition-transform duration-500 group-hover:scale-110" />
+                        <button className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-white text-black font-bold py-3 px-8 rounded-xl shadow-lg hover:bg-gray-100 transition-colors uppercase tracking-wider text-sm whitespace-nowrap">
+                            MAGIC THE GATHERING
+                        </button>
+                    </div>
+                    <div className="relative h-[120px] bg-[#040D24] rounded-[30px] shadow-lg flex items-center justify-center overflow-hidden group">
+                        <button className="bg-white text-black font-bold py-3 px-12 rounded-xl shadow-lg hover:bg-gray-100 transition-colors uppercase tracking-wider text-sm">
+                            MERCH
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default CategoryGrid;

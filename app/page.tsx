@@ -6,6 +6,10 @@ import Card from "@/components/ui/Card";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import Ticker from "@/components/ui/Ticker";
+import CategoryGrid from "@/components/ui/CategoryGrid";
+import SellYourCardsSection from "@/components/ui/SellYourCardsSection";
+import SocialMediaSection from "@/components/ui/SocialMediaSection";
 
 const CARDS = [
   {
@@ -116,10 +120,13 @@ export default function Home() {
 
       {/* New Section */}
       <div className="relative min-h-screen w-full p-10 bg-[#F1F1F1]">
-        <div className="absolute top-10 left-10">
+        <div className="absolute top-10 left-10 right-10 flex justify-between items-center">
           <p className="font-bold text-[72px] text-black tracking-[0.03em] leading-[1.2em]" style={{ fontFamily: 'Europa Grotesk SH' }}>
             WHAT'S HOT
           </p>
+          <a href="/shop" className="text-xl font-bold text-white bg-[#B266FF] px-8 py-3 rounded-full hover:bg-[#9933FF] transition-colors">
+            See more
+          </a>
         </div>
 
         <div className="mt-40 relative w-full max-w-[1600px] mx-auto">
@@ -162,6 +169,11 @@ export default function Home() {
           </div>
         </div>
       </div>
+      <Ticker />
+      <CategoryGrid />
+      <SellYourCardsSection />
+      <div className="h-screen w-full bg-[#F1F1F1]" />
+      <SocialMediaSection />
     </main>
   );
 }
