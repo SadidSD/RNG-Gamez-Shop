@@ -11,6 +11,8 @@ import CategoryGrid from "@/components/ui/CategoryGrid";
 import SellYourCardsSection from "@/components/ui/SellYourCardsSection";
 import SocialMediaSection from "@/components/ui/SocialMediaSection";
 
+import StoreLocationSection from "@/components/ui/StoreLocationSection";
+
 const CARDS = [
   {
     id: 1,
@@ -174,6 +176,7 @@ export default function Home() {
       <SellYourCardsSection />
       <div className="h-screen w-full bg-[#F1F1F1]" />
       <SocialMediaSection />
+      <StoreLocationSection />
     </main>
   );
 }

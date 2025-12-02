@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import { ArrowUpRight, CircleDollarSign, Coins, CreditCard } from 'lucide-react';
 
 const SellYourCardsSection = () => {
@@ -24,8 +25,14 @@ const SellYourCardsSection = () => {
             <div className="w-full max-w-[1600px] grid grid-cols-3 gap-8">
                 {/* Box 1 */}
                 <div className="relative h-[500px] bg-gray-300 rounded-[30px] overflow-hidden group">
-                    {/* Placeholder for Image */}
-                    <div className="absolute bottom-6 left-6 right-6 bg-[#040D24] rounded-[20px] p-6 flex items-center gap-4">
+                    <Image
+                        src="/sellYourCards.png"
+                        alt="Sell Your Cards"
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors" />
+                    <div className="absolute bottom-6 left-6 right-6 bg-[#040D24]/90 backdrop-blur-sm rounded-[20px] p-6 flex items-center gap-4 z-10">
                         <div className="bg-white rounded-full p-2">
                             <CircleDollarSign className="w-6 h-6 text-black" />
                         </div>
@@ -37,8 +44,14 @@ const SellYourCardsSection = () => {
 
                 {/* Box 2 */}
                 <div className="relative h-[500px] bg-gray-300 rounded-[30px] overflow-hidden group">
-                    {/* Placeholder for Image */}
-                    <div className="absolute bottom-6 left-6 right-6 bg-[#040D24] rounded-[20px] p-6 flex items-center gap-4">
+                    <Image
+                        src="/getCreditScore.jpg"
+                        alt="Get Credit Scores"
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors" />
+                    <div className="absolute bottom-6 left-6 right-6 bg-[#040D24]/90 backdrop-blur-sm rounded-[20px] p-6 flex items-center gap-4 z-10">
                         <div className="bg-white rounded-full p-2">
                             <Coins className="w-6 h-6 text-black" />
                         </div>
@@ -50,8 +63,14 @@ const SellYourCardsSection = () => {
 
                 {/* Box 3 */}
                 <div className="relative h-[500px] bg-gray-300 rounded-[30px] overflow-hidden group">
-                    {/* Placeholder for Image */}
-                    <div className="absolute bottom-6 left-6 right-6 bg-[#040D24] rounded-[20px] p-6 flex items-center gap-4">
+                    <Image
+                        src="/buyNewCards.jpg"
+                        alt="Buy New Cards"
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors" />
+                    <div className="absolute bottom-6 left-6 right-6 bg-[#040D24]/90 backdrop-blur-sm rounded-[20px] p-6 flex items-center gap-4 z-10">
                         <div className="bg-white rounded-full p-2">
                             <CreditCard className="w-6 h-6 text-black" />
                         </div>

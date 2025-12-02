@@ -3,32 +3,32 @@
 import React from 'react';
 import Card from '@/components/ui/Card';
 
-export default function BuylistPage() {
+export default function MTGPage() {
     // Dummy data for products
     const products = [
         {
             id: 1,
-            title: "Buylist Item 1",
-            price: "$50.00",
-            imageSrc: "/sellYourCards.png"
+            title: "Magic Card Example 1",
+            price: "$10.00",
+            imageSrc: "/magic.jpg"
         },
         {
             id: 2,
-            title: "Buylist Item 2",
-            price: "$75.00",
-            imageSrc: "/sellYourCards.png"
+            title: "Magic Card Example 2",
+            price: "$20.00",
+            imageSrc: "/magic.jpg"
         },
         {
             id: 3,
-            title: "Buylist Item 3",
-            price: "$100.00",
-            imageSrc: "/sellYourCards.png"
+            title: "Magic Card Example 3",
+            price: "$30.00",
+            imageSrc: "/magic.jpg"
         },
         {
             id: 4,
-            title: "Buylist Item 4",
-            price: "$125.00",
-            imageSrc: "/sellYourCards.png"
+            title: "Magic Card Example 4",
+            price: "$40.00",
+            imageSrc: "/magic.jpg"
         }
     ];
 
@@ -38,14 +38,14 @@ export default function BuylistPage() {
                 {/* Breadcrumbs */}
                 <div className="flex items-center gap-2 text-sm text-gray-500 mb-8">
                     <span className="w-4 h-4 bg-purple-500 rounded-sm"></span>
-                    <span>Buylist</span>
+                    <span>Magic The Gathering</span>
                     <span>/</span>
                     <span className="text-black font-medium">All</span>
                 </div>
 
                 {/* Header */}
                 <h1 className="text-[80px] font-bold text-black leading-tight mb-12" style={{ fontFamily: 'Europa Grotesk SH' }}>
-                    Buylist
+                    Magic The Gathering
                 </h1>
 
                 {/* Controls */}
