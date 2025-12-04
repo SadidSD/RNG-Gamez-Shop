@@ -10,7 +10,6 @@ import Ticker from "@/components/ui/Ticker";
 import CategoryGrid from "@/components/ui/CategoryGrid";
 import SellYourCardsSection from "@/components/ui/SellYourCardsSection";
 import SocialMediaSection from "@/components/ui/SocialMediaSection";
-
 import StoreLocationSection from "@/components/ui/StoreLocationSection";
 
 const CARDS = [
@@ -150,7 +149,7 @@ export default function Home() {
           {/* Slider Container */}
           <div className="overflow-hidden w-full py-20">
             <motion.div
-              className="flex gap-5"
+              className="flex gap-6"
               animate={{ x: `-${currentIndex * (100 / itemsPerPage)}%` }}
               transition={{ duration: 0.5, ease: "easeInOut" }}
             >
@@ -161,6 +160,7 @@ export default function Home() {
                   style={{ width: 'calc((100% - 72px) / 4)' }}
                 >
                   <Card
+                    id={card.id}
                     title={card.title}
                     price={card.price}
                     imageSrc={card.imageSrc}

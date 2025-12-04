@@ -37,10 +37,10 @@ export default function Navbar() {
 
     const navLinks = [
         { name: "Home", href: "/" },
-        { name: "Grading Cards", href: "/grading" },
+        { name: "Grading Cards", href: "/shop?category=Graded Cards" },
         { name: "Buylist", href: "/buylist" },
-        { name: "Magic The Gathering", href: "/mtg" },
-        { name: "Pokémon", href: "/pokemon" },
+        { name: "Magic The Gathering", href: "/shop?category=Magic: The Gathering" },
+        { name: "Pokémon", href: "/shop?category=Pokémon" },
         { name: "Events", href: "/events" },
     ];
 

@@ -11,8 +11,8 @@ interface CardProps {
 
 const Card: React.FC<CardProps> = ({ id, title, price, imageSrc }) => {
     return (
-        <div className="group/card bg-[#FAFAFA] rounded-[30px] p-2 shadow-[0px_1px_2px_0px_rgba(4,13,36,0.23)] w-full flex flex-col overflow-hidden hover:shadow-[0px_4px_12px_rgba(4,13,36,0.15)] transition-shadow duration-300">
-            <Link href={`/product/${id}`} className="block flex-1">
+        <div className="group/card bg-[#FAFAFA] rounded-[30px] rounded-bl-none p-2 shadow-[0px_1px_2px_0px_rgba(4,13,36,0.23)] w-full h-full flex flex-col overflow-hidden hover:shadow-[0px_4px_12px_rgba(4,13,36,0.15)] transition-shadow duration-300">
+            <Link href={`/product/${id}`} className="block flex-1 flex flex-col">
                 <div className="bg-[#FAFAFA] rounded-[30px] shadow-[2px_2px_5px_2px_rgba(4,13,36,0.15)] mb-4 overflow-hidden relative aspect-[4/3]">
                     <Image
                         src={imageSrc}
@@ -21,8 +21,8 @@ const Card: React.FC<CardProps> = ({ id, title, price, imageSrc }) => {
                         className="object-cover transition-transform duration-500 ease-out group-hover/card:scale-110"
                     />
                 </div>
-                <div className="px-2 mb-4">
-                    <h3 className="text-2xl font-medium text-black leading-tight line-clamp-2">
+                <div className="px-2 mb-4 flex-1">
+                    <h3 className="text-2xl font-medium text-black leading-tight line-clamp-2 h-[3.8rem]">
                         {title}
                     </h3>
                     <p className="text-2xl font-bold text-black mt-2">
