@@ -1,8 +1,13 @@
-import React from 'react';
+"use client";
+
+import React, { useState } from 'react';
 import Image from 'next/image';
+import { motion } from 'framer-motion';
 import { ArrowUpRight, CircleDollarSign, Coins, CreditCard } from 'lucide-react';
 
 const SellYourCardsSection = () => {
+    const [isHovered, setIsHovered] = useState(false);
+
     return (
         <div className="w-full min-h-screen bg-[#F1F1F1] py-20 px-10 flex flex-col items-center">
             {/* Header */}
@@ -13,12 +18,25 @@ const SellYourCardsSection = () => {
                 <p className="text-gray-600 text-lg mb-8 max-w-2xl mx-auto">
                     SELL YOUR CARDS eahowivuosehbveuwsobv ev bouwvbewobv bur evbes jbewoubvweo be bvevb oeubveo oew bveou veu uoebv uoeb vebwo bveouw beuov bouewuvb weobv oeu uwe ve beu
                 </p>
-                <button className="bg-[#B266FF] text-white px-8 py-3 rounded-full font-bold flex items-center gap-2 mx-auto hover:bg-[#9933FF] transition-colors">
-                    Sell Now
-                    <div className="bg-white rounded-full p-1">
-                        <ArrowUpRight className="w-4 h-4 text-[#B266FF]" />
-                    </div>
-                </button>
+                <motion.button
+                    className="bg-[#B266FF] px-8 py-3 rounded-full font-bold flex items-center gap-2 mx-auto transition-colors hover:bg-[#9933FF]"
+                    onHoverStart={() => setIsHovered(true)}
+                    onHoverEnd={() => setIsHovered(false)}
+                    layout
+                >
+                    <motion.span
+                        layout
+                        className={`text-xl transition-colors duration-300 ${isHovered ? "text-white order-2" : "text-black order-1"}`}
+                    >
+                        Sell Now
+                    </motion.span>
+                    <motion.div
+                        layout
+                        className={`rounded-full p-1 transition-colors duration-300 ${isHovered ? "bg-black order-1" : "bg-white order-2"}`}
+                    >
+                        <ArrowUpRight className={`w-4 h-4 transition-colors duration-300 ${isHovered ? "text-white" : "text-[#B266FF]"}`} />
+                    </motion.div>
+                </motion.button>
             </div>
 
             {/* Grid */}
