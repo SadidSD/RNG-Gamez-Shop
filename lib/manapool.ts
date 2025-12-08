@@ -40,9 +40,9 @@ export async function fetchGames(): Promise<Game[]> {
 
         // Temporary mock data until API is integrated
         const mockGames: Game[] = [
-            { id: 'mtg', name: 'Magic: The Gathering', icon: '🎴', image: '/magic-gathering.png' },
+            { id: 'mtg', name: 'Magic: The Gathering', icon: '🎴', image: '/magic.jpg' },
             { id: 'flesh-and-blood', name: 'Flesh and Blood', icon: '⚔️', image: '/flesh-and-blood.png' },
-            { id: 'pokemon', name: 'Pokémon', icon: '⚡', image: '/pokemon.png' },
+            { id: 'pokemon', name: 'Pokémon', icon: '⚡', image: '/pokemon.jpg' },
             { id: 'one-piece', name: 'One Piece', icon: '🏴‍☠️', image: '/one-piece.png' },
             { id: 'lorcana', name: 'Lorcana', icon: '✨', image: '/lorcana.png' },
         ];
