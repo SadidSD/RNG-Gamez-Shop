@@ -10,7 +10,7 @@ import SellYourCardsSection from "@/components/ui/SellYourCardsSection";
 import ReviewsSection from "@/components/ui/ReviewsSection";
 import SocialMediaSection from "@/components/ui/SocialMediaSection";
 import StoreLocationSection from "@/components/ui/StoreLocationSection";
-import SearchBox from "@/components/ui/SearchBox";
+
 
 const CARDS = [
   {
@@ -77,10 +77,6 @@ export default function Home() {
         />
         {/* Add your page content here, over the cover image */}
         <div className="absolute inset-0 flex flex-col justify-center">
-          {/* Search Box */}
-          <div className="w-full flex justify-center mb-18 px-4">
-            <SearchBox />
-          </div>
 
           <div className="pl-20 mt-4">
             {/* TEXT SETUP APPLIED HERE */}

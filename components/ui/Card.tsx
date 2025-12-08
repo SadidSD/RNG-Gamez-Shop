@@ -11,7 +11,7 @@ interface CardProps {
 
 const Card: React.FC<CardProps> = ({ id, title, price, imageSrc }) => {
     return (
-        <div className="group/card bg-[#FAFAFA] rounded-[30px] rounded-bl-none p-2 shadow-[0px_1px_2px_0px_rgba(4,13,36,0.23)] w-full h-full flex flex-col overflow-hidden hover:shadow-[0px_4px_12px_rgba(4,13,36,0.15)] transition-shadow duration-300">
+        <div className="group/card bg-[#FAFAFA] rounded-[30px] p-2 shadow-[0px_1px_2px_0px_rgba(4,13,36,0.23)] w-full h-full flex flex-col overflow-hidden hover:shadow-[0px_4px_12px_rgba(4,13,36,0.15)] transition-shadow duration-300">
             <Link href={`/product/${id}`} className="block flex-1 flex flex-col">
                 <div className="bg-[#FAFAFA] rounded-[30px] shadow-[2px_2px_5px_2px_rgba(4,13,36,0.15)] mb-4 overflow-hidden relative aspect-[4/3]">
                     <Image
@@ -30,8 +30,8 @@ const Card: React.FC<CardProps> = ({ id, title, price, imageSrc }) => {
                     </p>
                 </div>
             </Link>
-            <button className="group/button relative overflow-hidden bg-[#B266FF] text-black font-bold py-3 md:py-4 rounded-r-full flex items-center justify-between transition-colors duration-300 hover:text-white -ml-2 mr-2 px-4 md:px-6 lg:px-8 pr-4 md:pr-6">
-                <span className="absolute inset-0 flex items-center justify-center overflow-hidden rounded-r-full">
+            <button className="group/button relative overflow-hidden bg-[#B266FF] text-black font-bold py-3 md:py-4 rounded-full flex items-center justify-between transition-colors duration-300 hover:text-white px-4 md:px-6 lg:px-8 w-full">
+                <span className="absolute inset-0 flex items-center justify-center overflow-hidden rounded-full">
                     <span className="absolute top-full left-1/2 h-[30rem] w-[30rem] -translate-x-1/2 rounded-full bg-[#9933FF] transition-all duration-500 ease-out group-hover/button:top-1/2 group-hover/button:-translate-y-1/2"></span>
                 </span>
                 <span className="relative z-10 text-sm md:text-base">ADD TO CART</span>

@@ -105,10 +105,10 @@ export default function ProductSliderSection({
                     </button>
 
                     {/* Slider Window */}
-                    <div className="flex-1 overflow-hidden py-10">
+                    <div className="flex-1 overflow-hidden py-10 px-4">
                         <motion.div
                             className="flex gap-6"
-                            animate={{ x: `-${currentIndex * (100 / itemsPerPage)}%` }}
+                            animate={{ x: `calc(-${currentIndex} * (100% + 24px) / ${itemsPerPage})` }}
                             transition={{ duration: 0.5, ease: "easeInOut" }}
                         >
                             {cards.map((card) => (

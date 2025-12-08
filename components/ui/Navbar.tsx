@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Search, ShoppingCart, User, ChevronDown } from "lucide-react";
 import CartSidebar from "./CartSidebar";
+import SearchBox from "./SearchBox";
 
 export default function Navbar() {
     const [isVisible, setIsVisible] = useState(true);
@@ -81,9 +82,9 @@ export default function Navbar() {
 
                 {/* Right Actions */}
                 <div className="flex items-center gap-4 text-white">
-                    <button className="p-2 rounded-full hover:bg-white/10 transition-colors">
-                        <Search size={20} />
-                    </button>
+                    <div className="w-64">
+                        <SearchBox />
+                    </div>
                     <button
                         className="p-2 rounded-full hover:bg-white/10 transition-colors"
                         onClick={() => setIsCartOpen(true)}
