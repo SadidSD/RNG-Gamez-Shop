@@ -1,78 +1,80 @@
 "use client";
 
-import React, { useState, Suspense } from 'react';
+import React, { useState, Suspense, useEffect } from 'react';
 import Card from '@/components/ui/Card';
 import FilterSidebar from '@/components/ui/FilterSidebar';
 import { SlidersHorizontal } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 
-const CARDS = [
-    {
-        id: 1,
-        title: "Pokémon Tripack ME02: Phantasmal Flames – English",
-        price: "$4000.00",
-        imageSrc: "/cover.jpg",
-        category: "Pokémon"
-    },
-    {
-        id: 2,
-        title: "Magic Card Example 1",
-        price: "$10.00",
-        imageSrc: "/magic.jpg",
-        category: "Magic: The Gathering"
-    },
-    {
-        id: 3,
-        title: "Yu-Gi-Oh Card Example 1",
-        price: "$20.00",
-        imageSrc: "/YuGiOh.jpg",
-        category: "Yu-Gi-Oh!"
-    },
-    {
-        id: 4,
-        title: "Graded Card Example 1",
-        price: "$500.00",
-        imageSrc: "/graded.jpg",
-        category: "Graded Cards"
-    },
-    {
-        id: 5,
-        title: "Pokémon Tripack ME02: Phantasmal Flames – English",
-        price: "$4000.00",
-        imageSrc: "/cover.jpg",
-        category: "Pokémon"
-    },
-    {
-        id: 6,
-        title: "Magic Card Example 2",
-        price: "$20.00",
-        imageSrc: "/magic.jpg",
-        category: "Magic: The Gathering"
-    },
-    {
-        id: 7,
-        title: "Pokémon Tripack ME02: Phantasmal Flames – English",
-        price: "$4000.00",
-        imageSrc: "/cover.jpg",
-        category: "Pokémon"
-    },
-    {
-        id: 8,
-        title: "Pokémon Tripack ME02: Phantasmal Flames – English",
-        price: "$4000.00",
-        imageSrc: "/cover.jpg",
-        category: "Pokémon"
+const fetchProducts = async () => {
+    try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        const apiKey = process.env.NEXT_PUBLIC_API_KEY;
+
+        if (!apiUrl) {
+            console.error("NEXT_PUBLIC_API_URL is missing");
+            return [];
+        }
+
+        // Endpoint: /api/public/products (Public Shop via Railway/Render)
+        const res = await fetch(`${apiUrl}/public/products`, {
+            headers: {
+                'x-api-key': apiKey || '',
+            },
+            cache: 'no-store'
+        });
+
+        if (!res.ok) throw new Error('Failed to fetch products');
+
+        const data = await res.json();
+        // Return .data because backend returns { store: "...", count: N, data: [] }
+        return data.data || [];
+    } catch (error) {
+        console.error("Error fetching products:", error);
+        return [];
     }
-];
+};
 
 function ShopContent() {
+    const [products, setProducts] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
     const [showFilters, setShowFilters] = useState(false);
     const searchParams = useSearchParams();
     const currentCategory = searchParams.get('category');
 
-    const filteredCards = currentCategory
-        ? CARDS.filter(card => card.category === currentCategory)
-        : CARDS;
+    useEffect(() => {
+        const load = async () => {
+            setLoading(true);
+            const data = await fetchProducts();
+
+            // Map backend data to frontend Card format
+            // Backend: { id, name, price, image, ... }
+            // Frontend: { id, title, price, imageSrc, ... }
+            const mapped = data.map((p: any) => ({
+                id: p.id,
+                title: p.name,
+                price: `$${Number(p.price).toFixed(2)}`,
+                imageSrc: p.image || "/placeholder.svg",
+                category: "All", // Default category if missing from backend for now
+            }));
+
+            setProducts(mapped);
+            setLoading(false);
+        };
+        load();
+    }, []);
+
+    const filteredCards = currentCategory && currentCategory !== 'All'
+        ? products.filter(card => card.category === currentCategory)
+        : products;
+
+    if (loading) {
+        return (
+            <div className="min-h-[50vh] flex items-center justify-center">
+                <div className="text-xl text-gray-500 animate-pulse">Loading products from store...</div>
+            </div>
+        );
+    }
 
     return (
         <div className="max-w-[1600px] mx-auto">
