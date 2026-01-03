@@ -9,11 +9,10 @@ import { useSearchParams } from 'next/navigation';
 const fetchProducts = async () => {
     console.log("1. Starting fetchProducts...");
     try {
-        // HARDCODED DEBUG URL - BYPASSING VERCEL ENV VARS
-        const apiUrl = "https://rng-game-backend-production.up.railway.app/api";
-        const apiKey = "tcg-frontend-secret-key";
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        const apiKey = process.env.NEXT_PUBLIC_API_KEY;
 
-        console.log("2. Using Hardcoded URL:", apiUrl);
+        console.log("2. Env Vars:", { apiUrl, apiKey });
 
         if (!apiUrl) {
             console.error("CRITICAL: NEXT_PUBLIC_API_URL is missing");
@@ -92,9 +91,10 @@ function ShopContent() {
     return (
         <div className="max-w-[1600px] mx-auto">
             {/* DEBUG BANNER - REMOVE LATER */}
-            <div className="bg-red-600 text-white px-4 py-3 rounded relative mb-4 text-center">
-                <strong className="font-bold">DEBUG MODE (FORCED DO NOT SHIP):</strong>
-                <span className="block sm:inline"> URL: https://rng-game-backend-production.up.railway.app/api</span>
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+                <strong className="font-bold">DEBUG MODE:</strong>
+                <span className="block sm:inline"> API URL: {process.env.NEXT_PUBLIC_API_URL || "MISSING"}</span>
+                <span className="block sm:inline"> | API KEY: {process.env.NEXT_PUBLIC_API_KEY ? "Set" : "MISSING"}</span>
             </div>
             {/* Breadcrumbs */}
             <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
