@@ -59,17 +59,26 @@ function ShopContent() {
             setLoading(true);
             const data = await fetchProducts();
 
-            // Map backend data to frontend Card format
-            // Backend: { id, name, price, image, ... }
-            // Frontend: { id, title, price, imageSrc, ... }
+            // Normalize Backend 'game' to Frontend 'category'
+            const normalizeCategory = (game: string) => {
+                if (!game) return "All";
+                const g = game.toLowerCase();
+                // Map "Pokemon Cards" (Backend) -> "Pokémon" (Frontend Filter)
+                if (g.includes('pokemon')) return "Pokémon";
+                if (g.includes('magic') || g.includes('mtg')) return "Magic: The Gathering";
+                if (g.includes('yugioh') || g.includes('yu-gi-oh')) return "Yu-Gi-Oh!";
+                if (g.includes('sport')) return "Sports Cards";
+                if (g.includes('supply') || g.includes('supplies')) return "Supplies";
+                if (g.includes('graded')) return "Graded Cards";
+                return game; // Fallback
+            };
+
             const mapped = data.map((p: any) => ({
                 id: p.id,
                 title: p.name,
                 price: `$${Number(p.price).toFixed(2)}`,
                 imageSrc: p.image || "/placeholder.svg",
-                // Map Backend 'game' or 'categoryId' to Frontend 'category'
-                // User wants "Pokemon Cards", so we expect p.game to be "Pokemon Cards"
-                category: p.game || "All",
+                category: normalizeCategory(p.game),
             }));
 
             setProducts(mapped);
