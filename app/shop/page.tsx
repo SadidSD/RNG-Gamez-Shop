@@ -90,6 +90,12 @@ function ShopContent() {
 
     return (
         <div className="max-w-[1600px] mx-auto">
+            {/* DEBUG BANNER - REMOVE LATER */}
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+                <strong className="font-bold">DEBUG MODE:</strong>
+                <span className="block sm:inline"> API URL: {process.env.NEXT_PUBLIC_API_URL || "MISSING"}</span>
+                <span className="block sm:inline"> | API KEY: {process.env.NEXT_PUBLIC_API_KEY ? "Set" : "MISSING"}</span>
+            </div>
             {/* Breadcrumbs */}
             <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
                 <div className="w-4 h-4 bg-gradient-to-br from-purple-500 to-blue-500 rounded-sm"></div>
