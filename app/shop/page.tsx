@@ -7,26 +7,38 @@ import { SlidersHorizontal } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 
 const fetchProducts = async () => {
+    console.log("1. Starting fetchProducts...");
     try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL;
         const apiKey = process.env.NEXT_PUBLIC_API_KEY;
 
+        console.log("2. Env Vars:", { apiUrl, apiKey });
+
         if (!apiUrl) {
-            console.error("NEXT_PUBLIC_API_URL is missing");
+            console.error("CRITICAL: NEXT_PUBLIC_API_URL is missing");
             return [];
         }
 
+        const fullUrl = `${apiUrl}/public/products`;
+        console.log("3. Fetching from:", fullUrl);
+
         // Endpoint: /api/public/products (Public Shop via Railway/Render)
-        const res = await fetch(`${apiUrl}/public/products`, {
+        const res = await fetch(fullUrl, {
             headers: {
                 'x-api-key': apiKey || '',
             },
             cache: 'no-store'
         });
 
-        if (!res.ok) throw new Error('Failed to fetch products');
+        console.log("4. Response Status:", res.status);
+
+        if (!res.ok) {
+            console.error("Fetch failed:", res.status, res.statusText);
+            throw new Error('Failed to fetch products');
+        }
 
         const data = await res.json();
+        console.log("5. Data received:", data);
         // Return .data because backend returns { store: "...", count: N, data: [] }
         return data.data || [];
     } catch (error) {
