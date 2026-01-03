@@ -67,7 +67,9 @@ function ShopContent() {
                 title: p.name,
                 price: `$${Number(p.price).toFixed(2)}`,
                 imageSrc: p.image || "/placeholder.svg",
-                category: "All", // Default category if missing from backend for now
+                // Map Backend 'game' or 'categoryId' to Frontend 'category'
+                // User wants "Pokemon Cards", so we expect p.game to be "Pokemon Cards"
+                category: p.game || "All",
             }));
 
             setProducts(mapped);
