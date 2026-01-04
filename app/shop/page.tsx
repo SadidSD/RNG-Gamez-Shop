@@ -47,8 +47,21 @@ const fetchProducts = async () => {
     }
 };
 
+const fetchCategories = async () => {
+    try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        if (!apiUrl) return [];
+        const res = await fetch(`${apiUrl}/categories`, { cache: 'no-store' });
+        if (!res.ok) return [];
+        return await res.json();
+    } catch (e) {
+        return [];
+    }
+}
+
 function ShopContent() {
     const [products, setProducts] = useState<any[]>([]);
+    const [categories, setCategories] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
     const [showFilters, setShowFilters] = useState(false);
     const searchParams = useSearchParams();
@@ -57,29 +70,30 @@ function ShopContent() {
     useEffect(() => {
         const load = async () => {
             setLoading(true);
-            const data = await fetchProducts();
+            const [productsData, categoriesData] = await Promise.all([
+                fetchProducts(),
+                fetchCategories()
+            ]);
 
-            // Normalize Backend 'game' to Frontend 'category'
-            const normalizeCategory = (game: string) => {
-                if (!game) return "All";
-                const g = game.toLowerCase();
-                // Map "Pokemon Cards" (Backend) -> "Pokémon" (Frontend Filter)
-                if (g.includes('pokemon')) return "Pokémon";
-                if (g.includes('magic') || g.includes('mtg')) return "Magic: The Gathering";
-                if (g.includes('yugioh') || g.includes('yu-gi-oh')) return "Yu-Gi-Oh!";
-                if (g.includes('sport')) return "Sports Cards";
-                if (g.includes('supply') || g.includes('supplies')) return "Supplies";
-                if (g.includes('graded')) return "Graded Cards";
-                return game; // Fallback
-            };
+            // Set Categories for Sidebar
+            if (categoriesData && categoriesData.length > 0) {
+                setCategories(categoriesData.map((c: any) => c.name));
+            } else {
+                // Fallback defaults if no backend categories
+                setCategories(['Pokémon', 'Magic: The Gathering', 'Yu-Gi-Oh!', 'Sports Cards', 'Supplies', 'Graded Cards']);
+            }
 
-            const mapped = data.map((p: any) => ({
+            const mapped = productsData.map((p: any) => ({
                 id: p.id,
                 title: p.name,
                 price: `$${Number(p.price).toFixed(2)}`,
-                imageSrc: p.image || "/placeholder.svg",
-                category: normalizeCategory(p.game),
+                imageSrc: (p.images && p.images.length > 0) ? p.images[0] : "/placeholder.svg",
+                // Prefer linked category name, fallback to game, fallback to All
+                category: p.category ? p.category.name : (p.game || "All"),
             }));
+
+            // If the current mapped products introduce a category NOT in the fetched list (e.g. from legacy 'game' field), add it?
+            // For now, let's just stick to what the backend returns for filter list.
 
             setProducts(mapped);
             setLoading(false);
@@ -94,7 +108,7 @@ function ShopContent() {
     if (loading) {
         return (
             <div className="min-h-[50vh] flex items-center justify-center">
-                <div className="text-xl text-gray-500 animate-pulse">Loading products from store...</div>
+                <div className="text-xl text-gray-500 animate-pulse">Loading products...</div>
             </div>
         );
     }
@@ -102,11 +116,8 @@ function ShopContent() {
     return (
         <div className="max-w-[1600px] mx-auto">
             {/* DEBUG BANNER - REMOVE LATER */}
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
-                <strong className="font-bold">DEBUG MODE:</strong>
-                <span className="block sm:inline"> API URL: {process.env.NEXT_PUBLIC_API_URL || "MISSING"}</span>
-                <span className="block sm:inline"> | API KEY: {process.env.NEXT_PUBLIC_API_KEY ? "Set" : "MISSING"}</span>
-            </div>
+            {/* ... banner code ... */}
+
             {/* Breadcrumbs */}
             <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
                 <div className="w-4 h-4 bg-gradient-to-br from-purple-500 to-blue-500 rounded-sm"></div>
@@ -147,7 +158,7 @@ function ShopContent() {
             <div className="flex gap-8 items-start">
                 {/* Filter Sidebar - Conditionally rendered or hidden */}
                 <div className={`transition-all duration-300 ease-in-out ${showFilters ? 'w-64 opacity-100' : 'w-0 opacity-0 overflow-hidden'}`}>
-                    <FilterSidebar isOpen={true} onClose={() => setShowFilters(false)} />
+                    <FilterSidebar isOpen={true} onClose={() => setShowFilters(false)} categories={categories} />
                 </div>
 
                 {/* Product Grid */}

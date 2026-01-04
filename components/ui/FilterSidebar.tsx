@@ -34,9 +34,10 @@ const FilterSection: React.FC<FilterSectionProps> = ({ title, children, defaultO
 interface FilterSidebarProps {
     isOpen: boolean;
     onClose: () => void;
+    categories: string[];
 }
 
-const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose }) => {
+const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose, categories }) => {
     const [priceRange, setPriceRange] = useState({ min: 0, max: 1000 });
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -53,8 +54,6 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose }) => {
     };
 
     if (!isOpen) return null;
-
-    const categories = ['Pokémon', 'Magic: The Gathering', 'Yu-Gi-Oh!', 'Sports Cards', 'Supplies', 'Graded Cards'];
 
     return (
         <div className="w-full md:w-64 flex-shrink-0 bg-white p-4 rounded-lg shadow-sm border border-gray-100 h-fit">
