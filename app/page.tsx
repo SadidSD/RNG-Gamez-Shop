@@ -15,49 +15,49 @@ import StoreLocationSection from "@/components/ui/StoreLocationSection";
 const CARDS = [
   {
     id: 1,
-    title: "Pokémon Tripack ME02: Phantasmal Flames – English",
+    title: "Pokemon Tripack ME02: Phantasmal Flames – English",
     price: "$4000.00",
     imageSrc: "/cover.jpg"
   },
   {
     id: 2,
-    title: "Pokémon Tripack ME02: Phantasmal Flames – English",
+    title: "Pokemon Tripack ME02: Phantasmal Flames – English",
     price: "$4000.00",
     imageSrc: "/cover.jpg"
   },
   {
     id: 3,
-    title: "Pokémon Tripack ME02: Phantasmal Flames – English",
+    title: "Pokemon Tripack ME02: Phantasmal Flames – English",
     price: "$4000.00",
     imageSrc: "/cover.jpg"
   },
   {
     id: 4,
-    title: "Pokémon Tripack ME02: Phantasmal Flames – English",
+    title: "Pokemon Tripack ME02: Phantasmal Flames – English",
     price: "$4000.00",
     imageSrc: "/cover.jpg"
   },
   {
     id: 5,
-    title: "Pokémon Tripack ME02: Phantasmal Flames – English",
+    title: "Pokemon Tripack ME02: Phantasmal Flames – English",
     price: "$4000.00",
     imageSrc: "/cover.jpg"
   },
   {
     id: 6,
-    title: "Pokémon Tripack ME02: Phantasmal Flames – English",
+    title: "Pokemon Tripack ME02: Phantasmal Flames – English",
     price: "$4000.00",
     imageSrc: "/cover.jpg"
   },
   {
     id: 7,
-    title: "Pokémon Tripack ME02: Phantasmal Flames – English",
+    title: "Pokemon Tripack ME02: Phantasmal Flames – English",
     price: "$4000.00",
     imageSrc: "/cover.jpg"
   },
   {
     id: 8,
-    title: "Pokémon Tripack ME02: Phantasmal Flames – English",
+    title: "Pokemon Tripack ME02: Phantasmal Flames – English",
     price: "$4000.00",
     imageSrc: "/cover.jpg"
   }

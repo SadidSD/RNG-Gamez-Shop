@@ -42,10 +42,14 @@ export async function fetchGames(): Promise<Game[]> {
         const mockGames: Game[] = [
             { id: 'mtg', name: 'Magic: The Gathering', icon: '🎴', image: '/magic.jpg' },
             { id: 'flesh-and-blood', name: 'Flesh and Blood', icon: '⚔️', image: '/flesh-and-blood.png' },
-            { id: 'pokemon', name: 'Pokémon', icon: '⚡', image: '/pokemon.jpg' },
-            { id: 'one-piece', name: 'One Piece', icon: '🏴‍☠️', image: '/one-piece.png' },
-            { id: 'lorcana', name: 'Lorcana', icon: '✨', image: '/lorcana.png' },
-        ];
+            { id: 'pokemon', name: 'Pokemon', icon: '⚡', image: '/pokemon.jpg' },
+            'Pokemon': [
+                { id: 'pkm-1', name: 'Charizard', set: 'Base Set', image: '/charizard.png', cashPrice: 3000.00, creditPrice: 3500.00, rarity: 'Holo Rare', game: 'Pokemon' },
+                { id: 'pkm-2', name: 'Pikachu Illustrator', set: 'Promo', image: '/pikachu.png', cashPrice: 5000000.00, creditPrice: 5500000.00, rarity: 'Promo', game: 'Pokemon' },
+                { id: 'pkm-3', name: 'Blastoise', set: 'Base Set', image: '/charizard.png', cashPrice: 1500.00, creditPrice: 1800.00, rarity: 'Holo Rare', game: 'Pokemon' },
+                { id: 'one-piece', name: 'One Piece', icon: '🏴‍☠️', image: '/one-piece.png' },
+                { id: 'lorcana', name: 'Lorcana', icon: '✨', image: '/lorcana.png' },
+            ];
 
         gamesCache = mockGames;
         gamesCacheTime = Date.now();

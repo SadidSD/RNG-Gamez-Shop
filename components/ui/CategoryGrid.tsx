@@ -28,7 +28,7 @@ const CategoryGrid = () => {
                     <div className="relative h-1/2 w-full rounded-[30px] overflow-hidden group shadow-lg">
                         <Image src="/pokemon.jpg" alt="Pokemon" fill className="object-cover transition-transform duration-500 group-hover:scale-110" />
                         <div className="absolute inset-x-0 bottom-0 h-2/3 backdrop-blur-md [mask-image:linear-gradient(to_top,black,transparent)] pointer-events-none" />
-                        <a href="/shop?category=Pokémon" className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-white text-black font-bold py-3 px-8 rounded-xl shadow-lg hover:bg-gray-100 transition-colors uppercase tracking-wider text-sm whitespace-nowrap">
+                        <a href="/shop?category=Pokemon" className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-white text-black font-bold py-3 px-8 rounded-xl shadow-lg hover:bg-gray-100 transition-colors uppercase tracking-wider text-sm whitespace-nowrap">
                             POKEMON
                         </a>
                     </div>

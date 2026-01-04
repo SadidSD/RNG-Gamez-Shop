@@ -41,7 +41,7 @@ export default function Navbar() {
         { name: "Grading Cards", href: "/shop?category=Graded Cards" },
         { name: "Buylist", href: "/buylist" },
         { name: "Magic The Gathering", href: "/shop?category=Magic: The Gathering" },
-        { name: "Pokémon", href: "/shop?category=Pokémon" },
+        { name: "Pokemon", href: "/shop?category=Pokemon" },
         { name: "Events", href: "/events" },
     ];
 

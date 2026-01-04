@@ -21,25 +21,25 @@ export default function ProductPage({ params }: { params: { id: string } }) {
     const recommendedProducts = [
         {
             id: 1,
-            title: "Pokémon Tripack ME02: Phantasmal Flames – English",
+            title: "Pokemon Tripack ME02: Phantasmal Flames – English",
             price: "$4,000.00",
             imageSrc: "/pokemon.jpg"
         },
         {
             id: 2,
-            title: "Pokémon Tripack ME02: Phantasmal Flames – English",
+            title: "Pokemon Tripack ME02: Phantasmal Flames – English",
             price: "$4,000.00",
             imageSrc: "/pokemon.jpg"
         },
         {
             id: 3,
-            title: "Pokémon Tripack ME02: Phantasmal Flames – English",
+            title: "Pokemon Tripack ME02: Phantasmal Flames – English",
             price: "$4,000.00",
             imageSrc: "/pokemon.jpg"
         },
         {
             id: 4,
-            title: "Pokémon Tripack ME02: Phantasmal Flames – English",
+            title: "Pokemon Tripack ME02: Phantasmal Flames – English",
             price: "$4,000.00",
             imageSrc: "/pokemon.jpg"
         }
