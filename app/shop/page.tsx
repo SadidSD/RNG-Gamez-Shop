@@ -80,7 +80,7 @@ function ShopContent() {
                 setCategories(categoriesData.map((c: any) => c.name));
             } else {
                 // Fallback defaults if no backend categories
-                setCategories(['Pokémon', 'Magic: The Gathering', 'Yu-Gi-Oh!', 'Sports Cards', 'Supplies', 'Graded Cards']);
+                setCategories(['Pokemon', 'Magic: The Gathering', 'Yu-Gi-Oh!', 'Sports Cards', 'Supplies', 'Graded Cards']);
             }
 
             const mapped = productsData.map((p: any) => ({
@@ -98,10 +98,13 @@ function ShopContent() {
         load();
     }, []);
 
+    // Robust normalization: lowercase, remove accents, trim
+    const normalize = (str: string) => str ? str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim() : "";
+
     const filteredCards = currentCategory && currentCategory !== 'All'
         ? products.filter(card => {
-            const cardCat = (card.category || "").toLowerCase().trim();
-            const filterCat = (currentCategory || "").toLowerCase().trim();
+            const cardCat = normalize(card.category);
+            const filterCat = normalize(currentCategory);
             return cardCat === filterCat;
         })
         : products;
@@ -116,8 +119,23 @@ function ShopContent() {
 
     return (
         <div className="max-w-[1600px] mx-auto">
-            {/* DEBUG BANNER - REMOVE LATER */}
-            {/* ... banner code ... */}
+            {/* DEBUG BANNER */}
+            <div className="bg-yellow-100 border-4 border-yellow-500 p-4 mb-6 rounded text-sm text-black font-mono overflow-auto max-h-64">
+                <h3 className="font-bold border-b border-yellow-500 mb-2">DEBUG INFO (Take a screenshot if issue persists)</h3>
+                <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <p><strong>API URL:</strong> {process.env.NEXT_PUBLIC_API_URL || "UNDEFINED"}</p>
+                        <p><strong>Categories Fetched:</strong> {categories.length} ({categories.join(", ")})</p>
+                        <p><strong>Current Filter (Raw):</strong> "{currentCategory}"</p>
+                        <p><strong>Current Filter (Norm):</strong> "{normalize(currentCategory || "")}"</p>
+                    </div>
+                    <div>
+                        <p><strong>Total Products:</strong> {products.length}</p>
+                        <p><strong>Visible Products:</strong> {filteredCards.length}</p>
+                        <p><strong>Product Categories:</strong> {Array.from(new Set(products.map(p => `${p.title}: ${p.category} -> ${normalize(p.category)}`))).join(" | ")}</p>
+                    </div>
+                </div>
+            </div>
 
             {/* Breadcrumbs */}
             <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
