@@ -92,9 +92,6 @@ function ShopContent() {
                 category: p.category ? p.category.name : (p.game || "All"),
             }));
 
-            // If the current mapped products introduce a category NOT in the fetched list (e.g. from legacy 'game' field), add it?
-            // For now, let's just stick to what the backend returns for filter list.
-
             setProducts(mapped);
             setLoading(false);
         };
@@ -102,7 +99,11 @@ function ShopContent() {
     }, []);
 
     const filteredCards = currentCategory && currentCategory !== 'All'
-        ? products.filter(card => card.category === currentCategory)
+        ? products.filter(card => {
+            const cardCat = (card.category || "").toLowerCase().trim();
+            const filterCat = (currentCategory || "").toLowerCase().trim();
+            return cardCat === filterCat;
+        })
         : products;
 
     if (loading) {
