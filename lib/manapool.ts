@@ -43,13 +43,9 @@ export async function fetchGames(): Promise<Game[]> {
             { id: 'mtg', name: 'Magic: The Gathering', icon: '🎴', image: '/magic.jpg' },
             { id: 'flesh-and-blood', name: 'Flesh and Blood', icon: '⚔️', image: '/flesh-and-blood.png' },
             { id: 'pokemon', name: 'Pokemon', icon: '⚡', image: '/pokemon.jpg' },
-            'Pokemon': [
-                { id: 'pkm-1', name: 'Charizard', set: 'Base Set', image: '/charizard.png', cashPrice: 3000.00, creditPrice: 3500.00, rarity: 'Holo Rare', game: 'Pokemon' },
-                { id: 'pkm-2', name: 'Pikachu Illustrator', set: 'Promo', image: '/pikachu.png', cashPrice: 5000000.00, creditPrice: 5500000.00, rarity: 'Promo', game: 'Pokemon' },
-                { id: 'pkm-3', name: 'Blastoise', set: 'Base Set', image: '/charizard.png', cashPrice: 1500.00, creditPrice: 1800.00, rarity: 'Holo Rare', game: 'Pokemon' },
-                { id: 'one-piece', name: 'One Piece', icon: '🏴‍☠️', image: '/one-piece.png' },
-                { id: 'lorcana', name: 'Lorcana', icon: '✨', image: '/lorcana.png' },
-            ];
+            { id: 'one-piece', name: 'One Piece', icon: '🏴‍☠️', image: '/one-piece.png' },
+            { id: 'lorcana', name: 'Lorcana', icon: '✨', image: '/lorcana.png' },
+        ];
 
         gamesCache = mockGames;
         gamesCacheTime = Date.now();
@@ -90,10 +86,10 @@ export async function getGameCards(gameName: string): Promise<Card[]> {
                 { id: 'mtg-2', name: 'The One Ring', set: 'Tales of Middle-earth', image: '/one-ring.png', cashPrice: 2000000.00, creditPrice: 2200000.00, rarity: 'Mythic', game: 'Magic: The Gathering' },
                 { id: 'mtg-3', name: 'Mox Sapphire', set: 'Alpha', image: '/black-lotus.png', cashPrice: 15000.00, creditPrice: 17000.00, rarity: 'Rare', game: 'Magic: The Gathering' },
             ],
-            'Pokémon': [
-                { id: 'pkm-1', name: 'Charizard', set: 'Base Set', image: '/charizard.png', cashPrice: 3000.00, creditPrice: 3500.00, rarity: 'Holo Rare', game: 'Pokémon' },
-                { id: 'pkm-2', name: 'Pikachu Illustrator', set: 'Promo', image: '/pikachu.png', cashPrice: 5000000.00, creditPrice: 5500000.00, rarity: 'Promo', game: 'Pokémon' },
-                { id: 'pkm-3', name: 'Blastoise', set: 'Base Set', image: '/charizard.png', cashPrice: 1500.00, creditPrice: 1800.00, rarity: 'Holo Rare', game: 'Pokémon' },
+            'Pokemon': [
+                { id: 'pkm-1', name: 'Charizard', set: 'Base Set', image: '/charizard.png', cashPrice: 3000.00, creditPrice: 3500.00, rarity: 'Holo Rare', game: 'Pokemon' },
+                { id: 'pkm-2', name: 'Pikachu Illustrator', set: 'Promo', image: '/pikachu.png', cashPrice: 5000000.00, creditPrice: 5500000.00, rarity: 'Promo', game: 'Pokemon' },
+                { id: 'pkm-3', name: 'Blastoise', set: 'Base Set', image: '/charizard.png', cashPrice: 1500.00, creditPrice: 1800.00, rarity: 'Holo Rare', game: 'Pokemon' },
             ],
             'Yu-Gi-Oh': [ // Note: Yu-Gi-Oh is not in the game list above but for completeness
                 { id: 'ygo-1', name: 'Blue-Eyes White Dragon', set: 'LOB', image: '/blue-eyes.png', cashPrice: 1200.00, creditPrice: 1500.00, rarity: 'Ultra Rare', game: 'Yu-Gi-Oh' },
