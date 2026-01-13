@@ -90,6 +90,12 @@ function ShopContent() {
                 imageSrc: (p.images && p.images.length > 0) ? p.images[0] : "/placeholder.svg",
                 // Prefer linked category name, fallback to game, fallback to All
                 category: p.category ? p.category.name : (p.game || "All"),
+                set: p.set || "",
+                rarity: p.rarity || "",
+                number: p.collectorNumber || "",
+                conditionString: (p.variants && p.variants.length > 0)
+                    ? `${p.variants[0].condition || 'NM'}${p.variants[0].isFoil ? ' Foil' : ''}`
+                    : "",
             }));
 
             setProducts(mapped);
@@ -190,6 +196,10 @@ function ShopContent() {
                                     title={card.title}
                                     price={card.price}
                                     imageSrc={card.imageSrc}
+                                    set={card.set}
+                                    rarity={card.rarity}
+                                    number={card.number}
+                                    condition={card.conditionString}
                                 />
                             </div>
                         ))}

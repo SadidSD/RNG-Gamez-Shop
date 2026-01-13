@@ -7,9 +7,13 @@ interface CardProps {
     title: string;
     price: string;
     imageSrc: string;
+    set?: string;
+    rarity?: string;
+    number?: string;
+    condition?: string;
 }
 
-const Card: React.FC<CardProps> = ({ id, title, price, imageSrc }) => {
+const Card: React.FC<CardProps> = ({ id, title, price, imageSrc, set, rarity, number, condition }) => {
     return (
         <div className="group/card bg-[#FAFAFA] rounded-[30px] p-2 shadow-[0px_1px_2px_0px_rgba(4,13,36,0.23)] w-full h-full flex flex-col overflow-hidden hover:shadow-[0px_4px_12px_rgba(4,13,36,0.15)] transition-shadow duration-300">
             <Link href={`/product/${id}`} className="block flex-1 flex flex-col">
@@ -18,14 +22,20 @@ const Card: React.FC<CardProps> = ({ id, title, price, imageSrc }) => {
                         src={imageSrc}
                         alt={title}
                         fill
-                        className="object-cover transition-transform duration-500 ease-out group-hover/card:scale-110"
+                        className="object-contain p-2 transition-transform duration-500 ease-out group-hover/card:scale-110"
                     />
                 </div>
-                <div className="px-2 mb-4 flex-1">
-                    <h3 className="text-lg md:text-xl lg:text-2xl font-medium text-black leading-tight line-clamp-2 h-[2.5rem] md:h-[3.2rem] lg:h-[3.8rem]">
+                <div className="px-2 mb-4 flex-1 flex flex-col gap-1">
+                    <h3 className="text-lg font-bold text-black leading-tight line-clamp-2">
                         {title}
                     </h3>
-                    <p className="text-lg md:text-xl lg:text-2xl font-bold text-black mt-2">
+                    <div className="flex flex-wrap gap-2 text-xs text-gray-500">
+                        {set && <span className="bg-gray-200 px-2 py-0.5 rounded-full">{set}</span>}
+                        {number && <span>#{number}</span>}
+                        {rarity && <span className="capitalize text-gray-400">{rarity}</span>}
+                        {condition && <span className="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full font-bold text-[10px] uppercase tracking-wider">{condition}</span>}
+                    </div>
+                    <p className="text-xl font-bold text-black mt-auto pt-2">
                         {price}
                     </p>
                 </div>
