@@ -105,7 +105,14 @@ function ShopContent() {
     }, []);
 
     // Robust normalization: lowercase, remove accents, trim
-    const normalize = (str: string) => str ? str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim() : "";
+    const normalize = (str: string) => {
+        if (!str) return "";
+        let s = str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+        // Alias Handling
+        if (s === 'mtg') return 'magic: the gathering';
+        if (s === 'magic the gathering') return 'magic: the gathering';
+        return s;
+    };
 
     const filteredCards = currentCategory && currentCategory !== 'All'
         ? products.filter(card => {
