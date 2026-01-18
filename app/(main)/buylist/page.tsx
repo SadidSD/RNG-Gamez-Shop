@@ -3,39 +3,39 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useRouter } from 'next/navigation';
-import Header from '@/components/buylist/Header';
+
 
 export default function BuylistPage() {
-    const router = useRouter();
+  const router = useRouter();
 
-    return (
-        <PageContainer>
-            <Header />
-            <MainContent>
-                <Title>SELL YOUR CARDS</Title>
-                <Subtitle>Choose how you'd like to submit your cards</Subtitle>
+  return (
+    <PageContainer>
 
-                <ActionCardsContainer>
-                    <ActionCard onClick={() => router.push('/buylist/game-select?mode=category')}>
-                        <CardIconLarge>
-                            {/* Using a placeholder or emoji if image is missing, or use the image if available in public */}
-                            <span style={{ fontSize: '4rem' }}>🎴</span>
-                        </CardIconLarge>
-                        <CardTitle>Select Card by Category</CardTitle>
-                        <CardDescription>Search and select individual cards from our database</CardDescription>
-                    </ActionCard>
+      <MainContent>
+        <Title>SELL YOUR CARDS</Title>
+        <Subtitle>Choose how you'd like to submit your cards</Subtitle>
 
-                    <ActionCard onClick={() => router.push('/buylist/game-select?mode=bulk')}>
-                        <CardIconLarge>
-                            <span style={{ fontSize: '4rem' }}>📦</span>
-                        </CardIconLarge>
-                        <CardTitle>Bulk Submission</CardTitle>
-                        <CardDescription>Submit multiple cards at once for faster processing</CardDescription>
-                    </ActionCard>
-                </ActionCardsContainer>
-            </MainContent>
-        </PageContainer>
-    );
+        <ActionCardsContainer>
+          <ActionCard onClick={() => router.push('/buylist/game-select?mode=category')}>
+            <CardIconLarge>
+              {/* Using a placeholder or emoji if image is missing, or use the image if available in public */}
+              <span style={{ fontSize: '4rem' }}>🎴</span>
+            </CardIconLarge>
+            <CardTitle>Select Card by Category</CardTitle>
+            <CardDescription>Search and select individual cards from our database</CardDescription>
+          </ActionCard>
+
+          <ActionCard onClick={() => router.push('/buylist/game-select?mode=bulk')}>
+            <CardIconLarge>
+              <span style={{ fontSize: '4rem' }}>📦</span>
+            </CardIconLarge>
+            <CardTitle>Bulk Submission</CardTitle>
+            <CardDescription>Submit multiple cards at once for faster processing</CardDescription>
+          </ActionCard>
+        </ActionCardsContainer>
+      </MainContent>
+    </PageContainer>
+  );
 }
 
 
