@@ -16,7 +16,7 @@ export default function BuylistPage() {
         <Subtitle>Choose how you'd like to submit your cards</Subtitle>
 
         <ActionCardsContainer>
-          <ActionCard onClick={() => router.push('/buylist/game-select?mode=category')}>
+          <ActionCard onClick={() => router.push('/buylist/search')}>
             <CardIconLarge>
               {/* Using a placeholder or emoji if image is missing, or use the image if available in public */}
               <span style={{ fontSize: '4rem' }}>🎴</span>
@@ -25,7 +25,7 @@ export default function BuylistPage() {
             <CardDescription>Search and select individual cards from our database</CardDescription>
           </ActionCard>
 
-          <ActionCard onClick={() => router.push('/buylist/game-select?mode=bulk')}>
+          <ActionCard onClick={() => router.push('/buylist/bulk')}>
             <CardIconLarge>
               <span style={{ fontSize: '4rem' }}>📦</span>
             </CardIconLarge>
