@@ -21,7 +21,8 @@ interface BuylistCard {
 }
 
 // Interface compatible with CardResult's expectations
-interface FrontendCard extends BuylistCard {
+interface FrontendCard extends Omit<BuylistCard, 'set'> {
+  set: string;
   cashPrice: number;
   creditPrice: number;
   rarity: string;
