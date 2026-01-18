@@ -3,7 +3,7 @@
 import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import { useRouter } from 'next/navigation';
-import Header from '@/components/buylist/Header';
+
 import BulkPreview from '@/components/buylist/BulkPreview';
 import { BulkParseResult } from '@/types';
 import { parseTextInput, parseFile } from '@/lib/BulkParser';
@@ -108,7 +108,7 @@ export default function BulkPage() {
 
   return (
     <PageContainer>
-      <Header />
+
       <MainContent>
         <Title>BULK SUBMISSION</Title>
         <Subtitle>Submit multiple cards at once for faster processing</Subtitle>

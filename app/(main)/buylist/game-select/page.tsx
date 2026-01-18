@@ -3,7 +3,7 @@
 import React, { useEffect, useState, Suspense } from 'react';
 import styled from 'styled-components';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Header from '@/components/buylist/Header';
+
 import GameSelector from '@/components/buylist/GameSelector';
 import { Game } from '@/types';
 
@@ -33,7 +33,7 @@ function GameSelectContent() {
 export default function GameSelectPage() {
   return (
     <PageContainer>
-      <Header />
+
       <MainContent>
         <Suspense fallback={<div>Loading...</div>}>
           <GameSelectContent />

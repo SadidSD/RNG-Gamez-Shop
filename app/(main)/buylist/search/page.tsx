@@ -2,64 +2,64 @@
 
 import React, { useState, useMemo } from 'react';
 import styled from 'styled-components';
-import Header from '@/components/buylist/Header';
+
 import SearchBar from '@/components/buylist/SearchBar';
 import SetSelector from '@/components/buylist/SetSelector';
 import CardResult from '@/components/buylist/CardResult';
 import { mockCards, mockSets } from '@/lib/mockData';
 
 export default function SearchPage() {
-    const [searchTerm, setSearchTerm] = useState('');
-    const [selectedSet, setSelectedSet] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedSet, setSelectedSet] = useState<string | null>(null);
 
-    const filteredCards = useMemo(() => {
-        return mockCards.filter(card => {
-            const matchesSearch = searchTerm === '' ||
-                card.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                (card.cardNumber && card.cardNumber.includes(searchTerm));
+  const filteredCards = useMemo(() => {
+    return mockCards.filter(card => {
+      const matchesSearch = searchTerm === '' ||
+        card.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (card.cardNumber && card.cardNumber.includes(searchTerm));
 
-            const matchesSet = selectedSet === null || card.set === mockSets.find(s => s.id === selectedSet)?.name;
+      const matchesSet = selectedSet === null || card.set === mockSets.find(s => s.id === selectedSet)?.name;
 
-            return matchesSearch && matchesSet;
-        });
-    }, [searchTerm, selectedSet]);
+      return matchesSearch && matchesSet;
+    });
+  }, [searchTerm, selectedSet]);
 
-    return (
-        <PageContainer>
-            <Header />
-            <MainContent>
-                <SearchSection>
-                    <SearchControls>
-                        <SearchBarWrapper>
-                            <SearchBar value={searchTerm} onChange={setSearchTerm} />
-                        </SearchBarWrapper>
-                        <SetSelector selectedSet={selectedSet} onSelectSet={setSelectedSet} />
-                    </SearchControls>
-                </SearchSection>
+  return (
+    <PageContainer>
 
-                <ResultsSection>
-                    {filteredCards.length === 0 ? (
-                        <EmptyState>
-                            <EmptyIcon>🔍</EmptyIcon>
-                            <EmptyText>No cards found</EmptyText>
-                            <EmptySubtext>Try adjusting your search or filters</EmptySubtext>
-                        </EmptyState>
-                    ) : (
-                        <>
-                            <ResultsHeader>
-                                <ResultsCount>{filteredCards.length} cards found</ResultsCount>
-                            </ResultsHeader>
-                            <CardsGrid>
-                                {filteredCards.map((card) => (
-                                    <CardResult key={card.id} card={card} />
-                                ))}
-                            </CardsGrid>
-                        </>
-                    )}
-                </ResultsSection>
-            </MainContent>
-        </PageContainer>
-    );
+      <MainContent>
+        <SearchSection>
+          <SearchControls>
+            <SearchBarWrapper>
+              <SearchBar value={searchTerm} onChange={setSearchTerm} />
+            </SearchBarWrapper>
+            <SetSelector selectedSet={selectedSet} onSelectSet={setSelectedSet} />
+          </SearchControls>
+        </SearchSection>
+
+        <ResultsSection>
+          {filteredCards.length === 0 ? (
+            <EmptyState>
+              <EmptyIcon>🔍</EmptyIcon>
+              <EmptyText>No cards found</EmptyText>
+              <EmptySubtext>Try adjusting your search or filters</EmptySubtext>
+            </EmptyState>
+          ) : (
+            <>
+              <ResultsHeader>
+                <ResultsCount>{filteredCards.length} cards found</ResultsCount>
+              </ResultsHeader>
+              <CardsGrid>
+                {filteredCards.map((card) => (
+                  <CardResult key={card.id} card={card} />
+                ))}
+              </CardsGrid>
+            </>
+          )}
+        </ResultsSection>
+      </MainContent>
+    </PageContainer>
+  );
 }
 
 const PageContainer = styled.div`
