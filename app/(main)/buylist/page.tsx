@@ -21,7 +21,7 @@ export default function BuylistPage() {
               {/* Using a placeholder or emoji if image is missing, or use the image if available in public */}
               <span style={{ fontSize: '4rem' }}>🎴</span>
             </CardIconLarge>
-            <CardTitle>Select Card by Category</CardTitle>
+            <CardTitle>Select Cards</CardTitle>
             <CardDescription>Search and select individual cards from our database</CardDescription>
           </ActionCard>
 
