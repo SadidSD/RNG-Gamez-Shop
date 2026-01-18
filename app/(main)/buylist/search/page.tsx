@@ -1,53 +1,154 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
+import axios from 'axios';
+import { debounce } from 'lodash';
 
 import SearchBar from '@/components/buylist/SearchBar';
 import SetSelector from '@/components/buylist/SetSelector';
 import CardResult from '@/components/buylist/CardResult';
-import { mockCards, mockSets } from '@/lib/mockData';
+
+// Interfaces matching Backend BuylistFeaturedCard / Search Result
+interface BuylistCard {
+  id: string;
+  name: string;
+  set?: string;
+  game: string;
+  image: string;
+  basePrice?: number;
+  isRemote?: boolean;
+}
+
+// Interface compatible with CardResult's expectations
+interface FrontendCard extends BuylistCard {
+  cashPrice: number;
+  creditPrice: number;
+  rarity: string;
+  cardNumber?: string;
+}
 
 export default function SearchPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSet, setSelectedSet] = useState<string | null>(null);
+  const [cards, setCards] = useState<FrontendCard[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
 
-  const filteredCards = useMemo(() => {
-    return mockCards.filter(card => {
-      const matchesSearch = searchTerm === '' ||
-        card.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (card.cardNumber && card.cardNumber.includes(searchTerm));
+  // Helper to map backend data to frontend
+  const mapToFrontend = (data: BuylistCard[]): FrontendCard[] => {
+    if (!Array.isArray(data)) return [];
 
-      const matchesSet = selectedSet === null || card.set === mockSets.find(s => s.id === selectedSet)?.name;
+    return data.map(c => ({
+      ...c,
+      // Fallbacks for display
+      rarity: '', // Backend doesn't send rarity for featured yet
+      set: c.set || 'Unknown Set',
+      // Pricing Logic
+      cashPrice: c.basePrice ? Number(c.basePrice) : 0,
+      creditPrice: c.basePrice ? Number(c.basePrice) * 1.3 : 0, // Mock: 30% bonus
+      cardNumber: ''
+    }));
+  };
 
-      return matchesSearch && matchesSet;
-    });
-  }, [searchTerm, selectedSet]);
+  // Fetch Featured Cards on Mount
+  useEffect(() => {
+    const fetchFeatured = async () => {
+      try {
+        setLoading(true);
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/buylist/featured`, {
+          headers: { 'x-api-key': process.env.NEXT_PUBLIC_API_KEY }
+        });
+        setCards(mapToFrontend(res.data));
+      } catch (error) {
+        console.error('Failed to load featured buylist:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Only fetch featured if NOT searching
+    if (!searchTerm) {
+      fetchFeatured();
+    }
+  }, [searchTerm]);
+
+  // Search Logic (Debounced)
+  const performSearch = async (query: string) => {
+    if (!query) {
+      setIsSearching(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setIsSearching(true);
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/buylist/search`, {
+        params: { query },
+        headers: { 'x-api-key': process.env.NEXT_PUBLIC_API_KEY }
+      });
+
+      const data = res.data;
+
+      // Merge local and remote
+      const merged = [
+        ...(data.local || []),
+        ...(data.remote || [])
+      ];
+
+      setCards(mapToFrontend(merged));
+    } catch (error) {
+      console.error('Search failed:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debouncedSearch = useCallback(debounce(performSearch, 500), []);
+
+  useEffect(() => {
+    if (searchTerm) {
+      debouncedSearch(searchTerm);
+    } else {
+      setIsSearching(false);
+    }
+  }, [searchTerm, debouncedSearch]);
+
+
+  // Client-side Set Filter (Optional)
+  const filteredCards = cards.filter(card => {
+    return selectedSet === null || (card.set && card.set === selectedSet);
+  });
 
   return (
     <PageContainer>
-
       <MainContent>
         <SearchSection>
           <SearchControls>
             <SearchBarWrapper>
               <SearchBar value={searchTerm} onChange={setSearchTerm} />
             </SearchBarWrapper>
-            <SetSelector selectedSet={selectedSet} onSelectSet={setSelectedSet} />
+            {/* <SetSelector selectedSet={selectedSet} onSelectSet={setSelectedSet} />  */}
           </SearchControls>
         </SearchSection>
 
         <ResultsSection>
-          {filteredCards.length === 0 ? (
+          {loading ? (
+            <LoadingState>Searching Universe...</LoadingState>
+          ) : filteredCards.length === 0 ? (
             <EmptyState>
               <EmptyIcon>🔍</EmptyIcon>
-              <EmptyText>No cards found</EmptyText>
-              <EmptySubtext>Try adjusting your search or filters</EmptySubtext>
+              <EmptyText>{searchTerm ? 'No cards found' : 'Start typing to search'}</EmptyText>
+              <EmptySubtext>Try searching for "Pikachu" or "Lotus"</EmptySubtext>
             </EmptyState>
           ) : (
             <>
               <ResultsHeader>
-                <ResultsCount>{filteredCards.length} cards found</ResultsCount>
+                <ResultsCount>
+                  {filteredCards.length} result{filteredCards.length !== 1 ? 's' : ''}
+                  {searchTerm ? ' found' : ' (Featured)'}
+                </ResultsCount>
               </ResultsHeader>
               <CardsGrid>
                 {filteredCards.map((card) => (
@@ -61,6 +162,13 @@ export default function SearchPage() {
     </PageContainer>
   );
 }
+
+const LoadingState = styled.div`
+  text-align: center;
+  padding: 4rem;
+  font-size: 1.2rem;
+  color: #666;
+`;
 
 const PageContainer = styled.div`
   min-height: 100vh;
@@ -121,7 +229,7 @@ const CardsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.5rem;
-
+  
   @media (max-width: 640px) {
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   }

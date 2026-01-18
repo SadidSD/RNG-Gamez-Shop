@@ -6,6 +6,18 @@ const nextConfig = {
                 protocol: 'https',
                 hostname: 'img.youtube.com',
             },
+            {
+                protocol: 'https',
+                hostname: 'cards.scryfall.io',
+            },
+            {
+                protocol: 'https',
+                hostname: 'images.pokemontcg.io',
+            },
+            {
+                protocol: 'https',
+                hostname: 'rng-game-backend-production.up.railway.app',
+            }
         ],
     },
 };
