@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useAuth } from "@/context/AuthContext"
-import { Button } from "@/components/ui/Button"
+import Button from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
 import { Label } from "@/components/ui/Label"
 import Link from "next/link"
