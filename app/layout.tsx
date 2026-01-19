@@ -22,6 +22,7 @@ export const metadata: Metadata = {
 
 
 import Footer from "@/components/ui/Footer";
+import { AuthProvider } from "@/context/AuthContext";
 
 export default function RootLayout({
   children,
@@ -33,8 +34,10 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${roboto.variable} antialiased`}
       >
-        {children}
-        <Footer />
+        <AuthProvider>
+          {children}
+          <Footer />
+        </AuthProvider>
       </body>
     </html>
   );

@@ -6,11 +6,19 @@ import Link from "next/link";
 import { Search, ShoppingCart, User, ChevronDown } from "lucide-react";
 import CartSidebar from "./CartSidebar";
 import SearchBox from "./SearchBox";
+import { useAuth } from "@/context/AuthContext";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function Navbar() {
     const [isVisible, setIsVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
     const [isCartOpen, setIsCartOpen] = useState(false);
+    const { user, logout } = useAuth();
 
     useEffect(() => {
         const controlNavbar = () => {
@@ -91,9 +99,25 @@ export default function Navbar() {
                     >
                         <ShoppingCart size={20} />
                     </button>
-                    <button className="p-2 rounded-full hover:bg-white/10 transition-colors">
-                        <User size={20} />
-                    </button>
+
+                    {user ? (
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <button className="p-2 rounded-full hover:bg-white/10 transition-colors">
+                                    <User size={20} />
+                                </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuItem className="font-semibold">{user.email}</DropdownMenuItem>
+                                <DropdownMenuItem><Link href="/account">My Account</Link></DropdownMenuItem>
+                                <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    ) : (
+                        <Link href="/login" className="p-2 rounded-full hover:bg-white/10 transition-colors">
+                            <span className="text-sm font-semibold">Sign In</span>
+                        </Link>
+                    )}
                 </div>
             </nav>
 

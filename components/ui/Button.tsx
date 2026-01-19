@@ -5,15 +5,19 @@ interface ButtonProps {
   children: React.ReactNode;
   onClick?: () => void;
   className?: string;
+  type?: "button" | "submit" | "reset";
+  disabled?: boolean;
 }
 
-const Button: React.FC<ButtonProps> = ({ children, onClick, className }) => {
+const Button: React.FC<ButtonProps> = ({ children, onClick, className, type = "button", disabled }) => {
   return (
     <motion.button
       onClick={onClick}
-      className={`relative overflow-hidden bg-white font-bold py-2 px-6 rounded-full ${className}`}
+      type={type}
+      disabled={disabled}
+      className={`relative overflow-hidden bg-white font-bold py-2 px-6 rounded-full ${className} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
       initial="initial"
-      whileHover="hover"
+      whileHover={disabled ? "initial" : "hover"}
       animate="initial"
     >
       <motion.div
