@@ -8,7 +8,7 @@ import axios from 'axios';
 
 const CartDrawer: React.FC = () => {
   const { items, removeItem, updateQuantity, totals, isOpen, closeCart, clearCart } = useCart();
-  const [paymentMethod, setPaymentMethod] = useState<'cash' | 'credit'>('cash');
+  // const [paymentMethod, setPaymentMethod] = useState<'cash' | 'credit'>('cash'); // Removed: Credit Only
   const [customerName, setCustomerName] = useState('');
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -29,7 +29,7 @@ const CartDrawer: React.FC = () => {
           cardName: item.card.name,
           condition: item.card.condition || 'NM', // Default to NM if missing
           isFoil: false, // You might want to track foil status in cart item
-          offerPrice: paymentMethod === 'cash' ? item.card.cashPrice : item.card.creditPrice, // Or base price?
+          offerPrice: item.card.creditPrice, // Store Credit Only
           // NOTE: Backend expects 'offerPrice' per unit.
           // Usually buylist offers are based on a specific rate.
           // For now sending the displayed price (Cash or Credit value).
@@ -160,29 +160,7 @@ const CartDrawer: React.FC = () => {
                   />
                 </FormGroup>
 
-                <PaymentMethodSelector>
-                  <PaymentMethodLabel>Choose Payout Method:</PaymentMethodLabel>
-                  <PaymentOptions>
-                    <PaymentOption
-                      $active={paymentMethod === 'cash'}
-                      onClick={() => setPaymentMethod('cash')}
-                    >
-                      <RadioCircle $active={paymentMethod === 'cash'}>
-                        {paymentMethod === 'cash' && <RadioDot />}
-                      </RadioCircle>
-                      <span>Cash</span>
-                    </PaymentOption>
-                    <PaymentOption
-                      $active={paymentMethod === 'credit'}
-                      onClick={() => setPaymentMethod('credit')}
-                    >
-                      <RadioCircle $active={paymentMethod === 'credit'}>
-                        {paymentMethod === 'credit' && <RadioDot />}
-                      </RadioCircle>
-                      <span>Store Credit <CreditBonus>+20%</CreditBonus></span>
-                    </PaymentOption>
-                  </PaymentOptions>
-                </PaymentMethodSelector>
+
 
                 <TotalRow className="cash">
                   <TotalLabel>Total Cash Payout</TotalLabel>

@@ -3,6 +3,7 @@
 import StyledComponentsRegistry from '@/lib/registry';
 import { CartProvider } from '@/context/BuylistCartContext';
 import CartDrawer from '@/components/buylist/CartDrawer';
+import FloatingCartButton from '@/components/buylist/FloatingCartButton';
 
 export default function BuylistLayout({
     children,
@@ -13,6 +14,7 @@ export default function BuylistLayout({
         <StyledComponentsRegistry>
             <CartProvider>
                 {children}
+                <FloatingCartButton />
                 <CartDrawer />
             </CartProvider>
         </StyledComponentsRegistry>
