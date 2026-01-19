@@ -1,94 +1,100 @@
-'use client';
+"use client"
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import axios from 'axios';
-import { useAuth } from '@/context/AuthContext';
-import Button from '@/components/ui/Button'; // Custom Button Casing
-import { Input } from '@/components/ui/Input';
-import { Label } from '@/components/ui/Label';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/UiCard';
-import { Loader2 } from 'lucide-react';
+import { useState } from "react"
+import { useAuth } from "@/context/AuthContext"
+import { Button } from "@/components/ui/Button"
+import { Input } from "@/components/ui/Input"
+import { Label } from "@/components/ui/Label"
+import Link from "next/link"
+import { Loader2 } from "lucide-react"
 
 export default function LoginPage() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
-    const { login } = useAuth();
-    const router = useRouter();
+    const { login, loading } = useAuth()
+    const [formData, setFormData] = useState({
+        email: "",
+        password: "",
+    })
 
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setError('');
-        setLoading(true);
-
-        try {
-            const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
-                email,
-                password
-            });
-
-            if (res.data && res.data.access_token) {
-                // Decode token payload manually if needed, or just let AuthContext fetch profile
-                // Simple Login for now
-                login(res.data.access_token, {});
-                router.push('/');
-            }
-        } catch (err: any) {
-            console.error('Login error', err);
-            setError(err.response?.data?.message || 'Invalid credentials');
-        } finally {
-            setLoading(false);
-        }
-    };
+        e.preventDefault()
+        await login(formData.email, formData.password)
+    }
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
-            <Card className="w-full max-w-md">
-                <CardHeader>
-                    <CardTitle className="text-2xl text-center font-bold">Sign in to your account</CardTitle>
-                    <CardDescription className="text-center">
-                        Or <Link href="/signup" className="font-medium text-blue-600 hover:text-blue-500">register a new account</Link>
-                    </CardDescription>
-                </CardHeader>
-                <form onSubmit={handleSubmit}>
-                    <CardContent className="grid gap-4">
-                        {error && (
-                            <div className="bg-red-50 text-red-600 p-3 rounded text-sm">
-                                {error}
-                            </div>
-                        )}
-                        <div className="grid gap-2">
-                            <Label htmlFor="email">Email address</Label>
+        <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4 bg-gradient-to-br from-indigo-900 via-purple-900 to-black relative overflow-hidden">
+            {/* Ambient Background Elements */}
+            <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-purple-600 rounded-full mix-blend-screen filter blur-[128px] opacity-20 animate-pulse"></div>
+                <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-indigo-600 rounded-full mix-blend-screen filter blur-[128px] opacity-20 animate-pulse delay-1000"></div>
+            </div>
+
+            <div className="w-full max-w-md relative z-10">
+                <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-8 shadow-2xl">
+                    <div className="text-center mb-8">
+                        <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70">
+                            Welcome Back
+                        </h1>
+                        <p className="text-white/50 mt-2">
+                            Sign in to access your collection
+                        </p>
+                    </div>
+
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        <div className="space-y-2">
+                            <Label htmlFor="email" className="text-white/80">Email</Label>
                             <Input
                                 id="email"
                                 type="email"
+                                placeholder="wizard@example.com"
                                 required
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                value={formData.email}
+                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                className="bg-black/20 border-white/10 text-white placeholder:text-white/20 focus:border-purple-500/50 focus:ring-purple-500/20"
                             />
                         </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="password">Password</Label>
+                        <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                                <Label htmlFor="password" className="text-white/80">Password</Label>
+                                <Link
+                                    href="#"
+                                    className="text-sm text-purple-400 hover:text-purple-300 transition-colors"
+                                >
+                                    Forgot password?
+                                </Link>
+                            </div>
                             <Input
                                 id="password"
                                 type="password"
                                 required
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                value={formData.password}
+                                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                className="bg-black/20 border-white/10 text-white placeholder:text-white/20 focus:border-purple-500/50 focus:ring-purple-500/20"
                             />
                         </div>
-                    </CardContent>
-                    <CardFooter>
-                        <Button className="w-full" type="submit" disabled={loading}>
-                            {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                            Sign in
+                        <Button
+                            type="submit"
+                            className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 border-none text-white font-semibold py-6 shadow-lg shadow-purple-900/20"
+                            disabled={loading}
+                        >
+                            {loading ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Signing in...
+                                </>
+                            ) : (
+                                "Sign In"
+                            )}
                         </Button>
-                    </CardFooter>
-                </form>
-            </Card>
+                    </form>
+
+                    <div className="mt-8 text-center text-sm">
+                        <span className="text-white/40">Don't have an account? </span>
+                        <Link href="/signup" className="text-purple-400 hover:text-purple-300 font-medium transition-colors">
+                            Join the Gathering
+                        </Link>
+                    </div>
+                </div>
+            </div>
         </div>
-    );
+    )
 }
