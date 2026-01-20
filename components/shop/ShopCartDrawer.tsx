@@ -3,11 +3,13 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useShopCart } from '@/context/ShopCartContext';
+import { useAuth } from '@/context/AuthContext';
 import axios from 'axios';
 import { X, Trash2, ShoppingBag } from 'lucide-react';
 
 export default function ShopCartDrawer() {
     const { isOpen, closeCart, items, removeItem, updateQuantity, total, clearCart } = useShopCart();
+    const { user } = useAuth();
     const [step, setStep] = useState<'cart' | 'checkout' | 'success'>('cart');
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
@@ -18,6 +20,18 @@ export default function ShopCartDrawer() {
         city: '',
         zip: ''
     });
+
+    // Auto-fill form data when user is logged in
+    React.useEffect(() => {
+        if (user) {
+            setFormData(prev => ({
+                ...prev,
+                email: user.email || '',
+                firstName: user.firstName || '',
+                lastName: user.lastName || ''
+            }));
+        }
+    }, [user]);
 
     // Reset to cart step when drawer closes
     React.useEffect(() => {
