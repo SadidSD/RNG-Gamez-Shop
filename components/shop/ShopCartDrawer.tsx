@@ -44,9 +44,11 @@ export default function ShopCartDrawer() {
 
             setStep('success');
             clearCart();
-        } catch (error) {
+        } catch (error: any) {
             console.error('Checkout failed', error);
-            alert('Failed to place order. Please try again.');
+            const msg = error.response?.data?.message || 'Failed to place order.';
+            console.error('Validation Details:', msg);
+            alert(`Order Failed: ${Array.isArray(msg) ? msg.join(', ') : msg}`);
         } finally {
             setLoading(false);
         }
