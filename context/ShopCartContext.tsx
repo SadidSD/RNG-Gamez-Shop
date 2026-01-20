@@ -59,6 +59,7 @@ export function ShopCartProvider({ children }: { children: ReactNode }) {
             }
             return [...prev, { ...newItem, quantity }];
         });
+        console.log('Added item to cart:', newItem, quantity);
         setIsOpen(true); // Auto open on add
     };
 

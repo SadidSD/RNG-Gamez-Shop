@@ -22,6 +22,7 @@ const Card: React.FC<CardProps> = ({ id, title, price, imageSrc, set, rarity, nu
 
     const handleAddToCart = (e: React.MouseEvent) => {
         e.preventDefault(); // Prevent Link navigation
+        console.log('Card AddToCart clicked:', { id, variantId, rawPrice, title });
         if (variantId && rawPrice) {
             addItem({
                 variantId,
