@@ -23,20 +23,36 @@ const CartDrawer: React.FC = () => {
     setIsSubmitting(true);
     try {
       const payload = {
-        customerName: customerName,
-        customerEmail: email,
-        items: items.map(item => ({
-          cardName: item.card.name,
-          condition: item.card.condition || 'NM', // Default to NM if missing
-          isFoil: false, // You might want to track foil status in cart item
-          offerPrice: item.card.creditPrice, // Store Credit Only
-          // NOTE: Backend expects 'offerPrice' per unit.
-          // Usually buylist offers are based on a specific rate.
-          // For now sending the displayed price (Cash or Credit value).
-          quantity: item.quantity
-        }))
+        customerName: customerName.trim(),
+        customerEmail: email.trim(),
+        items: items.map(item => {
+          // Normalize Condition
+          let cond = item.card.condition || 'NM';
+          const condMap: Record<string, string> = {
+            'Near Mint': 'NM',
+            'Lightly Played': 'LP',
+            'Moderately Played': 'MP',
+            'Heavily Played': 'HP',
+            'Damaged': 'DAMAGED',
+            'Sealed': 'SEALED'
+          };
+          if (condMap[cond]) cond = condMap[cond];
+
+          // Ensure strict enum values
+          const validConditions = ['NM', 'LP', 'MP', 'HP', 'DAMAGED', 'SEALED'];
+          if (!validConditions.includes(cond)) cond = 'NM';
+
+          return {
+            cardName: item.card.name,
+            condition: cond,
+            isFoil: Boolean(item.card.isFoil || false),
+            offerPrice: Number(item.card.creditPrice), // Ensure number
+            quantity: Number(item.quantity)
+          };
+        })
       };
 
+      console.log('Submitting Payload:', payload);
       const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       await axios.post(`${apiUrl}/buylist/offers`, payload, {
         headers: { 'x-api-key': process.env.NEXT_PUBLIC_API_KEY }

@@ -10,6 +10,7 @@ export interface Card {
     cardNumber?: string;
     condition?: 'Near Mint' | 'Lightly Played' | 'Moderately Played' | 'Heavily Played' | 'Damaged';
     game?: string;
+    isFoil?: boolean;
 }
 
 export interface CartItem {
