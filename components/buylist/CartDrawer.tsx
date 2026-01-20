@@ -54,9 +54,10 @@ const CartDrawer: React.FC = () => {
 
       console.log('Submitting Payload:', payload);
       const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-      await axios.post(`${apiUrl}/buylist/offers`, payload, {
+      const res = await axios.post(`${apiUrl}/buylist/offers`, payload, {
         headers: { 'x-api-key': process.env.NEXT_PUBLIC_API_KEY }
       });
+      console.log('Submission Success. Response:', res.data);
 
       setSubmitStatus('success');
       setTimeout(() => {

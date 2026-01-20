@@ -6,73 +6,88 @@ import { Card } from '@/types';
 import { useCart } from '@/context/BuylistCartContext';
 
 interface CardResultProps {
-    card: Card;
+  card: Card;
 }
 
 const CardResult: React.FC<CardResultProps> = ({ card }) => {
-    const [quantity, setQuantity] = useState(1);
-    const [condition, setCondition] = useState<'Near Mint' | 'Lightly Played' | 'Moderately Played' | 'Heavily Played' | 'Damaged'>('Near Mint');
-    const { addItem } = useCart();
+  const [quantity, setQuantity] = useState(1);
+  const [condition, setCondition] = useState<'Near Mint' | 'Lightly Played' | 'Moderately Played' | 'Heavily Played' | 'Damaged'>('Near Mint');
+  const { addItem } = useCart();
 
-    const handleAddToCart = () => {
-        if (quantity > 0) {
-            addItem({ ...card, condition }, quantity);
-            setQuantity(1);
-        }
-    };
+  const [isAdded, setIsAdded] = useState(false);
 
-    return (
-        <CardContainer>
-            <CardImageWrapper>
-                <CardImage src={card.image} alt={card.name} />
-                <RarityBadge>{card.rarity}</RarityBadge>
-            </CardImageWrapper>
+  const handleAddToCart = () => {
+    if (quantity > 0) {
+      addItem({ ...card, condition }, quantity);
+      setQuantity(1);
+      setIsAdded(true);
+      setTimeout(() => setIsAdded(false), 1500);
+    }
+  };
 
-            <CardInfo>
-                <CardName>{card.name}</CardName>
-                <CardSet>
-                    <span>{card.set}</span>
-                </CardSet>
+  return (
+    <CardContainer>
+      <CardImageWrapper>
+        <CardImage src={card.image} alt={card.name} />
+        <RarityBadge>{card.rarity}</RarityBadge>
+      </CardImageWrapper>
 
-                <ConditionSelector>
-                    <ConditionLabel>Condition:</ConditionLabel>
-                    <ConditionDropdown value={condition} onChange={(e) => setCondition(e.target.value as any)}>
-                        <option value="Near Mint">Near Mint</option>
-                        <option value="Lightly Played">Lightly Played</option>
-                        <option value="Moderately Played">Moderately Played</option>
-                        <option value="Heavily Played">Heavily Played</option>
-                        <option value="Damaged">Damaged</option>
-                    </ConditionDropdown>
-                </ConditionSelector>
+      <CardInfo>
+        <CardName>{card.name}</CardName>
+        <CardSet>
+          <span>{card.set}</span>
+        </CardSet>
 
-                <PriceSection>
-                    <PriceRow>
-                        <PriceLabel>Cash</PriceLabel>
-                        <PriceValue className="cash">${card.cashPrice.toFixed(2)}</PriceValue>
-                    </PriceRow>
-                    <PriceRow>
-                        <PriceLabel>Credit</PriceLabel>
-                        <PriceValue className="credit">${card.creditPrice.toFixed(2)}</PriceValue>
-                    </PriceRow>
-                </PriceSection>
+        <ConditionSelector>
+          <ConditionLabel>Condition:</ConditionLabel>
+          <ConditionDropdown value={condition} onChange={(e) => setCondition(e.target.value as any)}>
+            <option value="Near Mint">Near Mint</option>
+            <option value="Lightly Played">Lightly Played</option>
+            <option value="Moderately Played">Moderately Played</option>
+            <option value="Heavily Played">Heavily Played</option>
+            <option value="Damaged">Damaged</option>
+          </ConditionDropdown>
+        </ConditionSelector>
 
-                <AddToCartSection>
-                    <QuantityInput
-                        type="number"
-                        min="1"
-                        value={quantity}
-                        onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                    />
-                    <AddButton onClick={handleAddToCart}>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                            <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                        Add
-                    </AddButton>
-                </AddToCartSection>
-            </CardInfo>
-        </CardContainer>
-    );
+        <PriceSection>
+          <PriceRow>
+            <PriceLabel>Cash</PriceLabel>
+            <PriceValue className="cash">${card.cashPrice.toFixed(2)}</PriceValue>
+          </PriceRow>
+          <PriceRow>
+            <PriceLabel>Credit</PriceLabel>
+            <PriceValue className="credit">${card.creditPrice.toFixed(2)}</PriceValue>
+          </PriceRow>
+        </PriceSection>
+
+        <AddToCartSection>
+          <QuantityInput
+            type="number"
+            min="1"
+            value={quantity}
+            onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+          />
+          <AddButton onClick={handleAddToCart} disabled={isAdded}>
+            {isAdded ? (
+              <>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Added!
+              </>
+            ) : (
+              <>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                Add
+              </>
+            )}
+          </AddButton>
+        </AddToCartSection>
+      </CardInfo>
+    </CardContainer>
+  );
 };
 
 const CardContainer = styled.div`

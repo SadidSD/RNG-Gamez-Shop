@@ -96,6 +96,8 @@ function ShopContent() {
                 conditionString: (p.variants && p.variants.length > 0)
                     ? `${p.variants[0].condition || 'NM'}${p.variants[0].isFoil ? ' Foil' : ''}`
                     : "",
+                rawPrice: Number(p.price),
+                variantId: (p.variants && p.variants.length > 0) ? p.variants[0].id : undefined,
             }));
 
             setProducts(mapped);
@@ -207,6 +209,8 @@ function ShopContent() {
                                     rarity={card.rarity}
                                     number={card.number}
                                     condition={card.conditionString}
+                                    variantId={card.variantId}
+                                    rawPrice={card.rawPrice}
                                 />
                             </div>
                         ))}

@@ -1,12 +1,10 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Search, ShoppingCart, User, ChevronDown } from "lucide-react";
-import CartSidebar from "./CartSidebar";
 import SearchBox from "./SearchBox";
 import { useAuth } from "@/context/AuthContext";
+import { useShopCart } from "@/context/ShopCartContext";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -17,8 +15,10 @@ import {
 export default function Navbar() {
     const [isVisible, setIsVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
-    const [isCartOpen, setIsCartOpen] = useState(false);
     const { user, logout } = useAuth();
+    const { openCart, items } = useShopCart();
+
+    const cartCount = items.reduce((acc, item) => acc + item.quantity, 0);
 
     useEffect(() => {
         const controlNavbar = () => {
@@ -94,10 +94,15 @@ export default function Navbar() {
                         <SearchBox />
                     </div>
                     <button
-                        className="p-2 rounded-full hover:bg-white/10 transition-colors"
-                        onClick={() => setIsCartOpen(true)}
+                        className="p-2 rounded-full hover:bg-white/10 transition-colors relative"
+                        onClick={openCart}
                     >
                         <ShoppingCart size={20} />
+                        {cartCount > 0 && (
+                            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
+                                {cartCount}
+                            </span>
+                        )}
                     </button>
 
                     {user ? (
@@ -120,9 +125,6 @@ export default function Navbar() {
                     )}
                 </div>
             </nav>
-
-            {/* Cart Sidebar */}
-            <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
         </>
     );
 }
