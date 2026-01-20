@@ -19,6 +19,14 @@ export default function ShopCartDrawer() {
         zip: ''
     });
 
+    // Reset to cart step when drawer closes
+    React.useEffect(() => {
+        if (!isOpen) {
+            setStep('cart');
+            setLoading(false);
+        }
+    }, [isOpen]);
+
     if (!isOpen) return null;
 
     const handleCheckout = async () => {
