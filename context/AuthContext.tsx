@@ -3,18 +3,21 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { useRouter } from 'next/navigation';
 
 interface User {
     id: string;
     email: string;
     role: string;
     storeId: string;
+    firstName?: string;
+    lastName?: string;
 }
 
 interface AuthContextType {
     user: User | null;
     loading: boolean;
-    login: (token: string, userData: any) => void;
+    login: (email: string, password: string) => Promise<void>;
     logout: () => void;
 }
 
@@ -23,17 +26,12 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
+    const router = useRouter();
 
     useEffect(() => {
-        // Hydrate from cookie/localStorage if needed
-        // For simplicity, we just check if token exists, and if so, decode or fetch profile.
-        // Ideally we fetch /auth/profile
+        // Hydrate from cookie
         const token = Cookies.get('tcg-shop-token');
         if (token) {
-            // For now, we trust the cookie existance for basic state, 
-            // but a real app should verify.
-            // We can decode JWT or just wait for explicit login action for now.
-            // OR: Fetch profile
             fetchProfile(token);
         } else {
             setLoading(false);
@@ -49,21 +47,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } catch (error) {
             console.error('Failed to fetch profile', error);
             Cookies.remove('tcg-shop-token');
+            setUser(null);
         } finally {
             setLoading(false);
         }
     };
 
-    const login = (token: string, userData: any) => {
-        Cookies.set('tcg-shop-token', token, { expires: 7 }); // 7 days
-        setUser(userData); // Usually payload from login response
-        // Verify with full profile fetch if userData is partial
-        if (!userData.email) fetchProfile(token);
+    const login = async (email: string, password: string) => {
+        try {
+            const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+                email,
+                password
+            });
+
+            if (res.data && res.data.access_token) {
+                const token = res.data.access_token;
+                Cookies.set('tcg-shop-token', token, { expires: 7 });
+
+                // Set initial user data if available, or fetch
+                if (res.data.user) {
+                    setUser(res.data.user);
+                } else {
+                    await fetchProfile(token);
+                }
+
+                router.push('/');
+            }
+        } catch (error) {
+            console.error('Login failed', error);
+            throw error; // Re-throw so Page can handle error display
+        }
     };
 
     const logout = () => {
         Cookies.remove('tcg-shop-token');
         setUser(null);
+        router.push('/login');
     };
 
     return (

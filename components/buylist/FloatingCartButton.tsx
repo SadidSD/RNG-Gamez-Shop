@@ -9,8 +9,8 @@ import { ShoppingBag } from 'lucide-react';
 const FloatingCartButton = () => {
     const { items, openCart } = useCart();
 
-    // Only show if there are items in the cart
-    if (items.length === 0) return null;
+    // Always show button, so users know where the cart is
+    // if (items.length === 0) return null;
 
     return (
         <AnimatePresence>
@@ -23,7 +23,7 @@ const FloatingCartButton = () => {
                 onClick={openCart}
             >
                 <ShoppingBag size={24} color="white" />
-                <CountBadge>{items.length}</CountBadge>
+                {items.length > 0 && <CountBadge>{items.length}</CountBadge>}
             </FloatContainer>
         </AnimatePresence>
     );

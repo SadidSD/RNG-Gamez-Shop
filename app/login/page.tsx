@@ -9,7 +9,9 @@ import Link from "next/link"
 import { Loader2 } from "lucide-react"
 
 export default function LoginPage() {
-    const { login, loading } = useAuth()
+    const { login } = useAuth() // Don't use context loading for button state
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState('')
     const [formData, setFormData] = useState({
         email: "",
         password: "",
@@ -17,7 +19,16 @@ export default function LoginPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        await login(formData.email, formData.password)
+        setLoading(true)
+        setError('')
+        try {
+            await login(formData.email, formData.password)
+        } catch (err: any) {
+            console.error(err)
+            setError(err.response?.data?.message || 'Invalid email or password.')
+        } finally {
+            setLoading(false)
+        }
     }
 
     return (
@@ -40,6 +51,11 @@ export default function LoginPage() {
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
+                        {error && (
+                            <div className="bg-red-500/10 border border-red-500/20 text-red-200 text-sm p-3 rounded-md">
+                                {error}
+                            </div>
+                        )}
                         <div className="space-y-2">
                             <Label htmlFor="email" className="text-white/80">Email</Label>
                             <Input
