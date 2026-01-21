@@ -80,7 +80,7 @@ export default function EventsPage() {
                     <motion.h1
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-5xl md:text-7xl font-bold text-white tracking-tighter"
+                        className="text-5xl md:text-7xl font-bold text-white tracking-widest"
                         style={{ fontFamily: 'Europa Grotesk SH' }}
                     >
                         UPCOMING EVENTS
