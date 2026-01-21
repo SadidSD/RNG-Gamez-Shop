@@ -107,14 +107,14 @@ export default function Home() {
             <h3 className="text-4xl font-bold text-white tracking-wide" style={{ fontFamily: 'Europa Grotesk SH' }}>200k+</h3>
             <p className="text-sm text-gray-200 font-medium tracking-wide mt-1 mb-3">SATISFIED BUYERS ON</p>
             <div className="flex items-center -space-x-3">
-              <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center overflow-hidden border-2 border-[#FFFFFF20] relative z-30">
+              <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center overflow-hidden border-2 border-[#FFFFFF20] relative z-10">
                 <img src="/RNG-logo.png" alt="RNG" className="w-full h-full object-cover" />
               </div>
               <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center overflow-hidden border-2 border-[#FFFFFF20] relative z-20">
                 <img src="/images/ebay-logo.png" alt="eBay" className="w-8 h-auto" />
               </div>
-              <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center overflow-hidden border-2 border-[#FFFFFF20] relative z-10">
-                <img src="/images/tcgplayer-logo.png" alt="TCGPlayer" className="w-8 h-auto" />
+              <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center overflow-hidden border-2 border-[#FFFFFF20] relative z-30">
+                <img src="/images/tcgplayer-logo-v2.jpg" alt="TCGPlayer" className="w-full h-auto object-cover" />
               </div>
             </div>
           </div>
