@@ -111,10 +111,10 @@ export default function Home() {
                 <img src="/RNG-logo.png" alt="RNG" className="w-full h-full object-cover" />
               </div>
               <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center overflow-hidden border-2 border-[#FFFFFF20] relative z-20">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/1/1b/EBay_logo.png" alt="eBay" className="w-8 h-auto" />
+                <img src="/images/ebay-logo.png" alt="eBay" className="w-8 h-auto" />
               </div>
               <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center overflow-hidden border-2 border-[#FFFFFF20] relative z-10">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/TCGplayer_Logo.svg/800px-TCGplayer_Logo.svg.png" alt="TCGPlayer" className="w-12 h-auto" />
+                <img src="/images/tcgplayer-logo.png" alt="TCGPlayer" className="w-8 h-auto" />
               </div>
             </div>
           </div>
