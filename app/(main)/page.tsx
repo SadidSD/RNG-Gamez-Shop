@@ -103,7 +103,21 @@ export default function Home() {
             boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.1)'
           }}
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
+          <div className="flex flex-col justify-center h-full px-6">
+            <h3 className="text-4xl font-bold text-white tracking-wide" style={{ fontFamily: 'Europa Grotesk SH' }}>200k+</h3>
+            <p className="text-sm text-gray-200 font-medium tracking-wide mt-1 mb-3">SATISFIED BUYERS ON</p>
+            <div className="flex items-center -space-x-3">
+              <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center overflow-hidden border-2 border-[#FFFFFF20] relative z-30">
+                <img src="/RNG-logo.png" alt="RNG" className="w-full h-full object-cover" />
+              </div>
+              <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center overflow-hidden border-2 border-[#FFFFFF20] relative z-20">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/1/1b/EBay_logo.png" alt="eBay" className="w-8 h-auto" />
+              </div>
+              <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center overflow-hidden border-2 border-[#FFFFFF20] relative z-10">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/TCGplayer_Logo.svg/800px-TCGplayer_Logo.svg.png" alt="TCGPlayer" className="w-12 h-auto" />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
