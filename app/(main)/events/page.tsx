@@ -57,6 +57,7 @@ export default function EventsPage() {
     }, [events, selectedGame]);
 
     if (loading) {
+        // Trigger Deployment
         return (
             <div className="min-h-screen bg-[#F1F1F1] flex items-center justify-center">
                 <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
@@ -68,9 +69,9 @@ export default function EventsPage() {
         <div className="min-h-screen bg-[#F1F1F1] pb-20">
             {/* Hero Section */}
             <div className="relative h-[40vh] bg-black overflow-hidden flex items-center justify-center">
-                <div className="absolute inset-0 opacity-40">
+                <div className="absolute inset-0 opacity-60">
                     <img
-                        src="https://images.unsplash.com/photo-1561531236-4d25785c4bf4?w=1600&q=80"
+                        src="/images/events-hero-final.jpg"
                         alt="Events Hero"
                         className="w-full h-full object-cover"
                     />
@@ -103,8 +104,8 @@ export default function EventsPage() {
                             key={game}
                             onClick={() => setSelectedGame(game)}
                             className={`px-6 py-2 rounded-full font-medium transition-all duration-300 ${selectedGame === game
-                                    ? 'bg-black text-white shadow-md transform scale-105'
-                                    : 'text-gray-500 hover:bg-gray-100'
+                                ? 'bg-black text-white shadow-md transform scale-105'
+                                : 'text-gray-500 hover:bg-gray-100'
                                 }`}
                         >
                             {game}
