@@ -94,7 +94,7 @@ export default function Home() {
 
         {/* Gradient Box Overlay */}
         <div
-          className="absolute top-[80%] right-50 transform -translate-y-1/2 w-[250px] h-[200px] rounded-[30px] overflow-hidden hidden xl:block"
+          className="absolute top-[80%] right-20 transform -translate-y-1/2 w-[250px] h-[200px] rounded-[30px] overflow-hidden hidden xl:block"
           style={{
             background: 'rgba(255, 255, 255, 0.05)',
             backdropFilter: 'blur(20px) saturate(180%)',
