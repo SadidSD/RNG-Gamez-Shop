@@ -14,10 +14,10 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ id, title, price, imageSrc }) => {
     return (
-        <div className="bg-white rounded-[30px] p-4 flex flex-col gap-4 border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300">
-            <Link href={`/product/${id}`} className="block">
+        <div className="aspect-[3/5] bg-white rounded-[30px] p-4 flex flex-col gap-4 border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300" style={{ aspectRatio: '3/5' }}>
+            <Link href={`/product/${id}`} className="flex flex-col h-full flex-1 min-h-0">
                 {/* Image Container */}
-                <div className="relative aspect-square w-full bg-white rounded-[20px] overflow-hidden flex items-center justify-center p-4">
+                <div className="relative flex-1 w-full bg-white rounded-[20px] overflow-hidden flex items-center justify-center p-4 min-h-0">
                     <div className="relative w-full h-full">
                         <Image
                             src={imageSrc}
@@ -29,7 +29,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ id, title, price, imageSrc })
                 </div>
 
                 {/* Content */}
-                <div className="flex flex-col gap-2 px-2 mt-4">
+                <div className="flex flex-col gap-2 px-2 mt-4 shrink-0">
                     <h3 className="text-lg font-medium text-black leading-tight line-clamp-2 min-h-[3rem]">
                         {title}
                     </h3>

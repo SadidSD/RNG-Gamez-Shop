@@ -78,15 +78,15 @@ export default function Home() {
         {/* Add your page content here, over the cover image */}
         <div className="absolute inset-0 flex flex-col justify-center">
 
-          <div className="pl-20 mt-4">
+          <div className="pl-40 mt-4">
             {/* TEXT SETUP APPLIED HERE */}
-            <p className="font-bold text-[72px] text-[#F1F1F1] tracking-[0.03em] leading-[1.2em]" style={{ fontFamily: 'Europa Grotesk SH' }}>
+            <p className="font-bold text-[100px] text-[#F1F1F1] tracking-[0.03em] leading-[1.1em]" style={{ fontFamily: 'Europa Grotesk SH' }}>
               CHECK OUT
             </p>
-            <p className="font-bold text-[72px] text-[#F1F1F1] tracking-[0.03em] leading-[1.2em]" style={{ fontFamily: 'Europa Grotesk SH' }}>
+            <p className="font-bold text-[100px] text-[#F1F1F1] tracking-[0.03em] leading-[1.1em]" style={{ fontFamily: 'Europa Grotesk SH' }}>
               WHATS NEW
             </p>
-            <Button className="mt-2">Shop Now</Button>
+            <Button className="mt-6 text-xl px-12 py-5">Shop Now</Button>
           </div>
         </div>
 
@@ -94,7 +94,7 @@ export default function Home() {
 
         {/* Gradient Box Overlay */}
         <div
-          className="absolute top-[80%] right-20 transform -translate-y-1/2 w-[250px] h-[200px] rounded-[30px] overflow-hidden hidden xl:block"
+          className="absolute top-[80%] right-80 transform -translate-y-1/2 w-[340px] h-[250px] rounded-[35px] overflow-hidden hidden xl:block"
           style={{
             background: 'rgba(255, 255, 255, 0.05)',
             backdropFilter: 'blur(20px) saturate(180%)',
@@ -103,17 +103,17 @@ export default function Home() {
             boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.1)'
           }}
         >
-          <div className="flex flex-col justify-center h-full px-6">
-            <h3 className="text-4xl font-bold text-white tracking-wide" style={{ fontFamily: 'Europa Grotesk SH' }}>200k+</h3>
-            <p className="text-sm text-gray-200 font-medium tracking-wide mt-1 mb-3">SATISFIED BUYERS ON</p>
-            <div className="flex items-center -space-x-3">
-              <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center overflow-hidden border-2 border-[#FFFFFF20] relative z-10">
+          <div className="flex flex-col justify-center h-full px-8">
+            <h3 className="text-6xl font-bold text-white tracking-wide" style={{ fontFamily: 'Europa Grotesk SH' }}>200k+</h3>
+            <p className="text-lg text-gray-200 font-medium tracking-wide mt-2 mb-4">SATISFIED BUYERS ON</p>
+            <div className="flex items-center -space-x-4">
+              <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center overflow-hidden border-4 border-[#FFFFFF20] relative z-10">
                 <img src="/RNG-logo.png" alt="RNG" className="w-full h-full object-cover" />
               </div>
-              <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center overflow-hidden border-2 border-[#FFFFFF20] relative z-20">
-                <img src="/images/ebay-logo.png" alt="eBay" className="w-8 h-auto" />
+              <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center overflow-hidden border-4 border-[#FFFFFF20] relative z-20">
+                <img src="/images/ebay-logo.png" alt="eBay" className="w-12 h-auto" />
               </div>
-              <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center overflow-hidden border-2 border-[#FFFFFF20] relative z-30">
+              <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center overflow-hidden border-4 border-[#FFFFFF20] relative z-30">
                 <img src="/images/tcgplayer-logo-v2.jpg" alt="TCGPlayer" className="w-full h-auto object-cover" />
               </div>
             </div>

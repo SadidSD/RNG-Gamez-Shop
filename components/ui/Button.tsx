@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { ArrowRight } from 'lucide-react';
 
 interface ButtonProps {
   children: React.ReactNode;
@@ -12,42 +13,50 @@ interface ButtonProps {
 const Button: React.FC<ButtonProps> = ({ children, onClick, className, type = "button", disabled }) => {
   return (
     <motion.button
-      onClick={onClick}
-      type={type}
-      disabled={disabled}
-      className={`relative overflow-hidden bg-white font-bold py-2 px-6 rounded-full ${className} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+      // ... (props)
+      className={`relative overflow-hidden bg-white font-bold py-3 px-8 rounded-full ${className} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
       initial="initial"
       whileHover={disabled ? "initial" : "hover"}
       animate="initial"
     >
+      {/* The Expanding Circle */}
       <motion.div
-        className="absolute inset-0 flex items-center justify-center"
-        aria-hidden="true"
-      >
-        <motion.div
-          className="w-4 h-4 rounded-full bg-[#A855F7]" // Using a nice purple (purple-500/600 equivalent)
-          variants={{
-            initial: { scale: 0, opacity: 0 },
-            hover: { scale: 40, opacity: 1 }, // Scale large enough to cover the button
-          }}
-          transition={{
-            type: "spring",
-            duration: 0.5,
-            bounce: 0.1,
-          }}
-        />
-      </motion.div>
-
-      <motion.span
-        className="relative z-10"
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-[#B266FF]"
         variants={{
-          initial: { color: "#000000" },
-          hover: { color: "#ffffff" },
+          initial: { scale: 1, translateY: "150%" },
+          hover: { scale: 150, translateY: 0 },
         }}
-        transition={{ duration: 0.3 }}
-      >
-        {children}
-      </motion.span>
+        transition={{
+          type: "spring",
+          duration: 0.5,
+          bounce: 0.1,
+          delay: 0
+        }}
+      />
+
+      <div className="relative z-10 flex items-center justify-center">
+        <motion.span
+          className="block"
+          variants={{
+            initial: { x: 0, color: "#000000" },
+            hover: { x: -8, color: "#ffffff" },
+          }}
+          transition={{ duration: 0.3 }}
+        >
+          {children}
+        </motion.span>
+
+        <motion.div
+          className="absolute right-[-20px]"
+          variants={{
+            initial: { opacity: 0, x: -10, color: "#000000" },
+            hover: { opacity: 1, x: -4, color: "#ffffff" },
+          }}
+          transition={{ duration: 0.3 }}
+        >
+          <ArrowRight size={20} />
+        </motion.div>
+      </div>
     </motion.button>
   );
 };

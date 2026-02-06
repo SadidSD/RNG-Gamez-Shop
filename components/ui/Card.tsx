@@ -41,9 +41,9 @@ const Card: React.FC<CardProps> = ({ id, title, price, imageSrc, set, rarity, nu
     };
 
     return (
-        <div className="group/card bg-[#FAFAFA] rounded-[30px] p-2 shadow-[0px_1px_2px_0px_rgba(4,13,36,0.23)] w-full h-full flex flex-col overflow-hidden hover:shadow-[0px_4px_12px_rgba(4,13,36,0.15)] transition-shadow duration-300">
-            <Link href={`/product/${id}`} className="block flex-1 flex flex-col">
-                <div className="bg-[#FAFAFA] rounded-[30px] shadow-[2px_2px_5px_2px_rgba(4,13,36,0.15)] mb-4 overflow-hidden relative aspect-[4/3]">
+        <div className="group/card bg-[#FAFAFA] rounded-[30px] p-2 shadow-[0px_1px_2px_0px_rgba(4,13,36,0.23)] w-full h-full flex flex-col overflow-hidden hover:shadow-[0px_4px_12px_rgba(4,13,36,0.15)] transition-shadow duration-300 aspect-[3/5]" style={{ aspectRatio: '3/5' }}>
+            <Link href={`/product/${id}`} className="block flex-1 flex flex-col h-full min-h-0">
+                <div className="bg-[#FAFAFA] rounded-[30px] shadow-[2px_2px_5px_2px_rgba(4,13,36,0.15)] mb-4 overflow-hidden relative flex-1 w-full min-h-0">
                     <Image
                         src={imageSrc}
                         alt={title}
@@ -51,7 +51,7 @@ const Card: React.FC<CardProps> = ({ id, title, price, imageSrc, set, rarity, nu
                         className="object-contain p-2 transition-transform duration-500 ease-out group-hover/card:scale-110"
                     />
                 </div>
-                <div className="px-2 mb-4 flex-1 flex flex-col gap-1">
+                <div className="px-2 mb-4 flex flex-col gap-1 shrink-0">
                     <h3 className="text-lg font-bold text-black leading-tight line-clamp-2">
                         {title}
                     </h3>
@@ -61,7 +61,7 @@ const Card: React.FC<CardProps> = ({ id, title, price, imageSrc, set, rarity, nu
                         {rarity && <span className="capitalize text-gray-400">{rarity}</span>}
                         {condition && <span className="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full font-bold text-[10px] uppercase tracking-wider">{condition}</span>}
                     </div>
-                    <p className="text-xl font-bold text-black mt-auto pt-2">
+                    <p className="text-xl font-bold text-black pt-2">
                         {price}
                     </p>
                 </div>
