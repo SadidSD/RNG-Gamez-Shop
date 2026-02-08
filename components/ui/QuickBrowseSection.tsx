@@ -63,7 +63,7 @@ const QUICK_BROWSE_DATA: QuickBrowseSectionData[] = [
             { id: 'under-1', label: 'Under $1', icon: Coins, href: '/products?category=Magic-The-Gathering&price_max=1', description: 'Budget friendly', imageSrc: '/images/under-1-price-v1.jpg' },
             { id: 'budget', label: 'Budget Picks', icon: Shield, href: '/products?category=Magic-The-Gathering&tag=budget', description: 'High value/cost', imageSrc: '/images/budget-price-v2.png' },
             { id: 'high-end', label: 'High-End', icon: Gem, href: '/products?category=Magic-The-Gathering&price_min=50', description: 'Premium cards', imageSrc: '/images/high-end-price-v1.png' },
-            { id: 'on-sale', label: 'On Sale', icon: ShoppingBag, href: '/products?category=Magic-The-Gathering&sale=true', description: 'Discounted items', imageSrc: '/images/on-sale-price-v3.jpg' },
+            { id: 'on-sale', label: 'On Sale', icon: ShoppingBag, href: '/products?category=Magic-The-Gathering&sale=true', description: 'Discounted items', imageSrc: '/images/on-sale-price-v4.png' },
         ]
     },
     {
