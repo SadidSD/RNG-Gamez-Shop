@@ -1,4 +1,5 @@
 /** @type {import('next').NextConfig} */
+// Allowed Image Domains: Scryfall, PokemonTCG, YouTube, Backend
 const nextConfig = {
     images: {
         remotePatterns: [

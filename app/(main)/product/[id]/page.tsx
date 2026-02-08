@@ -12,7 +12,7 @@ interface ProductVariant {
     condition: string;
     isFoil: boolean;
     language: string;
-    price: number;
+    price: number | string;
     inventory: { quantity: number } | null;
 }
 
@@ -92,7 +92,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
             name: product.name,
             set: product.set || 'Unknown Set',
             condition: selectedVariant.condition,
-            price: selectedVariant.price,
+            price: Number(selectedVariant.price),
             image: product.images?.[0] || '/placeholder.png'
         }, quantity);
     };
@@ -227,7 +227,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
 
                                             {selectedVariant ? (
                                                 <div className="flex items-baseline gap-1">
-                                                    <span className="text-5xl font-black text-black tracking-tight">${selectedVariant.price.toFixed(2)}</span>
+                                                    <span className="text-5xl font-black text-black tracking-tight">${Number(selectedVariant.price).toFixed(2)}</span>
                                                     <span className="text-gray-400 font-bold text-lg">USD</span>
                                                 </div>
                                             ) : (
