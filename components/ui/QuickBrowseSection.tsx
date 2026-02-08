@@ -48,7 +48,7 @@ const QUICK_BROWSE_DATA: QuickBrowseSectionData[] = [
         label: 'Card Roles',
         icon: Swords, // Represents function/utility
         items: [
-            { id: 'lands', label: 'Lands', icon: Layers, href: '/products?category=Magic-The-Gathering&type=Land', description: 'Mana base', imageSrc: '/cover.jpg' },
+            { id: 'lands', label: 'Lands', icon: Layers, href: '/products?category=Magic-The-Gathering&type=Land', description: 'Mana base', imageSrc: '/images/lands-role-v1.jpg' },
             { id: 'mana-rocks', label: 'Mana Rocks', icon: Gem, href: '/products?category=Magic-The-Gathering&type=Artifact&uptype=Mana', description: 'Ramp up', imageSrc: '/cover.jpg' },
             { id: 'removal', label: 'Removal', icon: Skull, href: '/products?category=Magic-The-Gathering&function=removal', description: 'Destroy & exile', imageSrc: '/cover.jpg' },
             { id: 'card-draw', label: 'Card Draw', icon: Scroll, href: '/products?category=Magic-The-Gathering&function=draw', description: 'Refill hand', imageSrc: '/cover.jpg' },
