@@ -71,7 +71,7 @@ const QUICK_BROWSE_DATA: QuickBrowseSectionData[] = [
         label: 'Collections',
         icon: Box,
         items: [
-            { id: 'latest', label: 'Latest Sets', icon: Sparkles, href: '/products?category=Magic-The-Gathering&sort=newest', description: 'New arrivals', imageSrc: '/images/latest-sets-collection-v1.jpg' },
+            { id: 'latest', label: 'Latest Sets', icon: Sparkles, href: '/products?category=Magic-The-Gathering&sort=newest', description: 'New arrivals', imageSrc: '/images/latest-sets-collection-v2.png' },
             { id: 'old-border', label: 'Old Border', icon: Scroll, href: '/products?category=Magic-The-Gathering&frame=old', description: 'Classic look', imageSrc: '/cover.jpg' },
             { id: 'promos', label: 'Promos', icon: Star, href: '/products?category=Magic-The-Gathering&rarity=promo', description: 'Special prints', imageSrc: '/cover.jpg' },
             { id: 'secret-lair', label: 'Secret Lair', icon: Ghost, href: '/products?category=Magic-The-Gathering&set=secret-lair', description: 'Exclusive drops', imageSrc: '/cover.jpg' },
