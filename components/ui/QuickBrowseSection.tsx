@@ -51,7 +51,7 @@ const QUICK_BROWSE_DATA: QuickBrowseSectionData[] = [
             { id: 'lands', label: 'Lands', icon: Layers, href: '/products?category=Magic-The-Gathering&type=Land', description: 'Mana base', imageSrc: '/images/lands-role-v1.jpg' },
             { id: 'mana-rocks', label: 'Mana Rocks', icon: Gem, href: '/products?category=Magic-The-Gathering&type=Artifact&uptype=Mana', description: 'Ramp up', imageSrc: '/images/mana-rocks-role-v1.png' },
             { id: 'removal', label: 'Removal', icon: Skull, href: '/products?category=Magic-The-Gathering&function=removal', description: 'Destroy & exile', imageSrc: '/images/removal-role-v1.png' },
-            { id: 'card-draw', label: 'Card Draw', icon: Scroll, href: '/products?category=Magic-The-Gathering&function=draw', description: 'Refill hand', imageSrc: '/cover.jpg' },
+            { id: 'card-draw', label: 'Card Draw', icon: Scroll, href: '/products?category=Magic-The-Gathering&function=draw', description: 'Refill hand', imageSrc: '/images/card-draw-role-v1.jpg' },
             { id: 'finishers', label: 'Finishers', icon: Flame, href: '/products?category=Magic-The-Gathering&function=finisher', description: 'Win the game', imageSrc: '/cover.jpg' },
         ]
     },
