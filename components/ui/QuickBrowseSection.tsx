@@ -35,7 +35,7 @@ const QUICK_BROWSE_DATA: QuickBrowseSectionData[] = [
         label: 'Play Formats',
         icon: Gamepad2, // Represents gameplay
         items: [
-            { id: 'commander', label: 'Commander', icon: Crown, href: '/products?category=Magic-The-Gathering&format=commander', description: 'Multiplayer fun', imageSrc: '/cover.jpg' },
+            { id: 'commander', label: 'Commander', icon: Crown, href: '/products?category=Magic-The-Gathering&format=commander', description: 'Multiplayer fun', imageSrc: '/images/commander-format.jpg' },
             { id: 'modern', label: 'Modern', icon: Zap, href: '/products?category=Magic-The-Gathering&format=modern', description: 'Fast & competitive', imageSrc: '/cover.jpg' },
             { id: 'pioneer', label: 'Pioneer', icon: Swords, href: '/products?category=Magic-The-Gathering&format=pioneer', description: 'Recent sets', imageSrc: '/cover.jpg' },
             { id: 'standard', label: 'Standard', icon: Layers, href: '/products?category=Magic-The-Gathering&format=standard', description: 'Applying rotation', imageSrc: '/cover.jpg' },
