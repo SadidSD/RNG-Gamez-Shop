@@ -39,7 +39,7 @@ const QUICK_BROWSE_DATA: QuickBrowseSectionData[] = [
             { id: 'modern', label: 'Modern', icon: Zap, href: '/products?category=Magic-The-Gathering&format=modern', description: 'Fast & competitive', imageSrc: '/images/modern-format-v2.jpg' },
             { id: 'pioneer', label: 'Pioneer', icon: Swords, href: '/products?category=Magic-The-Gathering&format=pioneer', description: 'Recent sets', imageSrc: '/images/pioneer-format-v2.jpg' },
             { id: 'standard', label: 'Standard', icon: Layers, href: '/products?category=Magic-The-Gathering&format=standard', description: 'Applying rotation', imageSrc: '/images/standard-format-v2.jpg' },
-            { id: 'legacy', label: 'Legacy', icon: Scroll, href: '/products?category=Magic-The-Gathering&format=legacy', description: 'Deep history', imageSrc: '/images/legacy-format.jpg' },
+            { id: 'legacy', label: 'Legacy', icon: Scroll, href: '/products?category=Magic-The-Gathering&format=legacy', description: 'Deep history', imageSrc: '/images/legacy-format-v2.jpg' },
             { id: 'vintage', label: 'Vintage', icon: Gem, href: '/products?category=Magic-The-Gathering&format=vintage', description: 'Power nine era', imageSrc: '/images/vintage-format.jpg' },
         ]
     },
