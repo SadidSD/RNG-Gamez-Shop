@@ -83,7 +83,7 @@ const QUICK_BROWSE_DATA: QuickBrowseSectionData[] = [
         icon: Star,
         items: [
             { id: 'best-sellers', label: 'Best Sellers', icon: Trophy, href: '/products?category=Magic-The-Gathering&sort=bestselling', description: 'Community favorites', imageSrc: '/images/best-sellers-store-pick-v1.png' },
-            { id: 'staff-picks', label: 'Staff Picks', icon: Crown, href: '/products?category=Magic-The-Gathering&tag=staff-pick', description: 'Curated by us', imageSrc: '/cover.jpg' },
+            { id: 'staff-picks', label: 'Staff Picks', icon: Crown, href: '/products?category=Magic-The-Gathering&tag=staff-pick', description: 'Curated by us', imageSrc: '/images/staff-picks-store-pick-v1.png' },
             { id: 'trending', label: 'Trending', icon: Flame, href: '/products?category=Magic-The-Gathering&sort=trending', description: 'Hot right now', imageSrc: '/cover.jpg' },
             { id: 'recently-added', label: 'Recently Added', icon: Box, href: '/products?category=Magic-The-Gathering&sort=date_added', description: 'Fresh stock', imageSrc: '/cover.jpg' },
         ]
