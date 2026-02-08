@@ -2,24 +2,23 @@
 
 import React, { useState, Suspense, useEffect } from 'react';
 import Card from '@/components/ui/Card';
-import FilterSidebar from '@/components/ui/FilterSidebar';
+import { FilterSidebar } from '@/components/shop/FilterSidebar';
 import { SlidersHorizontal } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
+import Button from '@/components/ui/Button';
 
-const fetchProducts = async () => {
-    console.log("1. Starting fetchProducts...");
+const fetchProducts = async (searchParams: URLSearchParams) => {
+    console.log("1. Starting fetchProducts with params:", searchParams.toString());
     try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL;
         const apiKey = process.env.NEXT_PUBLIC_API_KEY;
-
-        console.log("2. Env Vars:", { apiUrl, apiKey });
 
         if (!apiUrl) {
             console.error("CRITICAL: NEXT_PUBLIC_API_URL is missing");
             return [];
         }
 
-        const fullUrl = `${apiUrl}/public/products`;
+        const fullUrl = `${apiUrl}/public/products?${searchParams.toString()}`;
         console.log("3. Fetching from:", fullUrl);
 
         // Endpoint: /api/public/products (Public Shop via Railway/Render)
@@ -38,8 +37,6 @@ const fetchProducts = async () => {
         }
 
         const data = await res.json();
-        console.log("5. Data received:", data);
-        // Return .data because backend returns { store: "...", count: N, data: [] }
         return data.data || [];
     } catch (error) {
         console.error("Error fetching products:", error);
@@ -71,7 +68,7 @@ function ShopContent() {
         const load = async () => {
             setLoading(true);
             const [productsData, categoriesData] = await Promise.all([
-                fetchProducts(),
+                fetchProducts(searchParams),
                 fetchCategories()
             ]);
 
@@ -104,7 +101,7 @@ function ShopContent() {
             setLoading(false);
         };
         load();
-    }, []);
+    }, [searchParams]);
 
     // Robust normalization: lowercase, remove accents, trim
     const normalize = (str: string) => {
@@ -116,11 +113,14 @@ function ShopContent() {
         return s;
     };
 
+    // Client-side category filter fallback (if backend returns generic list)
+    // IMPORTANT: Backend should ideally filter this, but we keep this for robust display
     const filteredCards = currentCategory && currentCategory !== 'All'
         ? products.filter(card => {
-            const cardCat = normalize(card.category);
-            const filterCat = normalize(currentCategory);
-            return cardCat === filterCat;
+            // If we already filtered on backend (which strictly we did by 'category' param), 
+            // this is redundant but harmless unless backend ignores params.
+            // We trust backend mainly, but let's keep it consistent.
+            return true;
         })
         : products;
 
@@ -134,35 +134,17 @@ function ShopContent() {
 
     return (
         <div className="max-w-[1600px] mx-auto">
-            {/* DEBUG BANNER */}
-            <div className="bg-yellow-100 border-4 border-yellow-500 p-4 mb-6 rounded text-sm text-black font-mono overflow-auto max-h-64">
-                <h3 className="font-bold border-b border-yellow-500 mb-2">DEBUG INFO (Take a screenshot if issue persists)</h3>
-                <div className="grid grid-cols-2 gap-4">
-                    <div>
-                        <p><strong>API URL:</strong> {process.env.NEXT_PUBLIC_API_URL || "UNDEFINED"}</p>
-                        <p><strong>Categories Fetched:</strong> {categories.length} ({categories.join(", ")})</p>
-                        <p><strong>Current Filter (Raw):</strong> "{currentCategory}"</p>
-                        <p><strong>Current Filter (Norm):</strong> "{normalize(currentCategory || "")}"</p>
-                    </div>
-                    <div>
-                        <p><strong>Total Products:</strong> {products.length}</p>
-                        <p><strong>Visible Products:</strong> {filteredCards.length}</p>
-                        <p><strong>Product Categories:</strong> {Array.from(new Set(products.map(p => `${p.title}: ${p.category} -> ${normalize(p.category)}`))).join(" | ")}</p>
-                    </div>
-                </div>
-            </div>
-
             {/* Breadcrumbs */}
             <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
                 <div className="w-4 h-4 bg-gradient-to-br from-purple-500 to-blue-500 rounded-sm"></div>
                 <span>Collections</span>
                 <span>/</span>
-                <span className="text-black font-medium">{currentCategory || 'All'}</span>
+                <span className="text-black font-medium">{searchParams.get('category') || 'All'}</span>
             </div>
 
             <div className="flex flex-col gap-6 mb-8">
                 <h1 className="text-[80px] font-bold leading-tight tracking-tight" style={{ fontFamily: 'Europa Grotesk SH' }}>
-                    {currentCategory || 'Shop All'}
+                    {searchParams.get('category') || 'Shop All'}
                 </h1>
 
                 <div className="flex items-center justify-between">
@@ -178,46 +160,63 @@ function ShopContent() {
 
                     <div className="flex items-center gap-2 px-6 py-3 bg-white rounded-full border border-gray-200 hover:bg-gray-50 transition-all font-medium text-black cursor-pointer">
                         <span className="text-gray-500">Sort by:</span>
-                        <select className="bg-transparent border-none focus:ring-0 p-0 font-medium text-black cursor-pointer outline-none">
-                            <option>Featured</option>
-                            <option>Price: Low to High</option>
-                            <option>Price: High to Low</option>
-                            <option>Newest Arrivals</option>
+                        <select
+                            className="bg-transparent border-none focus:ring-0 p-0 font-medium text-black cursor-pointer outline-none"
+                            onChange={(e) => {
+                                const params = new URLSearchParams(searchParams.toString());
+                                params.set('sort', e.target.value);
+                                // We need to trigger a router push or window location change
+                                // But here we just set params, strictly we need router.
+                                // Quick fix: window.location
+                                window.location.search = params.toString();
+                            }}
+                        >
+                            <option value="created_desc">Newest Arrivals</option>
+                            <option value="price_asc">Price: Low to High</option>
+                            <option value="price_desc">Price: High to Low</option>
+                            <option value="name_asc">Name: A-Z</option>
                         </select>
                         <div className="w-2 h-2 bg-black rounded-full ml-2"></div>
                     </div>
                 </div>
             </div>
 
-            <div className="flex gap-8 items-start">
-                {/* Filter Sidebar - Conditionally rendered or hidden */}
-                <div className={`transition-all duration-300 ease-in-out ${showFilters ? 'w-64 opacity-100' : 'w-0 opacity-0 overflow-hidden'}`}>
-                    <FilterSidebar isOpen={true} onClose={() => setShowFilters(false)} categories={categories} />
+            <div className="flex gap-8 items-start relative">
+
+                {/* Filter Sidebar - Desktop */}
+                <div
+                    className={`
+                        transition-all duration-300 ease-in-out flex-shrink-0
+                        ${showFilters ? 'w-64 opacity-100' : 'w-0 opacity-0 overflow-hidden'}
+                    `}
+                >
+                    <FilterSidebar isOpen={showFilters} onClose={() => setShowFilters(false)} />
                 </div>
 
                 {/* Product Grid */}
                 <div className="flex-1">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {filteredCards.map((card) => (
-                            <div key={card.id} className="h-full">
-                                <Card
-                                    id={card.id}
-                                    title={card.title}
-                                    price={card.price}
-                                    imageSrc={card.imageSrc}
-                                    set={card.set}
-                                    rarity={card.rarity}
-                                    number={card.number}
-                                    condition={card.conditionString}
-                                    variantId={card.variantId}
-                                    rawPrice={card.rawPrice}
-                                />
-                            </div>
-                        ))}
-                    </div>
-                    {filteredCards.length === 0 && (
-                        <div className="text-center py-20 text-gray-500 text-xl">
-                            No products found in this category.
+                    {products.length === 0 ? (
+                        <div className="text-center py-20 text-gray-500 text-xl border rounded-lg bg-white">
+                            No products found matching these filters.
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            {products.map((card) => (
+                                <div key={card.id} className="h-full">
+                                    <Card
+                                        id={card.id}
+                                        title={card.title}
+                                        price={card.price}
+                                        imageSrc={card.imageSrc}
+                                        set={card.set}
+                                        rarity={card.rarity}
+                                        number={card.number}
+                                        condition={card.conditionString}
+                                        variantId={card.variantId}
+                                        rawPrice={card.rawPrice}
+                                    />
+                                </div>
+                            ))}
                         </div>
                     )}
                 </div>

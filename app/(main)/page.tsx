@@ -74,7 +74,7 @@ export default function Home() {
           fill
           priority
           quality={100}
-          style={{ objectFit: "contain" }}
+          style={{ objectFit: "cover" }}
         />
         <div className="absolute inset-0 bg-black/20 pointer-events-none" />
         {/* Add your page content here, over the cover image */}
