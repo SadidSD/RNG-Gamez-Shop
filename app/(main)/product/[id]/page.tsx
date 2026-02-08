@@ -51,7 +51,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/${params.id}`);
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/public/products/${params.id}`);
                 const data = await res.json();
                 setProduct(data);
 
@@ -93,7 +93,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
             set: product.set || 'Unknown Set',
             condition: selectedVariant.condition,
             price: selectedVariant.price,
-            image: product.images[0] || '/placeholder.png'
+            image: product.images?.[0] || '/placeholder.png'
         }, quantity);
     };
 
@@ -120,7 +120,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                     {/* Left Column: Images (5 cols) */}
                     <div className="lg:col-span-5 flex flex-col gap-6">
                         <div className="relative aspect-[3/4] bg-gray-100 rounded-2xl overflow-hidden border border-black/5 shadow-inner">
-                            {product.images[0] ? (
+                            {product.images?.[0] ? (
                                 <Image
                                     src={product.images[0]}
                                     alt={product.name}
