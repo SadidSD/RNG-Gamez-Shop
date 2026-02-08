@@ -36,11 +36,11 @@ const QUICK_BROWSE_DATA: QuickBrowseSectionData[] = [
         icon: Gamepad2, // Represents gameplay
         items: [
             { id: 'commander', label: 'Commander', icon: Crown, href: '/products?category=Magic-The-Gathering&format=commander', description: 'Multiplayer fun', imageSrc: '/images/commander-format.jpg' },
-            { id: 'modern', label: 'Modern', icon: Zap, href: '/products?category=Magic-The-Gathering&format=modern', description: 'Fast & competitive', imageSrc: '/cover.jpg' },
-            { id: 'pioneer', label: 'Pioneer', icon: Swords, href: '/products?category=Magic-The-Gathering&format=pioneer', description: 'Recent sets', imageSrc: '/cover.jpg' },
-            { id: 'standard', label: 'Standard', icon: Layers, href: '/products?category=Magic-The-Gathering&format=standard', description: 'Applying rotation', imageSrc: '/cover.jpg' },
-            { id: 'legacy', label: 'Legacy', icon: Scroll, href: '/products?category=Magic-The-Gathering&format=legacy', description: 'Deep history', imageSrc: '/cover.jpg' },
-            { id: 'vintage', label: 'Vintage', icon: Gem, href: '/products?category=Magic-The-Gathering&format=vintage', description: 'Power nine era', imageSrc: '/cover.jpg' },
+            { id: 'modern', label: 'Modern', icon: Zap, href: '/products?category=Magic-The-Gathering&format=modern', description: 'Fast & competitive', imageSrc: '/images/modern-format.jpg' },
+            { id: 'pioneer', label: 'Pioneer', icon: Swords, href: '/products?category=Magic-The-Gathering&format=pioneer', description: 'Recent sets', imageSrc: '/images/pioneer-format.jpg' },
+            { id: 'standard', label: 'Standard', icon: Layers, href: '/products?category=Magic-The-Gathering&format=standard', description: 'Applying rotation', imageSrc: '/images/standard-format.jpg' },
+            { id: 'legacy', label: 'Legacy', icon: Scroll, href: '/products?category=Magic-The-Gathering&format=legacy', description: 'Deep history', imageSrc: '/images/legacy-format.jpg' },
+            { id: 'vintage', label: 'Vintage', icon: Gem, href: '/products?category=Magic-The-Gathering&format=vintage', description: 'Power nine era', imageSrc: '/images/vintage-format.jpg' },
         ]
     },
     {
