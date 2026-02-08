@@ -69,7 +69,7 @@ export default function Home() {
     <main className="min-h-screen overflow-x-hidden">
       <div className="relative h-screen w-full bg-black">
         <Image
-          src="/hero-bg-new.jpg"
+          src="/hero-bg-final.jpg"
           alt="Cover"
           fill
           priority
