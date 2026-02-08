@@ -60,7 +60,7 @@ const QUICK_BROWSE_DATA: QuickBrowseSectionData[] = [
         label: 'Price & Deals',
         icon: DollarSign,
         items: [
-            { id: 'under-1', label: 'Under $1', icon: Coins, href: '/products?category=Magic-The-Gathering&price_max=1', description: 'Budget friendly', imageSrc: '/cover.jpg' },
+            { id: 'under-1', label: 'Under $1', icon: Coins, href: '/products?category=Magic-The-Gathering&price_max=1', description: 'Budget friendly', imageSrc: '/images/under-1-price-v1.jpg' },
             { id: 'budget', label: 'Budget Picks', icon: Shield, href: '/products?category=Magic-The-Gathering&tag=budget', description: 'High value/cost', imageSrc: '/cover.jpg' },
             { id: 'high-end', label: 'High-End', icon: Gem, href: '/products?category=Magic-The-Gathering&price_min=50', description: 'Premium cards', imageSrc: '/cover.jpg' },
             { id: 'on-sale', label: 'On Sale', icon: ShoppingBag, href: '/products?category=Magic-The-Gathering&sale=true', description: 'Discounted items', imageSrc: '/cover.jpg' },
