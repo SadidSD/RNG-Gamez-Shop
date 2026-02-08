@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
+import QuickBrowseSection from '@/components/ui/QuickBrowseSection';
 import ProductSliderSection from "@/components/ui/ProductSliderSection";
 import Ticker from "@/components/ui/Ticker";
 import CategoryGrid from "@/components/ui/CategoryGrid";
@@ -66,31 +67,39 @@ const CARDS = [
 export default function Home() {
   return (
     <main className="min-h-screen overflow-x-hidden">
-      <div className="relative h-screen w-full">
+      <div className="relative h-screen w-full bg-black">
         <Image
-          src="/cover.jpg"
+          src="/hero-bg-new.jpg"
           alt="Cover"
           fill
           priority
-          unoptimized
-          style={{ objectFit: "cover" }}
+          quality={100}
+          style={{ objectFit: "contain" }}
         />
+        <div className="absolute inset-0 bg-black/20 pointer-events-none" />
         {/* Add your page content here, over the cover image */}
         <div className="absolute inset-0 flex flex-col justify-center">
 
           <div className="pl-40 mt-4">
             {/* TEXT SETUP APPLIED HERE */}
-            <p className="font-bold text-[100px] text-[#F1F1F1] tracking-[0.03em] leading-[1.1em]" style={{ fontFamily: 'Europa Grotesk SH' }}>
-              CHECK OUT
-            </p>
-            <p className="font-bold text-[100px] text-[#F1F1F1] tracking-[0.03em] leading-[1.1em]" style={{ fontFamily: 'Europa Grotesk SH' }}>
-              WHATS NEW
-            </p>
-            <Button className="mt-6 text-xl px-12 py-5">Shop Now</Button>
+            <div className="max-w-2xl">
+              <h1 className="font-bold text-[60px] text-[#F1F1F1] tracking-tight leading-[1.1em] mb-6" style={{ fontFamily: 'Europa Grotesk SH' }}>
+                Find the exact card you’re looking for.
+              </h1>
+              <p className="text-xl text-gray-200 mb-8 leading-relaxed max-w-lg">
+                Browse thousands of Magic: The Gathering cards by set, condition, language, and format — updated with real market pricing.
+              </p>
+              <div className="flex gap-4">
+                <Button className="text-lg px-8 py-4 bg-[#B266FF] hover:bg-[#9944FF] text-white">
+                  Browse Cards
+                </Button>
+                <Button variant="outline" className="text-lg px-8 py-4 border-white text-white hover:bg-white/10">
+                  Sell Cards
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
-
-
 
         {/* Gradient Box Overlay */}
         <div
@@ -121,12 +130,12 @@ export default function Home() {
         </div>
       </div>
 
+      <QuickBrowseSection />
+
       <ProductSliderSection title="WHAT'S HOT" cards={CARDS} />
-      <ProductSliderSection title="POKEMON" cards={CARDS} />
-      <ProductSliderSection title="MAGIC THE GATHERING" cards={CARDS} />
 
       <Ticker />
-      <CategoryGrid />
+      {/* <CategoryGrid /> */}
       <SellYourCardsSection />
       <ReviewsSection />
       <SocialMediaSection />

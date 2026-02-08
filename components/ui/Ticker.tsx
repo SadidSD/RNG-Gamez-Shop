@@ -12,10 +12,10 @@ const Ticker = () => {
     ];
 
     return (
-        <div className="w-full bg-[#B266FF] overflow-hidden py-6 border-y border-white/10">
+        <div className="w-full bg-[#B266FF] overflow-hidden py-1 border-y border-white/10">
             <div className="flex whitespace-nowrap">
                 <motion.div
-                    className="flex items-center gap-32 pr-32"
+                    className="flex items-center gap-24 pr-24"
                     animate={{ x: "-100%" }}
                     transition={{
                         repeat: Infinity,
@@ -24,16 +24,16 @@ const Ticker = () => {
                     }}
                 >
                     {[...items, ...items, ...items, ...items].map((item, index) => (
-                        <div key={index} className="flex items-center gap-10">
-                            <Image src="/RNG-logo.png" alt="RNG Logo" width={100} height={100} className="object-contain" />
-                            <span className="text-3xl font-bold text-white tracking-wider" style={{ fontFamily: 'Europa Grotesk SH' }}>
+                        <div key={index} className="flex items-center gap-3">
+                            <Image src="/RNG-logo.png" alt="RNG Logo" width={30} height={30} className="object-contain" />
+                            <span className="text-base font-bold text-white tracking-wider" style={{ fontFamily: 'Europa Grotesk SH' }}>
                                 {item.text}
                             </span>
                         </div>
                     ))}
                 </motion.div>
                 <motion.div
-                    className="flex items-center gap-32 pr-32"
+                    className="flex items-center gap-24 pr-24"
                     animate={{ x: "-100%" }}
                     transition={{
                         repeat: Infinity,
@@ -42,9 +42,9 @@ const Ticker = () => {
                     }}
                 >
                     {[...items, ...items, ...items, ...items].map((item, index) => (
-                        <div key={`clone-${index}`} className="flex items-center gap-10">
-                            <Image src="/RNG-logo.png" alt="RNG Logo" width={100} height={100} className="object-contain" />
-                            <span className="text-3xl font-bold text-white tracking-wider" style={{ fontFamily: 'Europa Grotesk SH' }}>
+                        <div key={`clone-${index}`} className="flex items-center gap-3">
+                            <Image src="/RNG-logo.png" alt="RNG Logo" width={30} height={30} className="object-contain" />
+                            <span className="text-base font-bold text-white tracking-wider" style={{ fontFamily: 'Europa Grotesk SH' }}>
                                 {item.text}
                             </span>
                         </div>

@@ -8,20 +8,29 @@ interface ButtonProps {
   className?: string;
   type?: "button" | "submit" | "reset";
   disabled?: boolean;
+  variant?: "primary" | "outline";
 }
 
-const Button: React.FC<ButtonProps> = ({ children, onClick, className, type = "button", disabled }) => {
+const Button: React.FC<ButtonProps> = ({ children, onClick, className, type = "button", disabled, variant = "primary" }) => {
+  const isOutline = variant === "outline";
+  const baseStyles = "relative overflow-hidden font-bold py-3 px-8 rounded-full";
+  const variantStyles = isOutline
+    ? "bg-transparent border border-white text-white"
+    : "bg-white text-black";
+
   return (
     <motion.button
-      // ... (props)
-      className={`relative overflow-hidden bg-white font-bold py-3 px-8 rounded-full ${className} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+      onClick={onClick}
+      type={type}
+      disabled={disabled}
+      className={`${baseStyles} ${variantStyles} ${className} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
       initial="initial"
       whileHover={disabled ? "initial" : "hover"}
       animate="initial"
     >
       {/* The Expanding Circle */}
       <motion.div
-        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-[#B266FF]"
+        className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full ${isOutline ? 'bg-white' : 'bg-[#B266FF]'}`}
         variants={{
           initial: { scale: 1, translateY: "150%" },
           hover: { scale: 150, translateY: 0 },
@@ -38,8 +47,8 @@ const Button: React.FC<ButtonProps> = ({ children, onClick, className, type = "b
         <motion.span
           className="block"
           variants={{
-            initial: { x: 0, color: "#000000" },
-            hover: { x: -8, color: "#ffffff" },
+            initial: { x: 0, color: isOutline ? "#ffffff" : "#000000" },
+            hover: { x: -8, color: isOutline ? "#000000" : "#ffffff" },
           }}
           transition={{ duration: 0.3 }}
         >
