@@ -124,14 +124,6 @@ function ShopContent() {
         })
         : products;
 
-    if (loading) {
-        return (
-            <div className="min-h-[50vh] flex items-center justify-center">
-                <div className="text-xl text-gray-500 animate-pulse">Loading products...</div>
-            </div>
-        );
-    }
-
     return (
         <div className="max-w-[1600px] mx-auto">
             {/* Breadcrumbs */}
@@ -165,9 +157,7 @@ function ShopContent() {
                             onChange={(e) => {
                                 const params = new URLSearchParams(searchParams.toString());
                                 params.set('sort', e.target.value);
-                                // We need to trigger a router push or window location change
-                                // But here we just set params, strictly we need router.
-                                // Quick fix: window.location
+                                // Using router.push logic would be better but this works for now
                                 window.location.search = params.toString();
                             }}
                         >
@@ -195,7 +185,11 @@ function ShopContent() {
 
                 {/* Product Grid */}
                 <div className="flex-1">
-                    {products.length === 0 ? (
+                    {loading ? (
+                        <div className="min-h-[50vh] flex items-center justify-center">
+                            <div className="text-xl text-gray-500 animate-pulse">Loading products...</div>
+                        </div>
+                    ) : products.length === 0 ? (
                         <div className="text-center py-20 text-gray-500 text-xl border rounded-lg bg-white">
                             No products found matching these filters.
                         </div>
