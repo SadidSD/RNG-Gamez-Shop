@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Button from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
-import { ChevronDown, ChevronUp, X, Filter, RotateCcw } from 'lucide-react';
+import { X } from 'lucide-react';
 
 interface FilterSidebarProps {
     isOpen: boolean;
@@ -17,78 +17,55 @@ export function FilterSidebar({ isOpen, onClose, className }: FilterSidebarProps
     const router = useRouter();
     const searchParams = useSearchParams();
 
-    // -- State --
-    const [priceMin, setPriceMin] = useState(searchParams.get('priceMin') || '');
-    const [priceMax, setPriceMax] = useState(searchParams.get('priceMax') || '');
-    const [cmcMin, setCmcMin] = useState(searchParams.get('cmcMin') || '');
-    const [cmcMax, setCmcMax] = useState(searchParams.get('cmcMax') || '');
-    const [foil, setFoil] = useState(searchParams.get('foil') === 'true');
-    const [inStock, setInStock] = useState(searchParams.get('inStock') === 'true');
-    const [format, setFormat] = useState(searchParams.get('format') || '');
-    const [cardType, setCardType] = useState(searchParams.get('type') || '');
-
-    // Multi-select for colors
-    const [selectedColors, setSelectedColors] = useState<string[]>(
-        searchParams.get('colors')?.split(',') || []
-    );
-
-    // -- Sync with URL --
-    const applyFilters = () => {
+    // Helper to update URL
+    const updateFilter = (key: string, value: string | boolean | null) => {
         const params = new URLSearchParams(searchParams.toString());
 
-        // Helper to set/delete
-        const updateParam = (key: string, value: string | boolean) => {
-            if (value !== '' && value !== false && value !== null && value !== undefined) {
-                params.set(key, String(value));
-            } else {
-                params.delete(key);
-            }
-        };
-
-        updateParam('priceMin', priceMin);
-        updateParam('priceMax', priceMax);
-        updateParam('cmcMin', cmcMin);
-        updateParam('cmcMax', cmcMax);
-        updateParam('foil', foil);
-        updateParam('inStock', inStock);
-        updateParam('format', format);
-        updateParam('type', cardType);
-
-        if (selectedColors.length > 0) {
-            params.set('colors', selectedColors.join(','));
+        if (value !== '' && value !== false && value !== null && value !== undefined) {
+            params.set(key, String(value));
         } else {
-            params.delete('colors');
+            params.delete(key);
         }
 
         // Reset page on filter change
         params.delete('page');
 
         router.push(`/shop?${params.toString()}`);
-        if (window.innerWidth < 1024) {
-            onClose(); // Close mobile drawer on apply
-        }
+    };
+
+    // -- State for Inputs (Debounced/OnBlur) --
+    const [priceMin, setPriceMin] = useState(searchParams.get('priceMin') || '');
+    const [priceMax, setPriceMax] = useState(searchParams.get('priceMax') || '');
+    const [cmcMin, setCmcMin] = useState(searchParams.get('cmcMin') || '');
+    const [cmcMax, setCmcMax] = useState(searchParams.get('cmcMax') || '');
+
+    // Sync local input state if URL changes externally (e.g. Reset)
+    useEffect(() => {
+        setPriceMin(searchParams.get('priceMin') || '');
+        setPriceMax(searchParams.get('priceMax') || '');
+        setCmcMin(searchParams.get('cmcMin') || '');
+        setCmcMax(searchParams.get('cmcMax') || '');
+    }, [searchParams]);
+
+    // -- Immediate Handlers --
+    const selectedColors = searchParams.get('colors')?.split(',') || [];
+    const cardType = searchParams.get('type') || '';
+    const format = searchParams.get('format') || '';
+    const foil = searchParams.get('foil') === 'true';
+    const inStock = searchParams.get('inStock') === 'true';
+
+    const toggleColor = (color: string) => {
+        const current = selectedColors;
+        const next = current.includes(color)
+            ? current.filter(c => c !== color)
+            : [...current, color];
+
+        updateFilter('colors', next.length > 0 ? next.join(',') : null);
     };
 
     const clearFilters = () => {
-        setPriceMin('');
-        setPriceMax('');
-        setCmcMin('');
-        setCmcMax('');
-        setFoil(false);
-        setInStock(false);
-        setFormat('');
-        setCardType('');
-        setSelectedColors([]);
         router.push('/shop');
         if (window.innerWidth < 1024) onClose();
-    };
-
-    const toggleColor = (color: string) => {
-        setSelectedColors(prev =>
-            prev.includes(color)
-                ? prev.filter(c => c !== color)
-                : [...prev, color]
-        );
     };
 
     const ColorToggle = ({ color, label, bg }: { color: string, label: string, bg: string }) => (
@@ -143,7 +120,7 @@ export function FilterSidebar({ isOpen, onClose, className }: FilterSidebarProps
                         <select
                             className="w-full border rounded-md p-2 text-sm bg-white"
                             value={cardType}
-                            onChange={(e) => setCardType(e.target.value)}
+                            onChange={(e) => updateFilter('type', e.target.value)}
                         >
                             <option value="">Any Type</option>
                             <option value="Creature">Creature</option>
@@ -165,6 +142,8 @@ export function FilterSidebar({ isOpen, onClose, className }: FilterSidebarProps
                                 placeholder="0"
                                 value={cmcMin}
                                 onChange={(e) => setCmcMin(e.target.value)}
+                                onBlur={() => updateFilter('cmcMin', cmcMin)}
+                                onKeyDown={(e) => e.key === 'Enter' && updateFilter('cmcMin', cmcMin)}
                                 className="h-9 w-20"
                             />
                             <span className="text-gray-400">-</span>
@@ -173,6 +152,8 @@ export function FilterSidebar({ isOpen, onClose, className }: FilterSidebarProps
                                 placeholder="Any"
                                 value={cmcMax}
                                 onChange={(e) => setCmcMax(e.target.value)}
+                                onBlur={() => updateFilter('cmcMax', cmcMax)}
+                                onKeyDown={(e) => e.key === 'Enter' && updateFilter('cmcMax', cmcMax)}
                                 className="h-9 w-20"
                             />
                         </div>
@@ -189,7 +170,7 @@ export function FilterSidebar({ isOpen, onClose, className }: FilterSidebarProps
                         <select
                             className="w-full border rounded-md p-2 text-sm bg-white"
                             value={format}
-                            onChange={(e) => setFormat(e.target.value)}
+                            onChange={(e) => updateFilter('format', e.target.value)}
                         >
                             <option value="">Any Format</option>
                             <option value="commander">Commander</option>
@@ -218,6 +199,8 @@ export function FilterSidebar({ isOpen, onClose, className }: FilterSidebarProps
                                 placeholder="Min"
                                 value={priceMin}
                                 onChange={(e) => setPriceMin(e.target.value)}
+                                onBlur={() => updateFilter('priceMin', priceMin)}
+                                onKeyDown={(e) => e.key === 'Enter' && updateFilter('priceMin', priceMin)}
                                 className="h-9"
                             />
                             <span className="text-gray-400">-</span>
@@ -226,6 +209,8 @@ export function FilterSidebar({ isOpen, onClose, className }: FilterSidebarProps
                                 placeholder="Max"
                                 value={priceMax}
                                 onChange={(e) => setPriceMax(e.target.value)}
+                                onBlur={() => updateFilter('priceMax', priceMax)}
+                                onKeyDown={(e) => e.key === 'Enter' && updateFilter('priceMax', priceMax)}
                                 className="h-9"
                             />
                         </div>
@@ -237,7 +222,7 @@ export function FilterSidebar({ isOpen, onClose, className }: FilterSidebarProps
                             <input
                                 type="checkbox"
                                 checked={inStock}
-                                onChange={(e) => setInStock(e.target.checked)}
+                                onChange={(e) => updateFilter('inStock', e.target.checked)}
                                 className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
                             />
                             <span className="text-sm group-hover:text-black transition-colors text-gray-600">In Stock Only</span>
@@ -247,17 +232,13 @@ export function FilterSidebar({ isOpen, onClose, className }: FilterSidebarProps
                             <input
                                 type="checkbox"
                                 checked={foil}
-                                onChange={(e) => setFoil(e.target.checked)}
+                                onChange={(e) => updateFilter('foil', e.target.checked)}
                                 className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
                             />
                             <span className="text-sm group-hover:text-black transition-colors text-gray-600">Foil / Etched</span>
                         </label>
                     </div>
                 </div>
-
-                <Button onClick={applyFilters} className="w-full">
-                    Apply Filters
-                </Button>
             </div>
         </div>
     );
