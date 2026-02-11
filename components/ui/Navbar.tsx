@@ -49,7 +49,7 @@ export default function Navbar() {
     const navLinks = [
         { name: "Cards", href: "/shop" },
         { name: "Buylist", href: "/buylist" },
-        { name: "Sets", href: "/shop" },
+        { name: "Sets", href: "/sets" },
         { name: "Formats", href: "/shop" },
         { name: "New Arrivals", href: "/shop?sort=newest" },
     ];
