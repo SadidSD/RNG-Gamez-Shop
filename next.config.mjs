@@ -17,7 +17,7 @@ const nextConfig = {
             },
             {
                 protocol: 'https',
-                hostname: 'rng-game-backend-production.up.railway.app',
+                hostname: '*.onrender.com',
             }
         ],
     },
