@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import Button from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
@@ -16,6 +16,7 @@ interface FilterSidebarProps {
 export function FilterSidebar({ isOpen, onClose, className }: FilterSidebarProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const pathname = usePathname();
 
     // Helper to update URL
     const updateFilter = (key: string, value: string | boolean | null) => {
@@ -27,10 +28,30 @@ export function FilterSidebar({ isOpen, onClose, className }: FilterSidebarProps
             params.delete(key);
         }
 
+        // --- NAVIGATION LOGIC ---
+        let targetPath = pathname;
+
+        // --- EXCLUSION & PAGE JUMPING ---
+        // 1. If we are setting a specific category, clear 'singles' flag
+        if (key === 'category' && value) {
+            params.delete('singles');
+
+            // If we are on the /singles page but filtering for a category (especially sealed), 
+            // we MUST jump to /shop or else the /singles page's hardcoded filter will hide everything.
+            if (targetPath === '/singles') {
+                targetPath = '/shop';
+            }
+        }
+        
+        // 2. If we are setting 'singles' flag, clear specific category
+        if (key === 'singles' && value === 'true') {
+            params.delete('category');
+        }
+
         // Reset page on filter change
         params.delete('page');
 
-        router.push(`/shop?${params.toString()}`);
+        router.push(`${targetPath}?${params.toString()}`);
     };
 
     // -- State for Inputs (Debounced/OnBlur) --
@@ -64,7 +85,7 @@ export function FilterSidebar({ isOpen, onClose, className }: FilterSidebarProps
     };
 
     const clearFilters = () => {
-        router.push('/shop');
+        router.push(pathname);
         if (window.innerWidth < 1024) onClose();
     };
 
@@ -162,7 +183,64 @@ export function FilterSidebar({ isOpen, onClose, className }: FilterSidebarProps
 
                 <hr className="border-gray-100" />
 
-                {/* Layer 2: Game / Set - Format */}
+                {/* Layer 2: Categories */}
+                <div>
+                    <Label className="mb-3 block text-sm font-semibold text-muted-foreground uppercase tracking-wider">Product Categories</Label>
+                    <div className="space-y-1">
+                        <button
+                            onClick={() => {
+                                // If we are on /singles, "All Products" means going back to the full shop
+                                router.push('/shop');
+                            }}
+                            className={`
+                                w-full text-left px-3 py-1.5 rounded-md text-sm transition-all
+                                ${(pathname === '/shop' && !searchParams.get('category') && !searchParams.get('singles'))
+                                    ? 'bg-purple-100 text-purple-700 font-semibold'
+                                    : 'hover:bg-gray-50 text-gray-600'
+                                }
+                            `}
+                        >
+                            All Products
+                        </button>
+                        <button
+                            onClick={() => updateFilter('singles', 'true')}
+                            className={`
+                                w-full text-left px-3 py-1.5 rounded-md text-sm transition-all
+                                ${(searchParams.get('singles') === 'true' || (pathname === '/singles' && !searchParams.get('category')))
+                                    ? 'bg-purple-100 text-purple-700 font-semibold'
+                                    : 'hover:bg-gray-50 text-gray-600'
+                                }
+                            `}
+                        >
+                            Singles
+                        </button>
+                        {[
+                            { name: 'Booster Boxes', value: 'Booster Boxes' },
+                            { name: 'Booster Packs', value: 'Booster Packs' },
+                            { name: 'Bundles', value: 'Bundles' },
+                            { name: 'Precon Decks', value: 'Precon Decks' },
+                            { name: "Collector's Editions", value: "Collector's Editions" },
+                        ].map(cat => (
+                            <button
+                                key={cat.name}
+                                onClick={() => updateFilter('category', cat.value)}
+                                className={`
+                                    w-full text-left px-3 py-1.5 rounded-md text-sm transition-all
+                                    ${searchParams.get('category') === cat.value
+                                        ? 'bg-purple-100 text-purple-700 font-semibold'
+                                        : 'hover:bg-gray-50 text-gray-600'
+                                    }
+                                `}
+                            >
+                                {cat.name}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <hr className="border-gray-100" />
+
+                {/* Layer 3: Game / Set - Format */}
                 <div>
                     <Label className="mb-3 block text-sm font-semibold text-muted-foreground uppercase tracking-wider">Game</Label>
                     <div className="space-y-2">

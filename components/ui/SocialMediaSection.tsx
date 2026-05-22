@@ -8,25 +8,25 @@ const SocialMediaSection = () => {
     const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
 
     return (
-        <div className="w-full min-h-screen bg-[#F1F1F1] flex items-center justify-center p-10">
-            <div className="w-full max-w-[1600px] flex gap-20 items-center">
+        <div className="w-full bg-[#F1F1F1] flex items-center justify-center py-14 md:py-20 px-5 md:p-10">
+            <div className="w-full max-w-[1600px] flex flex-col lg:flex-row gap-10 lg:gap-20 items-center">
                 {/* Left Column */}
-                <div className="w-1/2 flex flex-col gap-8">
+                <div className="w-full lg:w-1/2 flex flex-col gap-5 md:gap-8">
                     <div className="flex gap-4">
                         <Box className="w-8 h-8 text-[#B266FF]" />
                         <Box className="w-8 h-8 text-[#B266FF]" />
                         <Box className="w-8 h-8 text-[#B266FF]" />
                     </div>
-                    <h2 className="text-[80px] font-bold text-black leading-tight" style={{ fontFamily: 'Europa Grotesk SH' }}>
+                    <h2 className="text-4xl sm:text-5xl lg:text-[80px] font-bold text-black leading-tight" style={{ fontFamily: 'Europa Grotesk SH' }}>
                         Follow our Social Media
                     </h2>
-                    <p className="text-xl text-black max-w-xl leading-relaxed">
-                        Subscribe to our youtube & follow our socials for daily updates. Join our growing TCG family and never miss a pull!
+                    <p className="text-base md:text-xl text-black max-w-xl leading-relaxed">
+                        Subscribe to our youtube &amp; follow our socials for daily updates. Join our growing TCG family and never miss a pull!
                     </p>
                 </div>
 
                 {/* Right Column */}
-                <div className="w-2/5 flex flex-col gap-8">
+                <div className="w-full lg:w-2/5 flex flex-col gap-6 md:gap-8">
                     {/* YouTube Video */}
                     <a
                         href={videoUrl}
@@ -49,7 +49,12 @@ const SocialMediaSection = () => {
 
                     {/* Social Icons Placeholder */}
                     <div className="flex gap-6 justify-center">
-                        <div className="relative w-32 h-32 bg-gray-300 rounded-[30px] overflow-hidden cursor-pointer group">
+                        <a
+                            href="https://instagram.com/rng_gamez_tcg"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="relative w-32 h-32 bg-gray-300 rounded-[30px] overflow-hidden cursor-pointer group"
+                        >
                             <Image
                                 src="/instagram.png"
                                 alt="Instagram"
@@ -79,8 +84,13 @@ const SocialMediaSection = () => {
                                     <circle cx="17.5" cy="6.5" r="1.5" fill="url(#instagramGradient)" />
                                 </svg>
                             </div>
-                        </div>
-                        <div className="relative w-32 h-32 bg-gray-300 rounded-[30px] overflow-hidden cursor-pointer group">
+                        </a>
+                        <a
+                            href="https://www.facebook.com/rnggamestore"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="relative w-32 h-32 bg-gray-300 rounded-[30px] overflow-hidden cursor-pointer group"
+                        >
                             <Image
                                 src="/facebook.png"
                                 alt="Facebook"
@@ -99,8 +109,13 @@ const SocialMediaSection = () => {
                                     <path d="M15.8 14.89L16.25 12H13.47V10.12C13.47 9.33 13.86 8.56 15.11 8.56H16.34V6.08C16.34 6.08 15.23 5.89 14.16 5.89C11.93 5.89 10.44 7.28 10.44 9.8V12H7.9V14.89H10.44V21.88C11.23 22.01 12.04 22.01 12.83 21.88V14.89H15.8Z" fill="white" />
                                 </svg>
                             </div>
-                        </div>
-                        <div className="relative w-32 h-32 bg-gray-300 rounded-[30px] overflow-hidden cursor-pointer group">
+                        </a>
+                        <a
+                            href="https://patreon.com/RNG_GAMEZ"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="relative w-32 h-32 bg-gray-300 rounded-[30px] overflow-hidden cursor-pointer group"
+                        >
                             <Image
                                 src="/patrion.png"
                                 alt="Patreon"
@@ -117,7 +132,7 @@ const SocialMediaSection = () => {
                                     <path d="M15.3 5.5C12.8 5.5 10.7 7.6 10.7 10.1C10.7 12.6 12.8 14.7 15.3 14.7C17.8 14.7 19.9 12.6 19.9 10.1C19.9 7.6 17.8 5.5 15.3 5.5ZM4.2 19.5H8.3V5.5H4.2V19.5Z" fill="#FF424D" />
                                 </svg>
                             </div>
-                        </div>
+                        </a>
                     </div>
                 </div>
             </div>

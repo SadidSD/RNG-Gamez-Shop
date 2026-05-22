@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { ChevronDown, Minus, Plus, ShoppingCart, Check, X, ShieldCheck } from 'lucide-react';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import { useShopCart } from '@/context/ShopCartContext';
+import { MtgSymbols } from '@/components/ui/MtgSymbols';
 
 interface ProductVariant {
     id: string;
@@ -21,6 +22,13 @@ interface Card {
     name: string;
     oracleText: string;
     legalities: any;
+    manaCost?: string;
+    manaValue?: number;
+    typeLine?: string;
+    colors?: string[];
+    power?: string;
+    toughness?: string;
+    loyalty?: string;
 }
 
 interface Product {
@@ -311,19 +319,55 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                             {activeTab === 'details' && (
                                 <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
                                     <div className="bg-gray-50 p-6 rounded-xl border border-gray-100">
-                                        <h3 className="font-bold text-black mb-2">Oracle Text</h3>
-                                        <p className="text-gray-700 whitespace-pre-wrap leading-relaxed font-serif text-lg">
-                                            {product.card?.oracleText || "No oracle text available."}
-                                        </p>
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="p-4 bg-gray-50 rounded-xl">
-                                            <span className="text-gray-400 text-xs uppercase font-bold">Artist</span>
-                                            <p className="font-medium">Unknown</p>
+                                        <div className="flex justify-between items-start mb-4">
+                                            <h3 className="font-bold text-black uppercase text-xs tracking-widest">Oracle Text</h3>
+                                            {product.card?.manaCost && (
+                                                <div className="flex items-center gap-1 bg-white px-3 py-1 rounded-full border border-gray-200 shadow-sm">
+                                                    <span className="text-[10px] font-black text-gray-400 mr-1 uppercase">Cost</span>
+                                                    <MtgSymbols text={product.card.manaCost} />
+                                                </div>
+                                            )}
                                         </div>
-                                        <div className="p-4 bg-gray-50 rounded-xl">
-                                            <span className="text-gray-400 text-xs uppercase font-bold">Type</span>
-                                            <p className="font-medium">Card</p>
+                                        <div className="text-gray-700 whitespace-pre-wrap leading-relaxed font-serif text-lg">
+                                            {product.card?.oracleText ? (
+                                                <MtgSymbols text={product.card.oracleText} />
+                                            ) : (
+                                                "No oracle text available."
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                        <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                                            <span className="text-gray-400 text-[10px] uppercase font-black tracking-widest">Type Line</span>
+                                            <p className="font-bold text-sm leading-tight mt-1">{product.card?.typeLine || "Card"}</p>
+                                        </div>
+                                        {product.card?.colors && product.card.colors.length > 0 && (
+                                            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                                                <span className="text-gray-400 text-[10px] uppercase font-black tracking-widest">Color</span>
+                                                <div className="flex gap-1 mt-1">
+                                                    {product.card.colors.map(c => (
+                                                        <span key={c} className={`w-4 h-4 rounded-full border border-black/10 flex items-center justify-center text-[10px] font-bold text-white shadow-sm ${c === 'W' ? 'bg-yellow-100 text-yellow-800' : c === 'U' ? 'bg-blue-500' : c === 'B' ? 'bg-gray-800' : c === 'R' ? 'bg-red-500' : c === 'G' ? 'bg-green-600' : 'bg-gray-400'}`}>
+                                                            {c}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                        {(product.card?.power || product.card?.toughness) && (
+                                            <div className="p-4 bg-white rounded-xl border border-gray-200 shadow-sm ring-1 ring-black/5">
+                                                <span className="text-gray-400 text-[10px] uppercase font-black tracking-widest">Stats</span>
+                                                <p className="font-black text-xl mt-0.5">{product.card.power} / {product.card.toughness}</p>
+                                            </div>
+                                        )}
+                                        {product.card?.loyalty && (
+                                            <div className="p-4 bg-purple-50 rounded-xl border border-purple-100">
+                                                <span className="text-purple-400 text-[10px] uppercase font-black tracking-widest">Loyalty</span>
+                                                <p className="font-black text-xl mt-0.5 text-purple-700">{product.card.loyalty}</p>
+                                            </div>
+                                        )}
+                                        <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                                            <span className="text-gray-400 text-[10px] uppercase font-black tracking-widest">Mana Value</span>
+                                            <p className="font-bold text-sm mt-1">{product.card?.manaValue ?? "N/A"}</p>
                                         </div>
                                     </div>
                                 </div>

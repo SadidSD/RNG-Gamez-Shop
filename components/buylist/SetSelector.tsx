@@ -2,26 +2,23 @@
 
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Set } from '@/types';
-import { mockSets } from '@/lib/mockData';
 
 interface SetSelectorProps {
+    sets: string[];
     selectedSet: string | null;
     onSelectSet: (setId: string | null) => void;
 }
 
-const SetSelector: React.FC<SetSelectorProps> = ({ selectedSet, onSelectSet }) => {
+const SetSelector: React.FC<SetSelectorProps> = ({ sets, selectedSet, onSelectSet }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
 
-    const selectedSetData = mockSets.find(set => set.id === selectedSet);
-
-    const filteredSets = mockSets.filter(set =>
-        set.name.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredSets = sets.filter(set =>
+        set.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    const handleSelectSet = (setId: string | null) => {
-        onSelectSet(setId);
+    const handleSelectSet = (set: string | null) => {
+        onSelectSet(set);
         setIsOpen(false);
         setSearchTerm('');
     };
@@ -30,9 +27,9 @@ const SetSelector: React.FC<SetSelectorProps> = ({ selectedSet, onSelectSet }) =
         <SelectorContainer>
             <SelectorButton onClick={() => setIsOpen(!isOpen)}>
                 <ButtonContent>
-                    {selectedSetData ? (
+                    {selectedSet ? (
                         <>
-                            <span>{selectedSetData.name}</span>
+                            <span>{selectedSet}</span>
                         </>
                     ) : (
                         <span>Select Set</span>
@@ -67,12 +64,13 @@ const SetSelector: React.FC<SetSelectorProps> = ({ selectedSet, onSelectSet }) =
                             </SetItem>
                             {filteredSets.map((set) => (
                                 <SetItem
-                                    key={set.id}
-                                    onClick={() => handleSelectSet(set.id)}
-                                    $isSelected={selectedSet === set.id}
+                                    key={set}
+                                    onClick={() => handleSelectSet(set)}
+                                    $isSelected={selectedSet === set}
                                 >
-                                    <SetName>{set.name}</SetName>
-                                    {selectedSet === set.id && <CheckIcon>✓</CheckIcon>}
+                                    <SetIcon> </SetIcon>
+                                    <SetName>{set}</SetName>
+                                    {selectedSet === set && <CheckIcon>✓</CheckIcon>}
                                 </SetItem>
                             ))}
                         </SetList>

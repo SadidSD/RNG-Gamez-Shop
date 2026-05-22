@@ -60,9 +60,9 @@ export default function ProductSliderSection({
         <div className="w-full py-20 bg-[#F1F1F1]">
             <div className="w-full max-w-[1600px] mx-auto px-10">
                 {/* Header */}
-                <div className="flex justify-between items-center mb-12 px-20">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 md:mb-12 gap-4 px-2 md:px-10 lg:px-20">
                     <p
-                        className="font-bold text-[72px] text-black tracking-[0.03em] leading-[1.2em]"
+                        className="font-bold text-4xl md:text-5xl lg:text-[72px] text-black tracking-[0.03em] leading-[1.2em]"
                         style={{ fontFamily: "Europa Grotesk SH" }}
                     >
                         {title}

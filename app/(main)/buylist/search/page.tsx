@@ -117,7 +117,9 @@ export default function SearchPage() {
   }, [searchTerm, debouncedSearch]);
 
 
-  // Client-side Set Filter (Optional)
+  // Client-side Set Filter
+  const availableSets = Array.from(new Set(cards.map(c => c.set).filter(Boolean)));
+
   const filteredCards = cards.filter(card => {
     return selectedSet === null || (card.set && card.set === selectedSet);
   });
@@ -130,7 +132,7 @@ export default function SearchPage() {
             <SearchBarWrapper>
               <SearchBar value={searchTerm} onChange={setSearchTerm} />
             </SearchBarWrapper>
-            {/* <SetSelector selectedSet={selectedSet} onSelectSet={setSelectedSet} />  */}
+            <SetSelector sets={availableSets} selectedSet={selectedSet} onSelectSet={setSelectedSet} />
           </SearchControls>
         </SearchSection>
 

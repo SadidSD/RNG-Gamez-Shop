@@ -1,12 +1,12 @@
 import { Metadata } from 'next';
-import SetsGallery from '@/components/sets/SetsGallery';
+import SealedProductsGallery from '@/components/sealed/SealedProductsGallery';
 
 export const metadata: Metadata = {
-    title: 'Magic: The Gathering Sets | RNG Gamez',
-    description: 'Browse all Magic: The Gathering sets with official set symbols and icons.',
+    title: 'Sealed Products | RNG Gamez',
+    description: 'Browse booster boxes, bundles, collector editions, and preconstructed decks for Magic: The Gathering.',
 };
 
-export default function SetsPage() {
+export default function SealedPage() {
     return (
         <div className="min-h-screen pt-24 pb-16">
             {/* Hero Section */}
@@ -15,18 +15,18 @@ export default function SetsPage() {
                     <span className="inline-block w-2 h-2 rounded-sm bg-purple-500" />
                     <span>Collections</span>
                     <span>/</span>
-                    <span className="text-purple-600 font-medium">Sets</span>
+                    <span className="text-purple-600 font-medium">Sealed Products</span>
                 </div>
                 <h1 className="text-5xl font-extrabold tracking-tight mb-3 text-gray-900" style={{ fontFamily: 'Europa Grotesk SH, sans-serif' }}>
-                    Explore Magic <span className="text-purple-500">Sets</span>
+                    Sealed <span className="text-purple-500">Products</span>
                 </h1>
                 <p className="text-gray-500 text-lg max-w-xl">
-                    Browse every Magic: The Gathering expansion, core set, and special release — from Alpha to the latest drop.
+                    Booster boxes, bundles, collector editions, and preconstructed decks — factory sealed and ready to open.
                 </p>
             </div>
 
-            {/* Sets Gallery */}
-            <SetsGallery />
+            {/* Gallery */}
+            <SealedProductsGallery />
         </div>
     );
 }

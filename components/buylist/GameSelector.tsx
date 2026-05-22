@@ -3,11 +3,17 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Game } from '@/types';
-import { fetchGames } from '@/lib/manapool';
 
 interface GameSelectorProps {
     onSelectGame: (game: Game) => void;
 }
+
+const fetchGamesLocal = async (): Promise<Game[]> => {
+    return [
+        { id: 'mtg', name: 'Magic: The Gathering', image: '/placeholder.png' },
+        { id: 'pokemon', name: 'Pokemon TCG', image: '/placeholder.png' }
+    ];
+};
 
 const GameSelector: React.FC<GameSelectorProps> = ({ onSelectGame }) => {
     const [games, setGames] = useState<Game[]>([]);
@@ -16,7 +22,7 @@ const GameSelector: React.FC<GameSelectorProps> = ({ onSelectGame }) => {
     useEffect(() => {
         const loadGames = async () => {
             setLoading(true);
-            const fetchedGames = await fetchGames();
+            const fetchedGames = await fetchGamesLocal();
             setGames(fetchedGames);
             setLoading(false);
         };

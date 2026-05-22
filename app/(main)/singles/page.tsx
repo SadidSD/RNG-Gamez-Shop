@@ -4,42 +4,28 @@ import React, { useState, Suspense, useEffect } from 'react';
 import Card from '@/components/ui/Card';
 import { FilterSidebar } from '@/components/shop/FilterSidebar';
 import { SlidersHorizontal } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
-import Button from '@/components/ui/Button';
+import { useSearchParams, useRouter } from 'next/navigation';
 
-const fetchProducts = async (searchParams: URLSearchParams) => {
-    console.log("1. Starting fetchProducts with params:", searchParams.toString());
+const fetchSingles = async (searchParams: URLSearchParams) => {
     try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL;
         const apiKey = process.env.NEXT_PUBLIC_API_KEY;
+        if (!apiUrl) return [];
 
-        if (!apiUrl) {
-            console.error("CRITICAL: NEXT_PUBLIC_API_URL is missing");
-            return [];
-        }
+        // Always inject singles=true so only individual trading cards are returned
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('singles', 'true');
 
-        const fullUrl = `${apiUrl}/public/products?${searchParams.toString()}`;
-        console.log("3. Fetching from:", fullUrl);
-
-        // Endpoint: /api/public/products (Public Shop via Railway/Render)
-        const res = await fetch(fullUrl, {
-            headers: {
-                'x-api-key': apiKey || '',
-            },
-            cache: 'no-store'
+        const res = await fetch(`${apiUrl}/public/products?${params.toString()}`, {
+            headers: { 'x-api-key': apiKey || '' },
+            cache: 'no-store',
         });
 
-        console.log("4. Response Status:", res.status);
-
-        if (!res.ok) {
-            console.error("Fetch failed:", res.status, res.statusText);
-            throw new Error('Failed to fetch products');
-        }
-
+        if (!res.ok) throw new Error('Failed to fetch singles');
         const data = await res.json();
         return data.data || [];
     } catch (error) {
-        console.error("Error fetching products:", error);
+        console.error('Error fetching singles:', error);
         return [];
     }
 };
@@ -51,50 +37,47 @@ const fetchCategories = async () => {
         const res = await fetch(`${apiUrl}/categories`, { cache: 'no-store' });
         if (!res.ok) return [];
         return await res.json();
-    } catch (e) {
+    } catch {
         return [];
     }
-}
+};
 
-function ShopContent() {
+function SinglesContent() {
     const [products, setProducts] = useState<any[]>([]);
     const [categories, setCategories] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
     const [showFilters, setShowFilters] = useState(false);
     const searchParams = useSearchParams();
-    const currentCategory = searchParams.get('category');
+    const router = useRouter();
 
     useEffect(() => {
         const load = async () => {
             setLoading(true);
             const [productsData, categoriesData] = await Promise.all([
-                fetchProducts(searchParams),
-                fetchCategories()
+                fetchSingles(searchParams),
+                fetchCategories(),
             ]);
 
-            // Set Categories for Sidebar
             if (categoriesData && categoriesData.length > 0) {
                 setCategories(categoriesData.map((c: any) => c.name));
             } else {
-                // Fallback defaults if no backend categories
-                setCategories(['Pokemon', 'Magic: The Gathering', 'Yu-Gi-Oh!', 'Sports Cards', 'Supplies', 'Graded Cards']);
+                setCategories(['Pokemon', 'Magic: The Gathering', 'Yu-Gi-Oh!', 'Sports Cards']);
             }
 
             const mapped = productsData.map((p: any) => ({
                 id: p.id,
                 title: p.name,
                 price: `$${Number(p.price).toFixed(2)}`,
-                imageSrc: (p.images && p.images.length > 0) ? p.images[0] : "/placeholder.svg",
-                // Prefer linked category name, fallback to game, fallback to All
-                category: p.category ? p.category.name : (p.game || "All"),
-                set: p.set || "",
-                rarity: p.rarity || "",
-                number: p.collectorNumber || "",
-                conditionString: (p.variants && p.variants.length > 0)
+                imageSrc: p.images?.[0] || '/placeholder.svg',
+                category: p.category ? p.category.name : (p.game || 'All'),
+                set: p.set || '',
+                rarity: p.rarity || '',
+                number: p.collectorNumber || '',
+                conditionString: p.variants?.length > 0
                     ? `${p.variants[0].condition || 'NM'}${p.variants[0].isFoil ? ' Foil' : ''}`
-                    : "",
+                    : '',
                 rawPrice: Number(p.price),
-                variantId: (p.variants && p.variants.length > 0) ? p.variants[0].id : undefined,
+                variantId: p.variants?.[0]?.id,
             }));
 
             setProducts(mapped);
@@ -103,40 +86,34 @@ function ShopContent() {
         load();
     }, [searchParams]);
 
-    // Robust normalization: lowercase, remove accents, trim
-    const normalize = (str: string) => {
-        if (!str) return "";
-        let s = str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
-        // Alias Handling
-        if (s === 'mtg') return 'magic: the gathering';
-        if (s === 'magic the gathering') return 'magic: the gathering';
-        return s;
+    const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('sort', e.target.value);
+        router.push(`/singles?${params.toString()}`);
     };
 
-    // Client-side category filter fallback (if backend returns generic list)
-    // IMPORTANT: Backend should ideally filter this, but we keep this for robust display
-    const filteredCards = currentCategory && currentCategory !== 'All'
-        ? products.filter(card => {
-            // If we already filtered on backend (which strictly we did by 'category' param), 
-            // this is redundant but harmless unless backend ignores params.
-            // We trust backend mainly, but let's keep it consistent.
-            return true;
-        })
-        : products;
+    const displayTitle = searchParams.get('category') || 'Singles';
 
     return (
         <div className="max-w-[1600px] mx-auto">
             {/* Breadcrumbs */}
             <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
                 <div className="w-4 h-4 bg-gradient-to-br from-purple-500 to-blue-500 rounded-sm"></div>
-                <span>Collections</span>
-                <span>/</span>
-                <span className="text-black font-medium">{searchParams.get('category') || 'All'}</span>
+                <span>Singles</span>
+                {searchParams.get('category') && (
+                    <>
+                        <span>/</span>
+                        <span className="text-black font-medium">{searchParams.get('category')}</span>
+                    </>
+                )}
             </div>
 
             <div className="flex flex-col gap-4 md:gap-6 mb-8">
-                <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold leading-tight tracking-tight" style={{ fontFamily: 'Europa Grotesk SH' }}>
-                    {searchParams.get('category') || 'Shop All'}
+                <h1
+                    className="text-4xl sm:text-5xl lg:text-7xl font-bold leading-tight tracking-tight"
+                    style={{ fontFamily: 'Europa Grotesk SH' }}
+                >
+                    {displayTitle}
                 </h1>
 
                 <div className="flex flex-wrap items-center justify-between gap-3">
@@ -154,12 +131,8 @@ function ShopContent() {
                         <span className="text-gray-500">Sort by:</span>
                         <select
                             className="bg-transparent border-none focus:ring-0 p-0 font-medium text-black cursor-pointer outline-none"
-                            onChange={(e) => {
-                                const params = new URLSearchParams(searchParams.toString());
-                                params.set('sort', e.target.value);
-                                // Using router.push logic would be better but this works for now
-                                window.location.search = params.toString();
-                            }}
+                            onChange={handleSortChange}
+                            defaultValue={searchParams.get('sort') || 'created_desc'}
                         >
                             <option value="created_desc">Newest Arrivals</option>
                             <option value="price_asc">Price: Low to High</option>
@@ -172,13 +145,11 @@ function ShopContent() {
             </div>
 
             <div className="flex gap-8 items-start relative">
-
-                {/* Filter Sidebar - Desktop */}
+                {/* Filter Sidebar */}
                 <div
-                    className={`
-                        transition-all duration-300 ease-in-out flex-shrink-0
-                        ${showFilters ? 'w-64 opacity-100' : 'w-0 opacity-0 overflow-hidden'}
-                    `}
+                    className={`transition-all duration-300 ease-in-out flex-shrink-0 ${
+                        showFilters ? 'w-64 opacity-100' : 'w-0 opacity-0 overflow-hidden'
+                    }`}
                 >
                     <FilterSidebar isOpen={showFilters} onClose={() => setShowFilters(false)} />
                 </div>
@@ -187,11 +158,11 @@ function ShopContent() {
                 <div className="flex-1">
                     {loading ? (
                         <div className="min-h-[50vh] flex items-center justify-center">
-                            <div className="text-xl text-gray-500 animate-pulse">Loading products...</div>
+                            <div className="text-xl text-gray-500 animate-pulse">Loading singles...</div>
                         </div>
                     ) : products.length === 0 ? (
                         <div className="text-center py-20 text-gray-500 text-xl border rounded-lg bg-white">
-                            No products found matching these filters.
+                            No singles found matching these filters.
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -219,11 +190,11 @@ function ShopContent() {
     );
 }
 
-export default function Shop() {
+export default function Singles() {
     return (
-        <main className="min-h-screen bg-[#F1F1F1] pt-40 pb-20 px-4 md:px-10">
+        <main className="min-h-screen bg-[#F1F1F1] pt-28 md:pt-40 pb-20 px-4 md:px-10">
             <Suspense fallback={<div>Loading...</div>}>
-                <ShopContent />
+                <SinglesContent />
             </Suspense>
         </main>
     );

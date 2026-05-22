@@ -12,6 +12,7 @@ interface User {
     storeId: string;
     firstName?: string;
     lastName?: string;
+    creditBalance?: number;
 }
 
 interface AuthContextType {

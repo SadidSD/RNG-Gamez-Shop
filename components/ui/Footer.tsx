@@ -7,23 +7,23 @@ const Footer = () => {
         <footer className="w-full bg-[#050511] text-white py-16 px-6 md:px-20">
             <div className="max-w-7xl mx-auto">
                 {/* Top Section: Newsletter */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-10 mb-20">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-12 md:mb-20">
                     <div className="max-w-xl">
-                        <h2 className="text-5xl md:text-6xl font-bold leading-tight">
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
                             Subscribe to Our Newsletter
                         </h2>
                     </div>
 
-                    <div className="flex items-center gap-4 w-full md:w-auto">
-                        <div className="relative w-full md:w-[400px]">
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
+                        <div className="relative w-full sm:w-[300px] md:w-[400px]">
                             <input
                                 type="email"
                                 placeholder="Enter your email address"
-                                className="w-full bg-transparent border border-gray-600 rounded-full py-4 px-6 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors"
+                                className="w-full bg-transparent border border-gray-600 rounded-full py-3.5 px-6 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors"
                                 suppressHydrationWarning
                             />
                         </div>
-                        <button className="bg-[#B266FF] hover:bg-[#9e4df5] text-black font-medium py-4 px-8 rounded-full flex items-center gap-2 transition-colors">
+                        <button className="bg-[#B266FF] hover:bg-[#9e4df5] text-black font-medium py-3.5 px-8 rounded-full flex items-center justify-center gap-2 transition-colors whitespace-nowrap">
                             Subscribe
                             <div className="bg-black rounded-full p-1">
                                 <ArrowUpRight className="w-4 h-4 text-white" />
@@ -42,10 +42,10 @@ const Footer = () => {
                     </div>
 
                     <div className="flex items-center gap-6">
-                        <Link href="#" className="p-2 border border-gray-600 rounded-full hover:border-white hover:text-white transition-colors">
+                        <Link href="https://instagram.com/rng_gamez_tcg" target="_blank" className="p-2 border border-gray-600 rounded-full hover:border-white hover:text-white transition-colors">
                             <Instagram className="w-5 h-5" />
                         </Link>
-                        <Link href="#" className="p-2 border border-gray-600 rounded-full hover:border-white hover:text-white transition-colors">
+                        <Link href="https://www.facebook.com/rnggamestore" target="_blank" className="p-2 border border-gray-600 rounded-full hover:border-white hover:text-white transition-colors">
                             <Facebook className="w-5 h-5" />
                         </Link>
                         {/* TikTok Icon (using SVG as it might not be in all lucide versions or just generic) */}
