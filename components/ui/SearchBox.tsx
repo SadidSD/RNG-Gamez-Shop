@@ -1,8 +1,24 @@
+"use client";
+
+import { useState } from "react";
 import { Search } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function SearchBox() {
+    const [query, setQuery] = useState("");
+    const router = useRouter();
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (query.trim()) {
+            router.push(`/shop?name=${encodeURIComponent(query.trim())}`);
+        } else {
+            router.push(`/shop`);
+        }
+    };
+
     return (
-        <div className="relative w-full max-w-md group">
+        <form onSubmit={handleSubmit} className="relative w-full max-w-md group">
             {/* Glow Effect */}
             <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full blur opacity-30 group-hover:opacity-60 transition duration-500"></div>
 
@@ -11,15 +27,17 @@ export default function SearchBox() {
                 <input
                     type="text"
                     placeholder="Search..."
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
                     className="w-full bg-transparent border-none outline-none text-white text-sm placeholder-white/50 px-4 py-2 font-['Europa_Grotesk_SH'] tracking-wide"
                     style={{ fontFamily: 'Europa Grotesk SH' }}
                 />
                 <div className="pr-2">
-                    <button className="flex items-center justify-center p-1.5 rounded-full bg-white/10 border border-white/10 text-white/70 hover:bg-white/20 transition-colors cursor-pointer">
+                    <button type="submit" className="flex items-center justify-center p-1.5 rounded-full bg-white/10 border border-white/10 text-white/70 hover:bg-white/20 transition-colors cursor-pointer">
                         <Search className="w-4 h-4" />
                     </button>
                 </div>
             </div>
-        </div>
+        </form>
     );
 }
