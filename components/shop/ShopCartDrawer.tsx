@@ -44,6 +44,11 @@ export default function ShopCartDrawer() {
     if (!isOpen) return null;
 
     const handleCheckout = async () => {
+        if (total < 0.50) {
+            alert('Stripe requires a minimum order amount of $0.50. Please add more items to your cart.');
+            return;
+        }
+
         setLoading(true);
         try {
             const payload = {
@@ -117,11 +122,22 @@ export default function ShopCartDrawer() {
                             ))}
                         </ItemsList>
                         <Footer>
+                            {total > 0 && total < 0.50 && (
+                                <div style={{ color: '#ef4444', fontSize: '0.875rem', marginBottom: '0.75rem', textAlign: 'center', fontWeight: '500' }}>
+                                    * Minimum order amount is $0.50
+                                </div>
+                            )}
                             <TotalRow>
                                 <span>Total</span>
                                 <span>${total.toFixed(2)}</span>
                             </TotalRow>
-                            <CheckoutButton onClick={() => setStep('checkout')} disabled={items.length === 0}>
+                            <CheckoutButton onClick={() => {
+                                if (total < 0.50) {
+                                    alert('Stripe requires a minimum order amount of $0.50. Please add more items to your cart.');
+                                    return;
+                                }
+                                setStep('checkout');
+                            }} disabled={items.length === 0}>
                                 Checkout
                             </CheckoutButton>
                         </Footer>
