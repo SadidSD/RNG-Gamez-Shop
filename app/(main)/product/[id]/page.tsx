@@ -255,8 +255,8 @@ export default function ProductPage({ params }: { params: { id: string } }) {
 
                                         {stock > 0 && (
                                             <div className="mt-8 space-y-3">
-                                                <div className="flex flex-col 2xl:flex-row items-stretch 2xl:items-center gap-3">
-                                                    <div className="flex items-center justify-between bg-gray-100 rounded-xl h-14 border border-transparent hover:border-gray-200 transition-colors">
+                                                <div className="flex flex-col gap-3 w-full">
+                                                    <div className="flex items-center justify-between bg-gray-100 rounded-xl h-14 border border-transparent hover:border-gray-200 transition-colors w-full">
                                                         <button
                                                             type="button"
                                                             onClick={() => quantity > 1 && setQuantity(q => q - 1)}
@@ -277,7 +277,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                                                         type="button"
                                                         onClick={handleAddToCart}
                                                         disabled={isAdded}
-                                                        className={`flex-1 font-bold h-14 px-6 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg active:scale-95 text-lg whitespace-nowrap ${isAdded ? 'bg-green-500 text-white shadow-green-500/20' : 'bg-[#B266FF] hover:bg-[#9933FF] text-white shadow-purple-500/20'}`}
+                                                        className={`w-full font-bold h-14 px-6 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg active:scale-95 text-lg whitespace-nowrap ${isAdded ? 'bg-green-500 text-white shadow-green-500/20' : 'bg-[#B266FF] hover:bg-[#9933FF] text-white shadow-purple-500/20'}`}
                                                     >
                                                         {isAdded ? (
                                                             <>
