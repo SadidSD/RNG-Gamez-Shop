@@ -105,7 +105,9 @@ const CartDrawer: React.FC = () => {
             condition: cond,
             isFoil: Boolean(item.card.isFoil || false),
             offerPrice: Number(item.card.creditPrice), // Ensure number
-            quantity: Number(item.quantity)
+            quantity: Number(item.quantity),
+            imageUrl: item.card.image,
+            setName: item.card.set
           };
         }),
         images
