@@ -359,6 +359,7 @@ const DrawerContainer = styled(motion.div)`
   display: flex;
   flex-direction: column;
   box-shadow: -10px 0 40px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
 
   @media (max-width: 640px) {
     max-width: 100%;
@@ -371,6 +372,10 @@ const DrawerHeader = styled.div`
   align-items: center;
   padding: 2rem;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  background: rgba(255, 255, 255, 0.98);
+  z-index: 10;
 `;
 
 const Title = styled.h2`
@@ -405,8 +410,6 @@ const CloseButton = styled.button`
 `;
 
 const ItemsList = styled.div`
-  flex: 1;
-  overflow-y: auto;
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
@@ -579,7 +582,7 @@ const SummarySection = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  flex-shrink: 0;
+  margin-top: auto;
 `;
 
 const SummaryTitle = styled.h3`
