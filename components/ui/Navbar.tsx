@@ -138,14 +138,15 @@ export default function Navbar() {
                                             <User size={20} />
                                         </button>
                                     </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end">
-                                        <DropdownMenuItem className="font-semibold">
-                                            {user.email}
+                                    <DropdownMenuContent align="end" className="w-56 bg-black/95 backdrop-blur-xl border border-white/10 text-white rounded-xl shadow-2xl p-2 z-[100]">
+                                        <div className="px-2 py-2 mb-1 border-b border-white/10">
+                                            <p className="text-xs text-purple-300 font-semibold uppercase tracking-wider mb-1">Signed in as</p>
+                                            <p className="text-sm font-medium truncate">{user.email}</p>
+                                        </div>
+                                        <DropdownMenuItem className="cursor-pointer rounded-lg focus:bg-white/10 focus:text-white transition-colors p-0 mt-1">
+                                            <Link href="/account" className="w-full px-2 py-1.5">My Account</Link>
                                         </DropdownMenuItem>
-                                        <DropdownMenuItem>
-                                            <Link href="/account">My Account</Link>
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem onClick={logout}>
+                                        <DropdownMenuItem onClick={logout} className="cursor-pointer rounded-lg text-red-400 focus:bg-red-500/20 focus:text-red-300 transition-colors mt-1">
                                             Logout
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
