@@ -60,12 +60,17 @@ export default function ShopCartDrawer() {
             };
 
             const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-            await axios.post(`${apiUrl}/orders`, payload, {
+            const res = await axios.post(`${apiUrl}/orders`, payload, {
                 headers: { 'x-api-key': process.env.NEXT_PUBLIC_API_KEY }
             });
 
-            setStep('success');
-            clearCart();
+            if (res.data && res.data.stripeSessionUrl) {
+                clearCart();
+                window.location.href = res.data.stripeSessionUrl;
+            } else {
+                setStep('success');
+                clearCart();
+            }
         } catch (error: any) {
             console.error('Checkout failed', error);
             const msg = error.response?.data?.message || 'Failed to place order.';
