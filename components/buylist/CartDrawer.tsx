@@ -7,12 +7,37 @@ import { useCart } from '@/context/BuylistCartContext';
 import axios from 'axios';
 
 const CartDrawer: React.FC = () => {
-  const { items, removeItem, updateQuantity, totals, isOpen, closeCart, clearCart } = useCart();
+  const { items, removeItem, updateQuantity, totals, isOpen, closeCart, clearCart, images, setImages } = useCart();
   // const [paymentMethod, setPaymentMethod] = useState<'cash' | 'credit'>('cash'); // Removed: Credit Only
   const [customerName, setCustomerName] = useState('');
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    const newImages: string[] = [];
+    const maxFiles = 20; // Prevent huge payloads
+
+    Array.from(files).forEach(file => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (reader.result) {
+            newImages.push(reader.result as string);
+        }
+        if (newImages.length === files.length) {
+           setImages(prev => [...prev, ...newImages].slice(0, maxFiles));
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const removeImage = (index: number) => {
+    setImages(prev => prev.filter((_, i) => i !== index));
+  };
 
   const handleCheckout = async () => {
     if (!customerName || !email) {
@@ -49,7 +74,8 @@ const CartDrawer: React.FC = () => {
             offerPrice: Number(item.card.creditPrice), // Ensure number
             quantity: Number(item.quantity)
           };
-        })
+        }),
+        images
       };
 
       console.log('Submitting Payload:', payload);
@@ -177,7 +203,30 @@ const CartDrawer: React.FC = () => {
                   />
                 </FormGroup>
 
-
+                <FormGroup>
+                    <label style={{ fontSize: '0.875rem', fontWeight: 600, color: '#666' }}>Upload Card Photos (Front & Back)</label>
+                    <Input 
+                        type="file" 
+                        accept="image/*" 
+                        multiple 
+                        capture="environment" 
+                        onChange={handleImageUpload} 
+                    />
+                    {images && images.length > 0 && (
+                        <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', padding: '4px 0' }}>
+                            {images.map((img, idx) => (
+                                <div key={idx} style={{ position: 'relative', width: '60px', height: '60px', flexShrink: 0 }}>
+                                    <img src={img} alt="Upload preview" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
+                                    <button 
+                                        type="button"
+                                        onClick={() => removeImage(idx)}
+                                        style={{ position: 'absolute', top: '-5px', right: '-5px', background: '#EF4444', color: 'white', borderRadius: '50%', width: '20px', height: '20px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px' }}
+                                    >✕</button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </FormGroup>
 
                 <TotalRow className="cash">
                   <TotalLabel>Total Cash Payout</TotalLabel>

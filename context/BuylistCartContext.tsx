@@ -13,6 +13,8 @@ interface CartContextType {
     isOpen: boolean;
     openCart: () => void;
     closeCart: () => void;
+    images: string[];
+    setImages: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -22,6 +24,8 @@ const CREDIT_BONUS_MULTIPLIER = 1.2; // 20% bonus for store credit
 export function CartProvider({ children }: { children: ReactNode }) {
     const [items, setItems] = useState<CartItem[]>([]);
     const [isOpen, setIsOpen] = useState(false);
+
+    const [images, setImages] = useState<string[]>([]);
 
     // Load cart from localStorage on mount
     useEffect(() => {
@@ -75,6 +79,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     const clearCart = () => {
         setItems([]);
+        setImages([]);
     };
 
     const openCart = () => setIsOpen(true);
@@ -102,6 +107,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 isOpen,
                 openCart,
                 closeCart,
+                images,
+                setImages,
             }}
         >
             {children}
