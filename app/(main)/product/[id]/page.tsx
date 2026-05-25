@@ -91,6 +91,8 @@ export default function ProductPage({ params }: { params: { id: string } }) {
         setSelectedVariant(found || null);
     }, [selectedCondition, selectedFoil, selectedLanguage, product]);
 
+    const [isAdded, setIsAdded] = useState(false);
+
     const handleAddToCart = () => {
         if (!product || !selectedVariant) return;
 
@@ -103,6 +105,9 @@ export default function ProductPage({ params }: { params: { id: string } }) {
             price: Number(selectedVariant.price),
             image: product.images?.[0] || '/placeholder.png'
         }, quantity);
+
+        setIsAdded(true);
+        setTimeout(() => setIsAdded(false), 1500);
     };
 
     if (loading) return <div className="min-h-screen bg-[#F1F1F1] pt-40 flex justify-center"><div className="animate-spin h-8 w-8 border-4 border-black border-t-transparent rounded-full"></div></div>;
@@ -250,28 +255,41 @@ export default function ProductPage({ params }: { params: { id: string } }) {
 
                                         {stock > 0 && (
                                             <div className="mt-8 space-y-3">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="flex items-center bg-gray-100 rounded-xl h-14 border border-transparent hover:border-gray-200 transition-colors">
+                                                <div className="flex flex-col 2xl:flex-row items-stretch 2xl:items-center gap-3">
+                                                    <div className="flex items-center justify-between bg-gray-100 rounded-xl h-14 border border-transparent hover:border-gray-200 transition-colors">
                                                         <button
+                                                            type="button"
                                                             onClick={() => quantity > 1 && setQuantity(q => q - 1)}
-                                                            className="px-4 h-full hover:bg-gray-200 rounded-l-xl transition-colors text-gray-500 hover:text-black"
+                                                            className="px-6 h-full hover:bg-gray-200 rounded-l-xl transition-colors text-gray-500 hover:text-black"
                                                         >
                                                             <Minus size={18} />
                                                         </button>
-                                                        <span className="w-8 text-center font-black text-lg">{quantity}</span>
+                                                        <span className="w-10 text-center font-black text-lg">{quantity}</span>
                                                         <button
+                                                            type="button"
                                                             onClick={() => quantity < stock && setQuantity(q => q + 1)}
-                                                            className="px-4 h-full hover:bg-gray-200 rounded-r-xl transition-colors text-gray-500 hover:text-black"
+                                                            className="px-6 h-full hover:bg-gray-200 rounded-r-xl transition-colors text-gray-500 hover:text-black"
                                                         >
                                                             <Plus size={18} />
                                                         </button>
                                                     </div>
                                                     <button
+                                                        type="button"
                                                         onClick={handleAddToCart}
-                                                        className="flex-1 bg-[#B266FF] hover:bg-[#9933FF] text-white font-bold h-14 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-purple-500/20 active:scale-95 text-lg"
+                                                        disabled={isAdded}
+                                                        className={`flex-1 font-bold h-14 px-6 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg active:scale-95 text-lg whitespace-nowrap ${isAdded ? 'bg-green-500 text-white shadow-green-500/20' : 'bg-[#B266FF] hover:bg-[#9933FF] text-white shadow-purple-500/20'}`}
                                                     >
-                                                        <ShoppingCart size={20} />
-                                                        Add to Cart
+                                                        {isAdded ? (
+                                                            <>
+                                                                <Check size={20} className="shrink-0" />
+                                                                Added to Cart!
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <ShoppingCart size={20} className="shrink-0" />
+                                                                Add to Cart
+                                                            </>
+                                                        )}
                                                     </button>
                                                 </div>
                                                 <p className="text-center text-xs text-gray-400 font-medium">+ Shipping: Calculated at checkout</p>
