@@ -205,13 +205,38 @@ const CartDrawer: React.FC = () => {
 
                 <FormGroup>
                     <label style={{ fontSize: '0.875rem', fontWeight: 600, color: '#666' }}>Upload Card Photos (Front & Back)</label>
-                    <Input 
-                        type="file" 
-                        accept="image/*" 
-                        multiple 
-                        capture="environment" 
-                        onChange={handleImageUpload} 
-                    />
+                    <PhotoActionContainer>
+                      <UploadLabel>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                          <circle cx="12" cy="13" r="4"></circle>
+                        </svg>
+                        Take Photo
+                        <input 
+                            type="file" 
+                            accept="image/*" 
+                            multiple 
+                            capture="environment" 
+                            onChange={handleImageUpload} 
+                            style={{ display: 'none' }}
+                        />
+                      </UploadLabel>
+                      <UploadLabel>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                          <polyline points="17 8 12 3 7 8"></polyline>
+                          <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        Upload File
+                        <input 
+                            type="file" 
+                            accept="image/*" 
+                            multiple 
+                            onChange={handleImageUpload} 
+                            style={{ display: 'none' }}
+                        />
+                      </UploadLabel>
+                    </PhotoActionContainer>
                     {images && images.length > 0 && (
                         <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', padding: '4px 0' }}>
                             {images.map((img, idx) => (
@@ -521,6 +546,7 @@ const SummarySection = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  flex-shrink: 0;
 `;
 
 const SummaryTitle = styled.h3`
@@ -670,6 +696,44 @@ const CreditBonus = styled.span`
   padding: 0.15rem 0.4rem;
   border-radius: 9999px;
   margin-left: 0.25rem;
+`;
+
+const PhotoActionContainer = styled.div`
+  display: flex;
+  gap: 10px;
+`;
+
+const UploadLabel = styled.label`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 12px;
+  background: #FFFFFF;
+  border: 2px dashed #E5E7EB;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 200ms ease;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #4B5563;
+
+  &:hover {
+    background: #F9FAFB;
+    border-color: #B473FF;
+    color: #1F2937;
+    
+    svg {
+      color: #B473FF;
+    }
+  }
+  
+  svg {
+    color: #9CA3AF;
+    transition: all 200ms ease;
+  }
 `;
 
 export default CartDrawer;
