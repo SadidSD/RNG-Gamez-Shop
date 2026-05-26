@@ -6,10 +6,10 @@ import Button from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
 import { Label } from "@/components/ui/Label"
 import Link from "next/link"
-import { Loader2 } from "lucide-react"
+import { Loader2, ArrowLeft } from "lucide-react"
 
 export default function LoginPage() {
-    const { login } = useAuth() // Don't use context loading for button state
+    const { login } = useAuth()
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
     const [formData, setFormData] = useState({
@@ -32,32 +32,41 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4 bg-gradient-to-br from-indigo-900 via-purple-900 to-black relative overflow-hidden">
-            {/* Ambient Background Elements */}
-            <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-purple-600 rounded-full mix-blend-screen filter blur-[128px] opacity-20 animate-pulse"></div>
-                <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-indigo-600 rounded-full mix-blend-screen filter blur-[128px] opacity-20 animate-pulse delay-1000"></div>
-            </div>
+        <div className="min-h-screen w-full flex flex-col justify-between p-6 bg-[#09090B] text-white relative overflow-hidden font-sans">
+            {/* Soft Radial Ambient Glow */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px] pointer-events-none z-0" />
 
-            <div className="w-full max-w-md relative z-10">
-                <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-8 shadow-2xl">
+            {/* Header (Minimal navigation back to home) */}
+            <header className="relative z-10 w-full max-w-7xl mx-auto flex items-center justify-between">
+                <Link href="/" className="group flex items-center gap-2 text-xs uppercase tracking-wider text-neutral-400 hover:text-white transition-all">
+                    <ArrowLeft size={14} className="group-hover:-translate-x-0.5 transition-transform" />
+                    <span>Back to Shop</span>
+                </Link>
+                <Link href="/" className="text-sm font-black tracking-widest text-white hover:opacity-80 transition-opacity uppercase">
+                    RNG GAMEZ
+                </Link>
+            </header>
+
+            {/* Main Card */}
+            <main className="relative z-10 my-auto flex items-center justify-center w-full">
+                <div className="w-full max-w-md bg-neutral-900/40 border border-neutral-800/80 rounded-2xl p-8 backdrop-blur-md shadow-2xl">
                     <div className="text-center mb-8">
-                        <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70">
-                            Welcome Back
+                        <h1 className="text-2xl font-semibold tracking-tight text-white">
+                            Welcome back
                         </h1>
-                        <p className="text-white/50 mt-2">
-                            Sign in to access your collection
+                        <p className="text-xs text-neutral-400 mt-2">
+                            Enter your credentials to access your account
                         </p>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="space-y-6">
+                    <form onSubmit={handleSubmit} className="space-y-5">
                         {error && (
-                            <div className="bg-red-500/10 border border-red-500/20 text-red-200 text-sm p-3 rounded-md">
+                            <div className="bg-red-500/10 border border-red-500/20 text-red-200 text-xs p-3 rounded-xl">
                                 {error}
                             </div>
                         )}
-                        <div className="space-y-2">
-                            <Label htmlFor="email" className="text-white/80">Email</Label>
+                        <div className="space-y-1.5">
+                            <Label htmlFor="email" className="text-xs font-medium text-neutral-400">Email Address</Label>
                             <Input
                                 id="email"
                                 type="email"
@@ -65,17 +74,17 @@ export default function LoginPage() {
                                 required
                                 value={formData.email}
                                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                className="bg-black/20 border-white/10 text-white placeholder:text-white/20 focus:border-purple-500/50 focus:ring-purple-500/20"
+                                className="bg-neutral-950/60 border-neutral-800 text-white placeholder:text-neutral-600 focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 rounded-xl h-11 text-sm transition-all"
                             />
                         </div>
-                        <div className="space-y-2">
+                        <div className="space-y-1.5">
                             <div className="flex items-center justify-between">
-                                <Label htmlFor="password" className="text-white/80">Password</Label>
+                                <Label htmlFor="password" className="text-xs font-medium text-neutral-400">Password</Label>
                                 <Link
                                     href="#"
-                                    className="text-sm text-purple-400 hover:text-purple-300 transition-colors"
+                                    className="text-xs text-purple-400 hover:text-purple-300 transition-colors"
                                 >
-                                    Forgot password?
+                                    Forgot?
                                 </Link>
                             </div>
                             <Input
@@ -84,33 +93,35 @@ export default function LoginPage() {
                                 required
                                 value={formData.password}
                                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                className="bg-black/20 border-white/10 text-white placeholder:text-white/20 focus:border-purple-500/50 focus:ring-purple-500/20"
+                                className="bg-neutral-950/60 border-neutral-800 text-white placeholder:text-neutral-600 focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 rounded-xl h-11 text-sm transition-all"
                             />
                         </div>
                         <Button
                             type="submit"
-                            className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 border-none text-white font-semibold py-6 shadow-lg shadow-purple-900/20"
+                            className="w-full bg-white hover:bg-neutral-200 text-black font-semibold h-11 rounded-xl shadow-lg border-none text-sm transition-all flex items-center justify-center mt-6"
                             disabled={loading}
                         >
                             {loading ? (
-                                <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Signing in...
-                                </>
+                                <Loader2 className="h-4 w-4 animate-spin text-black" />
                             ) : (
                                 "Sign In"
                             )}
                         </Button>
                     </form>
 
-                    <div className="mt-8 text-center text-sm">
-                        <span className="text-white/40">Don't have an account? </span>
+                    <div className="mt-8 text-center text-xs">
+                        <span className="text-neutral-500">New here? </span>
                         <Link href="/signup" className="text-purple-400 hover:text-purple-300 font-medium transition-colors">
-                            Join the Gathering
+                            Create an account
                         </Link>
                     </div>
                 </div>
-            </div>
+            </main>
+            {/* Footer space */}
+            <footer className="relative z-10 w-full max-w-7xl mx-auto flex justify-between items-center text-[10px] text-neutral-600 uppercase tracking-widest mt-auto">
+                <span>© {new Date().getFullYear()} RNG GAMEZ</span>
+                <span>Minimal Checkout Enforced</span>
+            </footer>
         </div>
     )
 }

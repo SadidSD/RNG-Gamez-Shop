@@ -21,7 +21,6 @@ export const metadata: Metadata = {
 };
 
 
-import Footer from "@/components/ui/Footer";
 import { AuthProvider } from "@/context/AuthContext";
 
 export default function RootLayout({
@@ -36,7 +35,6 @@ export default function RootLayout({
       >
         <AuthProvider>
           {children}
-          <Footer />
         </AuthProvider>
       </body>
     </html>

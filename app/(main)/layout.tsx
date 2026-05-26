@@ -1,6 +1,7 @@
 import Navbar from "@/components/ui/Navbar";
 import { ShopCartProvider } from "@/context/ShopCartContext";
 import ShopCartDrawer from "@/components/shop/ShopCartDrawer";
+import Footer from "@/components/ui/Footer";
 
 export default function MainLayout({
     children,
@@ -12,6 +13,7 @@ export default function MainLayout({
             <Navbar />
             <ShopCartDrawer />
             {children}
+            <Footer />
         </ShopCartProvider>
     );
 }
