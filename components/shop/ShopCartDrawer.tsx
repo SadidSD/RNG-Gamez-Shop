@@ -12,6 +12,7 @@ export default function ShopCartDrawer() {
     const { user } = useAuth();
     const [step, setStep] = useState<'cart' | 'checkout' | 'success'>('cart');
     const [loading, setLoading] = useState(false);
+    const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'store_credit'>('stripe');
     const [formData, setFormData] = useState({
         email: '',
         firstName: '',
@@ -32,21 +33,28 @@ export default function ShopCartDrawer() {
                 firstName: user.firstName || '',
                 lastName: user.lastName || ''
             }));
+            // Set payment method to store credit if user has enough balance as default helper
+            if (user.creditBalance && user.creditBalance >= total) {
+                setPaymentMethod('store_credit');
+            } else {
+                setPaymentMethod('stripe');
+            }
         }
-    }, [user]);
+    }, [user, isOpen, total]);
 
     // Reset to cart step when drawer closes
     React.useEffect(() => {
         if (!isOpen) {
             setStep('cart');
             setLoading(false);
+            setPaymentMethod('stripe');
         }
     }, [isOpen]);
 
     if (!isOpen) return null;
 
     const handleCheckout = async () => {
-        if (total < 0.50) {
+        if (paymentMethod === 'stripe' && total < 0.50) {
             alert('Stripe requires a minimum order amount of $0.50. Please add more items to your cart.');
             return;
         }
@@ -62,6 +70,7 @@ export default function ShopCartDrawer() {
                 shippingState: formData.state,
                 shippingCountry: formData.country,
                 shippingZip: formData.zip,
+                paymentMethod: paymentMethod,
                 items: items.map(i => ({
                     variantId: i.variantId,
                     quantity: i.quantity
@@ -126,9 +135,9 @@ export default function ShopCartDrawer() {
                             ))}
                         </ItemsList>
                         <Footer>
-                            {total > 0 && total < 0.50 && (
+                            {total > 0 && total < 0.50 && paymentMethod === 'stripe' && (
                                 <div style={{ color: '#ef4444', fontSize: '0.875rem', marginBottom: '0.75rem', textAlign: 'center', fontWeight: '500' }}>
-                                    * Minimum order amount is $0.50
+                                    * Minimum order amount is $0.50 for Stripe Card payments
                                 </div>
                             )}
                             <TotalRow>
@@ -136,10 +145,6 @@ export default function ShopCartDrawer() {
                                 <span>${total.toFixed(2)}</span>
                             </TotalRow>
                             <CheckoutButton onClick={() => {
-                                if (total < 0.50) {
-                                    alert('Stripe requires a minimum order amount of $0.50. Please add more items to your cart.');
-                                    return;
-                                }
                                 setStep('checkout');
                             }} disabled={items.length === 0}>
                                 Checkout
@@ -166,12 +171,52 @@ export default function ShopCartDrawer() {
                             <Input placeholder="Country (e.g. US)" value={formData.country} onChange={e => setFormData({ ...formData, country: e.target.value })} />
                         </Row>
 
+                        {user && Number(user.creditBalance) > 0 && (
+                            <PaymentMethodSection>
+                                <h4>Payment Method</h4>
+                                <PaymentOptions>
+                                    <PaymentOption 
+                                        type="button"
+                                        active={paymentMethod === 'stripe'} 
+                                        onClick={() => setPaymentMethod('stripe')}
+                                    >
+                                        Stripe / Credit Card
+                                    </PaymentOption>
+                                    <PaymentOption 
+                                        type="button"
+                                        active={paymentMethod === 'store_credit'} 
+                                        disabled={Number(user.creditBalance) < total}
+                                        onClick={() => {
+                                            if (Number(user.creditBalance) >= total) {
+                                                setPaymentMethod('store_credit');
+                                            }
+                                        }}
+                                    >
+                                        Store Credit (Balance: ${Number(user.creditBalance).toFixed(2)})
+                                        {Number(user.creditBalance) < total && (
+                                            <span style={{ color: '#ef4444', display: 'block', fontSize: '0.75rem', marginTop: '0.25rem' }}>
+                                                (Insufficient balance)
+                                            </span>
+                                        )}
+                                    </PaymentOption>
+                                </PaymentOptions>
+                            </PaymentMethodSection>
+                        )}
+
                         <Footer>
+                            {paymentMethod === 'stripe' && total < 0.50 && (
+                                <div style={{ color: '#ef4444', fontSize: '0.85rem', marginBottom: '0.75rem', textAlign: 'center', fontWeight: '500' }}>
+                                    * Stripe requires a minimum order amount of $0.50
+                                </div>
+                            )}
                             <TotalRow>
                                 <span>Total</span>
                                 <span>${total.toFixed(2)}</span>
                             </TotalRow>
-                            <CheckoutButton onClick={handleCheckout} disabled={loading || !formData.email}>
+                            <CheckoutButton 
+                                onClick={handleCheckout} 
+                                disabled={loading || !formData.email || (paymentMethod === 'stripe' && total < 0.50)}
+                            >
                                 {loading ? 'Processing...' : 'Place Order'}
                             </CheckoutButton>
                             <BackButton onClick={() => setStep('cart')}>Back to Cart</BackButton>
@@ -317,4 +362,35 @@ const SuccessState = styled.div`
     flex: 1; display: flex; flex-direction: column; 
     align-items: center; justify-content: center; gap: 1rem;
     text-align: center; padding: 2rem;
+`;
+
+const PaymentMethodSection = styled.div`
+    margin-top: 0.5rem;
+    h4 { margin: 0 0 0.5rem 0; font-size: 0.9rem; font-weight: 600; color: #333; }
+`;
+
+const PaymentOptions = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+`;
+
+const PaymentOption = styled.button<{ active: boolean; disabled?: boolean }>`
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid ${props => props.active ? 'black' : '#ddd'};
+    background: ${props => props.active ? '#f9f9f9' : 'white'};
+    border-radius: 6px;
+    text-align: left;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
+    opacity: ${props => props.disabled ? 0.5 : 1};
+    color: ${props => props.disabled ? '#999' : 'black'};
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: ${props => props.disabled ? 'white' : '#f9f9f9'};
+        border-color: ${props => props.disabled ? '#ddd' : props.active ? 'black' : '#999'};
+    }
 `;
