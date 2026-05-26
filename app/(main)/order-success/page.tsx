@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { CheckCircle, ShoppingBag, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export default function OrderSuccessPage() {
+function OrderSuccessContent() {
     const searchParams = useSearchParams();
     const [sessionId, setSessionId] = useState<string | null>(null);
 
@@ -16,10 +16,7 @@ export default function OrderSuccessPage() {
     }, [searchParams]);
 
     return (
-        <div className="min-h-[80vh] flex items-center justify-center p-6 text-white relative overflow-hidden">
-            {/* Background Glows */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-green-500/20 rounded-full blur-[120px] pointer-events-none" />
-
+        <>
             <motion.div 
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -63,6 +60,18 @@ export default function OrderSuccessPage() {
                     </Link>
                 </div>
             </motion.div>
+        </>
+    );
+}
+
+export default function OrderSuccessPage() {
+    return (
+        <div className="min-h-[80vh] flex items-center justify-center p-6 text-white relative overflow-hidden">
+            {/* Background Glows */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-green-500/20 rounded-full blur-[120px] pointer-events-none" />
+            <Suspense fallback={<div className="z-10 text-xl font-bold">Loading...</div>}>
+                <OrderSuccessContent />
+            </Suspense>
         </div>
     );
 }
