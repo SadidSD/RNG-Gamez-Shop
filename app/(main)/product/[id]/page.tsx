@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ChevronDown, Minus, Plus, ShoppingCart, Check, X, ShieldCheck } from 'lucide-react';
+import { Minus, Plus, ShoppingCart, Check, X, ShieldCheck } from 'lucide-react';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import { useShopCart } from '@/context/ShopCartContext';
 import { MtgSymbols } from '@/components/ui/MtgSymbols';
@@ -232,10 +232,6 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                                         <div>
                                             <div className="flex items-baseline justify-between mb-1">
                                                 <p className="text-sm font-bold text-gray-400 uppercase tracking-wider">Current Price</p>
-                                                {/* Market Range Mock */}
-                                                <div className="text-xs font-medium text-gray-400">
-                                                    Market: <span className="text-gray-600">$59 - $74</span>
-                                                </div>
                                             </div>
 
                                             {selectedVariant ? (
@@ -311,13 +307,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                                 </div>
                             </div>
 
-                            {/* Other Listings Mock */}
-                            <div className="border-t border-gray-200 pt-4 mt-2">
-                                <button className="flex items-center justify-between w-full text-sm font-bold text-gray-600 hover:text-black transition-colors group">
-                                    <span>View 3 other listings from $62.00</span>
-                                    <ChevronDown size={16} className="group-hover:translate-y-0.5 transition-transform" />
-                                </button>
-                            </div>
+
                         </div>
 
                         {/* Information Tabs */}
