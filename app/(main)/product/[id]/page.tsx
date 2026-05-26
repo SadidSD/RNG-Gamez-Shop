@@ -31,15 +31,23 @@ interface Card {
     loyalty?: string;
 }
 
+interface Category {
+    id: string;
+    name: string;
+    slug: string;
+}
+
 interface Product {
     id: string;
     name: string;
+    description?: string;
     set: string;
     rarity: string;
     collectorNumber: string;
     images: string[];
     card: Card;
     variants: ProductVariant[];
+    category?: Category;
 }
 
 export default function ProductPage({ params }: { params: { id: string } }) {
@@ -80,16 +88,52 @@ export default function ProductPage({ params }: { params: { id: string } }) {
         fetchProduct();
     }, [params.id]);
 
+    const categoryName = product?.category?.name?.toLowerCase() || '';
+    const categorySlug = product?.category?.slug?.toLowerCase() || '';
+    const isSealedCategory = categoryName.includes('box') || 
+                             categoryName.includes('pack') || 
+                             categoryName.includes('bundle') || 
+                             categoryName.includes('deck') || 
+                             categoryName.includes('sealed') ||
+                             categorySlug.includes('box') || 
+                             categorySlug.includes('pack') || 
+                             categorySlug.includes('bundle') || 
+                             categorySlug.includes('deck') || 
+                             categorySlug.includes('sealed') ||
+                             categoryName.includes('kit') ||
+                             categoryName.includes('edition');
+                             
+    const isSealed = isSealedCategory || (product?.variants?.some(v => v.condition === 'SEALED') ?? false);
+
     // Update selected variant when selectors change
     useEffect(() => {
         if (!product) return;
-        const found = product.variants.find(v =>
-            v.condition === selectedCondition &&
-            v.isFoil === selectedFoil &&
-            v.language === selectedLanguage
-        );
+        
+        let found;
+        if (isSealed) {
+            // For sealed products, find variant with SEALED condition, or just fallback to the first variant if not found
+            found = product.variants.find(v =>
+                v.condition === 'SEALED' &&
+                v.language === selectedLanguage
+            );
+            if (!found) {
+                found = product.variants.find(v => v.condition === 'SEALED');
+            }
+            if (!found) {
+                found = product.variants.find(v => v.language === selectedLanguage);
+            }
+            if (!found) {
+                found = product.variants[0];
+            }
+        } else {
+            found = product.variants.find(v =>
+                v.condition === selectedCondition &&
+                v.isFoil === selectedFoil &&
+                v.language === selectedLanguage
+            );
+        }
         setSelectedVariant(found || null);
-    }, [selectedCondition, selectedFoil, selectedLanguage, product]);
+    }, [selectedCondition, selectedFoil, selectedLanguage, product, isSealed]);
 
     const [isAdded, setIsAdded] = useState(false);
 
@@ -173,43 +217,58 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                 {/* Selectors */}
                                 <div className="space-y-6">
-                                    {/* Printing / Finish Selector */}
-                                    <div>
-                                        <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 block">Version</label>
-                                        <div className="grid grid-cols-2 gap-2">
-                                            <button
-                                                onClick={() => setSelectedFoil(false)}
-                                                className={`flex flex-col items-center justify-center py-3 px-2 rounded-xl border-2 transition-all ${!selectedFoil ? 'bg-white border-black shadow-sm' : 'bg-gray-100 border-transparent text-gray-500 hover:bg-white hover:border-gray-200'}`}
-                                            >
-                                                <span className="text-sm font-bold">Normal</span>
-                                            </button>
-                                            <button
-                                                onClick={() => setSelectedFoil(true)}
-                                                className={`flex flex-col items-center justify-center py-3 px-2 rounded-xl border-2 transition-all ${selectedFoil ? 'bg-white border-purple-500 text-purple-700 shadow-sm' : 'bg-gray-100 border-transparent text-gray-500 hover:bg-white hover:border-purple-200'}`}
-                                            >
-                                                <span className="text-sm font-bold">Foil</span>
-                                            </button>
-                                        </div>
-                                    </div>
+                                    {!isSealed ? (
+                                        <>
+                                            {/* Printing / Finish Selector */}
+                                            <div>
+                                                <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 block">Version</label>
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    <button
+                                                        onClick={() => setSelectedFoil(false)}
+                                                        className={`flex flex-col items-center justify-center py-3 px-2 rounded-xl border-2 transition-all ${!selectedFoil ? 'bg-white border-black shadow-sm' : 'bg-gray-100 border-transparent text-gray-500 hover:bg-white hover:border-gray-200'}`}
+                                                    >
+                                                        <span className="text-sm font-bold">Normal</span>
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setSelectedFoil(true)}
+                                                        className={`flex flex-col items-center justify-center py-3 px-2 rounded-xl border-2 transition-all ${selectedFoil ? 'bg-white border-purple-500 text-purple-700 shadow-sm' : 'bg-gray-100 border-transparent text-gray-500 hover:bg-white hover:border-purple-200'}`}
+                                                    >
+                                                        <span className="text-sm font-bold">Foil</span>
+                                                    </button>
+                                                </div>
+                                            </div>
 
-                                    {/* Condition Selector */}
-                                    <div>
-                                        <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 block">Condition</label>
-                                        <div className="grid grid-cols-4 gap-2">
-                                            {['NM', 'LP', 'MP', 'HP'].map(cond => (
-                                                <button
-                                                    key={cond}
-                                                    onClick={() => setSelectedCondition(cond)}
-                                                    className={`py-2 rounded-lg text-xs font-bold border-2 transition-all ${selectedCondition === cond ? 'bg-black text-white border-black' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'}`}
-                                                >
-                                                    {cond}
-                                                </button>
-                                            ))}
+                                            {/* Condition Selector */}
+                                            <div>
+                                                <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 block">Condition</label>
+                                                <div className="grid grid-cols-4 gap-2">
+                                                    {['NM', 'LP', 'MP', 'HP'].map(cond => (
+                                                        <button
+                                                            key={cond}
+                                                            onClick={() => setSelectedCondition(cond)}
+                                                            className={`py-2 rounded-lg text-xs font-bold border-2 transition-all ${selectedCondition === cond ? 'bg-black text-white border-black' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'}`}
+                                                        >
+                                                            {cond}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                                <div className="mt-2 text-right">
+                                                    <Link href="#" className="text-xs text-purple-600 font-bold hover:underline">Condition Guide</Link>
+                                                </div>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <div className="space-y-4 py-2">
+                                            <div className="flex justify-between items-center bg-white p-3 rounded-xl border border-black/5 shadow-sm">
+                                                <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Format</span>
+                                                <span className="text-sm font-black text-black">Sealed Product</span>
+                                            </div>
+                                            <div className="flex justify-between items-center bg-white p-3 rounded-xl border border-black/5 shadow-sm">
+                                                <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Condition</span>
+                                                <span className="text-xs font-bold bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full uppercase tracking-wider">Sealed</span>
+                                            </div>
                                         </div>
-                                        <div className="mt-2 text-right">
-                                            <Link href="#" className="text-xs text-purple-600 font-bold hover:underline">Condition Guide</Link>
-                                        </div>
-                                    </div>
+                                    )}
 
                                     {/* Language Selector (Mock) */}
                                     <div>
@@ -312,76 +371,84 @@ export default function ProductPage({ params }: { params: { id: string } }) {
 
                         {/* Information Tabs */}
                         <div>
-                            <div className="flex border-b border-gray-200 mb-6">
-                                {['details', 'legalities', 'rulings'].map(tab => (
-                                    <button
-                                        key={tab}
-                                        onClick={() => setActiveTab(tab as any)}
-                                        className={`px-6 py-3 text-sm font-bold uppercase tracking-wider border-b-2 transition-colors ${activeTab === tab ? 'border-black text-black' : 'border-transparent text-gray-400 hover:text-gray-600'}`}
-                                    >
-                                        {tab}
-                                    </button>
-                                ))}
-                            </div>
+                            {!isSealed && (
+                                <div className="flex border-b border-gray-200 mb-6">
+                                    {['details', 'legalities', 'rulings'].map(tab => (
+                                        <button
+                                            key={tab}
+                                            onClick={() => setActiveTab(tab as any)}
+                                            className={`px-6 py-3 text-sm font-bold uppercase tracking-wider border-b-2 transition-colors ${activeTab === tab ? 'border-black text-black' : 'border-transparent text-gray-400 hover:text-gray-600'}`}
+                                        >
+                                            {tab}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
 
                             {activeTab === 'details' && (
                                 <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
                                     <div className="bg-gray-50 p-6 rounded-xl border border-gray-100">
                                         <div className="flex justify-between items-start mb-4">
-                                            <h3 className="font-bold text-black uppercase text-xs tracking-widest">Oracle Text</h3>
-                                            {product.card?.manaCost && (
+                                            <h3 className="font-bold text-black uppercase text-xs tracking-widest">
+                                                {isSealed ? 'Product Description' : 'Oracle Text'}
+                                            </h3>
+                                            {!isSealed && product.card?.manaCost && (
                                                 <div className="flex items-center gap-1 bg-white px-3 py-1 rounded-full border border-gray-200 shadow-sm">
                                                     <span className="text-[10px] font-black text-gray-400 mr-1 uppercase">Cost</span>
                                                     <MtgSymbols text={product.card.manaCost} />
                                                 </div>
                                             )}
                                         </div>
-                                        <div className="text-gray-700 whitespace-pre-wrap leading-relaxed font-serif text-lg">
-                                            {product.card?.oracleText ? (
+                                        <div className="text-gray-700 whitespace-pre-wrap leading-relaxed text-base md:text-lg">
+                                            {isSealed ? (
+                                                product.description || "No description available."
+                                            ) : product.card?.oracleText ? (
                                                 <MtgSymbols text={product.card.oracleText} />
                                             ) : (
                                                 "No oracle text available."
                                             )}
                                         </div>
                                     </div>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                        <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
-                                            <span className="text-gray-400 text-[10px] uppercase font-black tracking-widest">Type Line</span>
-                                            <p className="font-bold text-sm leading-tight mt-1">{product.card?.typeLine || "Card"}</p>
-                                        </div>
-                                        {product.card?.colors && product.card.colors.length > 0 && (
+                                    {!isSealed && (
+                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                                             <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
-                                                <span className="text-gray-400 text-[10px] uppercase font-black tracking-widest">Color</span>
-                                                <div className="flex gap-1 mt-1">
-                                                    {product.card.colors.map(c => (
-                                                        <span key={c} className={`w-4 h-4 rounded-full border border-black/10 flex items-center justify-center text-[10px] font-bold text-white shadow-sm ${c === 'W' ? 'bg-yellow-100 text-yellow-800' : c === 'U' ? 'bg-blue-500' : c === 'B' ? 'bg-gray-800' : c === 'R' ? 'bg-red-500' : c === 'G' ? 'bg-green-600' : 'bg-gray-400'}`}>
-                                                            {c}
-                                                        </span>
-                                                    ))}
+                                                <span className="text-gray-400 text-[10px] uppercase font-black tracking-widest">Type Line</span>
+                                                <p className="font-bold text-sm leading-tight mt-1">{product.card?.typeLine || "Card"}</p>
+                                            </div>
+                                            {product.card?.colors && product.card.colors.length > 0 && (
+                                                <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                                                    <span className="text-gray-400 text-[10px] uppercase font-black tracking-widest">Color</span>
+                                                    <div className="flex gap-1 mt-1">
+                                                        {product.card.colors.map(c => (
+                                                            <span key={c} className={`w-4 h-4 rounded-full border border-black/10 flex items-center justify-center text-[10px] font-bold text-white shadow-sm ${c === 'W' ? 'bg-yellow-100 text-yellow-800' : c === 'U' ? 'bg-blue-500' : c === 'B' ? 'bg-gray-800' : c === 'R' ? 'bg-red-500' : c === 'G' ? 'bg-green-600' : 'bg-gray-400'}`}>
+                                                                {c}
+                                                            </span>
+                                                        ))}
+                                                    </div>
                                                 </div>
+                                            )}
+                                            {(product.card?.power || product.card?.toughness) && (
+                                                <div className="p-4 bg-white rounded-xl border border-gray-200 shadow-sm ring-1 ring-black/5">
+                                                    <span className="text-gray-400 text-[10px] uppercase font-black tracking-widest">Stats</span>
+                                                    <p className="font-black text-xl mt-0.5">{product.card.power} / {product.card.toughness}</p>
+                                                </div>
+                                            )}
+                                            {product.card?.loyalty && (
+                                                <div className="p-4 bg-purple-50 rounded-xl border border-purple-100">
+                                                    <span className="text-purple-400 text-[10px] uppercase font-black tracking-widest">Loyalty</span>
+                                                    <p className="font-black text-xl mt-0.5 text-purple-700">{product.card.loyalty}</p>
+                                                </div>
+                                            )}
+                                            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                                                <span className="text-gray-400 text-[10px] uppercase font-black tracking-widest">Mana Value</span>
+                                                <p className="font-bold text-sm mt-1">{product.card?.manaValue ?? "N/A"}</p>
                                             </div>
-                                        )}
-                                        {(product.card?.power || product.card?.toughness) && (
-                                            <div className="p-4 bg-white rounded-xl border border-gray-200 shadow-sm ring-1 ring-black/5">
-                                                <span className="text-gray-400 text-[10px] uppercase font-black tracking-widest">Stats</span>
-                                                <p className="font-black text-xl mt-0.5">{product.card.power} / {product.card.toughness}</p>
-                                            </div>
-                                        )}
-                                        {product.card?.loyalty && (
-                                            <div className="p-4 bg-purple-50 rounded-xl border border-purple-100">
-                                                <span className="text-purple-400 text-[10px] uppercase font-black tracking-widest">Loyalty</span>
-                                                <p className="font-black text-xl mt-0.5 text-purple-700">{product.card.loyalty}</p>
-                                            </div>
-                                        )}
-                                        <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
-                                            <span className="text-gray-400 text-[10px] uppercase font-black tracking-widest">Mana Value</span>
-                                            <p className="font-bold text-sm mt-1">{product.card?.manaValue ?? "N/A"}</p>
                                         </div>
-                                    </div>
+                                    )}
                                 </div>
                             )}
 
-                            {activeTab === 'legalities' && (
+                            {!isSealed && activeTab === 'legalities' && (
                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
                                     {product.card?.legalities ?
                                         ['commander', 'modern', 'standard', 'pauper', 'legacy', 'vintage'].map(format => {
@@ -403,7 +470,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                                 </div>
                             )}
 
-                            {activeTab === 'rulings' && (
+                            {!isSealed && activeTab === 'rulings' && (
                                 <div className="bg-gray-50 p-6 rounded-xl border border-gray-100 text-center text-gray-500 italic animate-in fade-in slide-in-from-bottom-2 duration-300">
                                     No rulings available for this card yet.
                                 </div>
