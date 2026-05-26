@@ -18,6 +18,8 @@ export default function ShopCartDrawer() {
         lastName: '',
         address: '',
         city: '',
+        state: '',
+        country: 'US',
         zip: ''
     });
 
@@ -57,6 +59,8 @@ export default function ShopCartDrawer() {
                 customerLastName: formData.lastName,
                 shippingAddress: formData.address,
                 shippingCity: formData.city,
+                shippingState: formData.state,
+                shippingCountry: formData.country,
                 shippingZip: formData.zip,
                 items: items.map(i => ({
                     variantId: i.variantId,
@@ -155,7 +159,11 @@ export default function ShopCartDrawer() {
                         <Input placeholder="Address" value={formData.address} onChange={e => setFormData({ ...formData, address: e.target.value })} />
                         <Row>
                             <Input placeholder="City" value={formData.city} onChange={e => setFormData({ ...formData, city: e.target.value })} />
+                            <Input placeholder="State (e.g. NY)" value={formData.state} onChange={e => setFormData({ ...formData, state: e.target.value })} />
+                        </Row>
+                        <Row>
                             <Input placeholder="ZIP" value={formData.zip} onChange={e => setFormData({ ...formData, zip: e.target.value })} />
+                            <Input placeholder="Country (e.g. US)" value={formData.country} onChange={e => setFormData({ ...formData, country: e.target.value })} />
                         </Row>
 
                         <Footer>
