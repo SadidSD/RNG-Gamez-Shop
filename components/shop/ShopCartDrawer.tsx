@@ -145,10 +145,20 @@ export default function ShopCartDrawer() {
                                 <span>${total.toFixed(2)}</span>
                             </TotalRow>
                             <CheckoutButton onClick={() => {
+                                if (!user) {
+                                    alert('Please log in or sign up to complete your checkout.');
+                                    window.location.href = '/login';
+                                    return;
+                                }
                                 setStep('checkout');
                             }} disabled={items.length === 0}>
                                 Checkout
                             </CheckoutButton>
+                            {!user && (
+                                <div style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.5rem', textAlign: 'center', fontWeight: '500' }}>
+                                    * You must be logged in to place an order
+                                </div>
+                            )}
                         </Footer>
                     </>
                 )}
