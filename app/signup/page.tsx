@@ -15,6 +15,7 @@ export default function SignupPage() {
     const router = useRouter()
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
+    const [isSuccess, setIsSuccess] = useState(false)
 
     const [formData, setFormData] = useState({
         firstName: "",
@@ -31,7 +32,9 @@ export default function SignupPage() {
 
         try {
             const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, formData)
-            if (res.data && res.data.access_token) {
+            if (res.data && res.data.message && !res.data.access_token) {
+                setIsSuccess(true)
+            } else if (res.data && res.data.access_token) {
                 await login(formData.email, formData.password)
             } else {
                 router.push('/login?registered=true')
@@ -65,10 +68,10 @@ export default function SignupPage() {
                 <div className="w-full max-w-md bg-neutral-900/40 border border-neutral-800/80 rounded-2xl p-8 backdrop-blur-md shadow-2xl">
                     <div className="text-center mb-8">
                         <h1 className="text-2xl font-semibold tracking-tight text-white">
-                            Create your account
+                            {isSuccess ? "Check your email" : "Create your account"}
                         </h1>
                         <p className="text-xs text-neutral-400 mt-2">
-                            Enter your details to join the shop
+                            {isSuccess ? "We've sent you a verification link" : "Enter your details to join the shop"}
                         </p>
                     </div>
 
@@ -78,8 +81,20 @@ export default function SignupPage() {
                         </div>
                     )}
 
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
+                    {isSuccess ? (
+                        <div className="text-center space-y-6">
+                            <div className="bg-purple-500/10 border border-purple-500/20 text-purple-200 p-4 rounded-xl text-sm">
+                                A verification email has been sent to <span className="font-semibold text-white">{formData.email}</span>. Please click the link in the email to verify your account.
+                            </div>
+                            <Link href="/login" className="inline-block w-full">
+                                <Button className="w-full bg-white hover:bg-neutral-200 text-black font-semibold h-11 rounded-xl shadow-lg border-none text-sm transition-all flex items-center justify-center">
+                                    Return to Login
+                                </Button>
+                            </Link>
+                        </div>
+                    ) : (
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1.5">
                                 <Label htmlFor="firstName" className="text-xs font-medium text-neutral-400">First Name</Label>
                                 <Input
@@ -144,6 +159,7 @@ export default function SignupPage() {
                             )}
                         </Button>
                     </form>
+                    )}
 
                     <div className="mt-8 text-center text-xs">
                         <span className="text-neutral-500">Already registered? </span>
