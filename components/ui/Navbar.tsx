@@ -23,6 +23,7 @@ export default function Navbar() {
     const { openCart, items } = useShopCart();
 
     const cartCount = items.reduce((acc, item) => acc + item.quantity, 0);
+    const isAdmin = user && ["ADMIN", "STAFF", "OWNER"].includes(user.role);
 
     useEffect(() => {
         const controlNavbar = () => {
@@ -143,6 +144,11 @@ export default function Navbar() {
                                             <p className="text-xs text-purple-300 font-semibold uppercase tracking-wider mb-1">Signed in as</p>
                                             <p className="text-sm font-medium truncate">{user.email}</p>
                                         </div>
+                                        {isAdmin && (
+                                            <DropdownMenuItem className="cursor-pointer rounded-lg focus:bg-white/10 focus:text-white transition-colors p-0 mt-1">
+                                                <Link href="/admin/orders" className="w-full px-2 py-1.5 font-semibold text-purple-300">Admin Dashboard</Link>
+                                            </DropdownMenuItem>
+                                        )}
                                         <DropdownMenuItem className="cursor-pointer rounded-lg focus:bg-white/10 focus:text-white transition-colors p-0 mt-1">
                                             <Link href="/account" className="w-full px-2 py-1.5">My Account</Link>
                                         </DropdownMenuItem>
@@ -260,23 +266,34 @@ export default function Navbar() {
                                         <p className="text-sm text-white font-medium truncate">
                                             {user.email}
                                         </p>
-                                        <div className="flex gap-3 pt-1">
-                                            <Link
-                                                href="/account"
-                                                onClick={() => setMobileMenuOpen(false)}
-                                                className="flex-1 text-center px-4 py-2.5 rounded-xl bg-purple-600/30 text-purple-200 text-sm font-semibold hover:bg-purple-600/50 transition-colors"
-                                            >
-                                                My Account
-                                            </Link>
-                                            <button
-                                                onClick={() => {
-                                                    logout();
-                                                    setMobileMenuOpen(false);
-                                                }}
-                                                className="flex-1 px-4 py-2.5 rounded-xl bg-red-500/10 text-red-400 text-sm font-semibold hover:bg-red-500/20 transition-colors"
-                                            >
-                                                Logout
-                                            </button>
+                                        <div className="space-y-2 pt-1">
+                                            {isAdmin && (
+                                                <Link
+                                                    href="/admin/orders"
+                                                    onClick={() => setMobileMenuOpen(false)}
+                                                    className="block w-full text-center px-4 py-2.5 rounded-xl bg-purple-600 text-white text-sm font-bold hover:bg-purple-700 transition-colors"
+                                                >
+                                                    Admin Dashboard
+                                                </Link>
+                                            )}
+                                            <div className="flex gap-3">
+                                                <Link
+                                                    href="/account"
+                                                    onClick={() => setMobileMenuOpen(false)}
+                                                    className="flex-1 text-center px-4 py-2.5 rounded-xl bg-purple-600/30 text-purple-200 text-sm font-semibold hover:bg-purple-600/50 transition-colors"
+                                                >
+                                                    My Account
+                                                </Link>
+                                                <button
+                                                    onClick={() => {
+                                                        logout();
+                                                        setMobileMenuOpen(false);
+                                                    }}
+                                                    className="flex-1 px-4 py-2.5 rounded-xl bg-red-500/10 text-red-400 text-sm font-semibold hover:bg-red-500/20 transition-colors"
+                                                >
+                                                    Logout
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 ) : (
