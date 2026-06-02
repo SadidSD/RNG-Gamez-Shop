@@ -14,7 +14,9 @@ import {
     AlertCircle, 
     CheckSquare,
     Loader2,
-    ShoppingBag
+    ShoppingBag,
+    Printer,
+    X
 } from "lucide-react"
 
 interface OrderItem {
@@ -50,6 +52,12 @@ export default function AdminOrdersPage() {
     const [updatingId, setUpdatingId] = useState<string | null>(null)
     const [searchTerm, setSearchTerm] = useState("")
     const [statusFilter, setStatusFilter] = useState("ALL")
+
+    // Batch Actions & Pull List Modal State
+    const [selectedIds, setSelectedIds] = useState<string[]>([])
+    const [pullListOpen, setPullListOpen] = useState(false)
+    const [pullListItems, setPullListItems] = useState<any[]>([])
+    const [pullListLoading, setPullListLoading] = useState(false)
 
     const fetchOrders = async () => {
         setLoading(true)
@@ -93,6 +101,11 @@ export default function AdminOrdersPage() {
         setFilteredOrders(result)
     }, [searchTerm, statusFilter, orders])
 
+    // Clear selection when filter changes
+    useEffect(() => {
+        setSelectedIds([])
+    }, [statusFilter])
+
     const handleUpdateStatus = async (orderId: string, newStatus: string) => {
         setUpdatingId(orderId)
         try {
@@ -122,6 +135,26 @@ export default function AdminOrdersPage() {
         }
     }
 
+    const generatePullList = async () => {
+        if (selectedIds.length === 0) return
+        setPullListLoading(true)
+        setPullListOpen(true)
+        try {
+            const token = Cookies.get("tcg-shop-token")
+            const res = await axios.get(
+                `${process.env.NEXT_PUBLIC_API_URL}/orders/pull-list?ids=${selectedIds.join(",")}`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            )
+            setPullListItems(res.data)
+        } catch (error) {
+            console.error("Failed to generate pull list:", error)
+            alert("Failed to generate pull list.")
+            setPullListOpen(false)
+        } finally {
+            setPullListLoading(false)
+        }
+    }
+
     // Metrics calculations
     const totalRevenue = orders
         .filter(o => ["PAID", "SHIPPED", "COMPLETED"].includes(o.status))
@@ -148,7 +181,7 @@ export default function AdminOrdersPage() {
     }
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 print:hidden">
             {/* Page Title */}
             <div>
                 <h1 className="text-3xl font-bold tracking-tight text-white">Orders</h1>
@@ -175,7 +208,7 @@ export default function AdminOrdersPage() {
                     <p className="text-xs font-semibold text-neutral-400 uppercase tracking-widest">Pending Fulfillment</p>
                     <p className="text-3xl font-black text-white mt-2">{pendingFulfillment}</p>
                     <p className="text-[10px] text-blue-400 flex items-center gap-1 mt-2">
-                        <span>Requires shipping label</span>
+                        <span>Requires pulling & shipping</span>
                     </p>
                 </div>
 
@@ -201,6 +234,31 @@ export default function AdminOrdersPage() {
                     </p>
                 </div>
             </div>
+
+            {/* Batch Action Bar */}
+            {selectedIds.length > 0 && (
+                <div className="bg-purple-950/30 border border-purple-500/30 rounded-2xl p-4 flex items-center justify-between backdrop-blur-md animate-in fade-in slide-in-from-top-4 duration-200">
+                    <div className="flex items-center gap-3">
+                        <CheckSquare className="text-purple-400" size={20} />
+                        <span className="text-sm font-semibold text-purple-200">{selectedIds.length} orders selected</span>
+                    </div>
+                    <div className="flex gap-2">
+                        <button
+                            onClick={generatePullList}
+                            className="h-9 px-4 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-lg shadow-purple-500/20"
+                        >
+                            <Printer size={14} />
+                            <span>Generate Pull List</span>
+                        </button>
+                        <button
+                            onClick={() => setSelectedIds([])}
+                            className="h-9 px-4 rounded-xl border border-neutral-850 hover:bg-neutral-800 text-neutral-400 hover:text-white text-xs font-semibold transition-all"
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {/* Filter and search controls */}
             <div className="bg-neutral-900/20 border border-neutral-800/60 rounded-2xl p-4 flex flex-col md:flex-row gap-4 items-center justify-between backdrop-blur-sm">
@@ -253,6 +311,20 @@ export default function AdminOrdersPage() {
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="border-b border-neutral-800/80 text-[10px] uppercase tracking-wider text-neutral-400 bg-neutral-900/50">
+                                    <th className="py-4 px-4 w-12 text-center">
+                                        <input
+                                            type="checkbox"
+                                            checked={filteredOrders.length > 0 && selectedIds.length === filteredOrders.length}
+                                            onChange={(e) => {
+                                                if (e.target.checked) {
+                                                    setSelectedIds(filteredOrders.map(o => o.id))
+                                                } else {
+                                                    setSelectedIds([])
+                                                }
+                                            }}
+                                            className="rounded border-neutral-800 text-purple-600 focus:ring-purple-500 bg-neutral-950 cursor-pointer"
+                                        />
+                                    </th>
                                     <th className="py-4 px-6 font-bold">Order #</th>
                                     <th className="py-4 px-6 font-bold">Customer</th>
                                     <th className="py-4 px-6 font-bold">Date</th>
@@ -265,6 +337,20 @@ export default function AdminOrdersPage() {
                             <tbody className="divide-y divide-neutral-800/40 text-sm">
                                 {filteredOrders.map((order) => (
                                     <tr key={order.id} className="hover:bg-white/[0.02] transition-colors group">
+                                        <td className="py-4 px-4 text-center">
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedIds.includes(order.id)}
+                                                onChange={(e) => {
+                                                    if (e.target.checked) {
+                                                        setSelectedIds(prev => [...prev, order.id])
+                                                    } else {
+                                                        setSelectedIds(prev => prev.filter(id => id !== order.id))
+                                                    }
+                                                }}
+                                                className="rounded border-neutral-800 text-purple-600 focus:ring-purple-500 bg-neutral-950 cursor-pointer"
+                                            />
+                                        </td>
                                         <td className="py-4 px-6 font-mono font-bold text-purple-400">
                                             #{order.orderNumber}
                                         </td>
@@ -353,6 +439,103 @@ export default function AdminOrdersPage() {
                     </div>
                 )}
             </div>
+
+            {/* Pull List Overlay (Printable Modal) */}
+            {pullListOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto print:fixed print:inset-0 print:p-0 print:bg-white print:backdrop-blur-none">
+                    <div className="bg-neutral-900 border border-neutral-800 rounded-2xl max-w-4xl w-full max-h-[85vh] flex flex-col backdrop-blur-md shadow-2xl overflow-hidden print:border-none print:bg-white print:max-h-none print:shadow-none print:w-full">
+                        {/* Header */}
+                        <div className="p-6 border-b border-neutral-800/80 flex items-center justify-between print:hidden">
+                            <div>
+                                <h3 className="text-lg font-bold text-white">Batch Pull List (Pick List)</h3>
+                                <p className="text-xs text-neutral-400 mt-1">Aggregated and sorted for inventory box retrieval.</p>
+                            </div>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => window.print()}
+                                    className="h-9 px-4 rounded-xl bg-white hover:bg-neutral-200 text-black text-xs font-bold transition-all flex items-center gap-1.5"
+                                >
+                                    <Printer size={14} />
+                                    <span>Print List</span>
+                                </button>
+                                <button
+                                    onClick={() => setPullListOpen(false)}
+                                    className="h-9 w-9 rounded-xl border border-neutral-850 hover:bg-neutral-800 text-neutral-400 hover:text-white flex items-center justify-center transition-all"
+                                >
+                                    <X size={18} />
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Printable Content */}
+                        <div className="p-6 overflow-y-auto flex-1 print:p-0 print:overflow-visible print:text-black">
+                            {pullListLoading ? (
+                                <div className="py-20 flex flex-col items-center justify-center text-neutral-400">
+                                    <Loader2 className="h-8 w-8 animate-spin text-purple-500 mb-3" />
+                                    <span>Aggregating pull list data...</span>
+                                </div>
+                            ) : pullListItems.length === 0 ? (
+                                <div className="py-20 text-center text-neutral-500">
+                                    No cards to pull.
+                                </div>
+                            ) : (
+                                <div className="space-y-6">
+                                    {/* Print Title Header */}
+                                    <div className="hidden print:block mb-6 border-b border-neutral-300 pb-3">
+                                        <h1 className="text-xl font-bold tracking-wider text-black">RNG GAMEZ — COMBINED PULL LIST</h1>
+                                        <div className="flex justify-between items-center text-[10px] text-neutral-500 mt-1">
+                                            <span>Generated: {new Date().toLocaleString()}</span>
+                                            <span>Orders Included: {selectedIds.length}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="border border-neutral-800 print:border-black rounded-xl overflow-hidden print:rounded-none">
+                                        <table className="w-full text-left text-xs border-collapse">
+                                            <thead>
+                                                <tr className="bg-neutral-950 text-neutral-400 uppercase tracking-wider font-bold text-[10px] border-b border-neutral-800 print:bg-neutral-100 print:text-black print:border-black">
+                                                    <th className="py-3 px-4">Game</th>
+                                                    <th className="py-3 px-4">Set Name</th>
+                                                    <th className="py-3 px-4">Card Name</th>
+                                                    <th className="py-3 px-4 text-center">Cond / Foil</th>
+                                                    <th className="py-3 px-4 text-center">SKU</th>
+                                                    <th className="py-3 px-4 text-center">Box Location</th>
+                                                    <th className="py-3 px-4 text-right">Pull Qty</th>
+                                                    <th className="py-3 px-4 text-center print:table-cell hidden w-16">Pulled</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-neutral-800 print:divide-neutral-300 text-neutral-300 print:text-black">
+                                                {pullListItems.map((item) => (
+                                                    <tr key={item.variantId} className="hover:bg-white/[0.01] print:bg-white print:border-b print:border-neutral-200">
+                                                        <td className="py-3 px-4 font-bold text-white print:text-black uppercase">{item.game}</td>
+                                                        <td className="py-3 px-4 font-medium text-neutral-300 print:text-black">{item.set}</td>
+                                                        <td className="py-3 px-4 font-semibold text-white print:text-black">{item.productName}</td>
+                                                        <td className="py-3 px-4 text-center font-medium">
+                                                            <span className="text-purple-300 print:text-black">{item.condition}</span>
+                                                            {item.isFoil && <span className="ml-1 text-[9px] bg-purple-500/20 text-purple-300 font-bold px-1 py-0.5 rounded print:border print:border-black print:text-black">FOIL</span>}
+                                                        </td>
+                                                        <td className="py-3 px-4 text-center font-mono text-[10px] text-neutral-500 print:text-black">{item.sku}</td>
+                                                        <td className="py-3 px-4 text-center text-emerald-400 print:text-black font-semibold">{item.location}</td>
+                                                        <td className="py-3 px-4 text-right font-black text-white print:text-black text-sm">{item.quantity}</td>
+                                                        <td className="py-3 px-4 text-center print:table-cell hidden">
+                                                            <div className="w-4 h-4 border border-black rounded mx-auto" />
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div className="flex justify-between items-center text-xs text-neutral-400 print:text-black pt-4">
+                                        <span>Items pulled match sorting box structure NM $\rightarrow$ LP $\rightarrow$ MP.</span>
+                                        <span className="font-bold text-white print:text-black">
+                                            Total Cards: {pullListItems.reduce((acc, item) => acc + item.quantity, 0)}
+                                        </span>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
