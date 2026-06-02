@@ -16,6 +16,7 @@ export default function SignupPage() {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
     const [isSuccess, setIsSuccess] = useState(false)
+    const [confirmPassword, setConfirmPassword] = useState('')
 
     const [formData, setFormData] = useState({
         firstName: "",
@@ -28,6 +29,12 @@ export default function SignupPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setError('')
+
+        if (formData.password !== confirmPassword) {
+            setError('Passwords do not match.')
+            return
+        }
+
         setLoading(true)
 
         try {
@@ -143,6 +150,18 @@ export default function SignupPage() {
                                 className="bg-neutral-950/60 border-neutral-800 text-white placeholder:text-neutral-600 focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 rounded-xl h-11 text-sm transition-all"
                             />
                             <p className="text-[10px] text-neutral-500">Must be at least 6 characters.</p>
+                        </div>
+
+                        <div className="space-y-1.5">
+                            <Label htmlFor="confirmPassword" className="text-xs font-medium text-neutral-400">Confirm Password</Label>
+                            <Input
+                                id="confirmPassword"
+                                type="password"
+                                required
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                className="bg-neutral-950/60 border-neutral-800 text-white placeholder:text-neutral-600 focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 rounded-xl h-11 text-sm transition-all"
+                            />
                         </div>
 
                         <Button
