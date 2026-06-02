@@ -197,3 +197,76 @@ function parseCSV(text: string, cardDatabase: Card[]): BulkParseResult[] {
 
     return results;
 }
+
+export function parseRawTextInput(text: string): { quantity: number; cardName: string }[] {
+    const lines = text.split('\n');
+    const results: { quantity: number; cardName: string }[] = [];
+
+    for (const line of lines) {
+        const parsed = parseLine(line);
+        if (parsed) {
+            results.push(parsed);
+        }
+    }
+
+    return results;
+}
+
+export async function parseRawFile(file: File): Promise<{ quantity: number; cardName: string }[]> {
+    try {
+        const text = await file.text();
+
+        if (file.name.toLowerCase().endsWith('.csv')) {
+            return parseRawCSV(text);
+        }
+
+        return parseRawTextInput(text);
+    } catch (error) {
+        console.error('Error parsing file:', error);
+        throw new Error('Failed to parse file. Please ensure it contains valid text.');
+    }
+}
+
+function parseRawCSV(text: string): { quantity: number; cardName: string }[] {
+    const lines = text.split('\n');
+    const results: { quantity: number; cardName: string }[] = [];
+
+    if (lines.length === 0) {
+        return results;
+    }
+
+    const firstLine = lines[0].toLowerCase();
+    const hasHeader = firstLine.includes('quantity') || firstLine.includes('name');
+    const startIndex = hasHeader ? 1 : 0;
+
+    let quantityIndex = 0;
+    let nameIndex = 1;
+
+    if (hasHeader) {
+        const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+        quantityIndex = headers.findIndex(h => h.includes('quantity') || h.includes('qty') || h.includes('count'));
+        nameIndex = headers.findIndex(h => h.includes('name') || h.includes('card'));
+
+        if (quantityIndex === -1) quantityIndex = 0;
+        if (nameIndex === -1) nameIndex = 1;
+    }
+
+    for (let i = startIndex; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue;
+
+        const columns = line.split(',').map(c => c.trim());
+
+        if (columns.length >= 2) {
+            const quantityStr = columns[quantityIndex];
+            const cardName = columns[nameIndex];
+            const quantity = parseInt(quantityStr, 10);
+
+            if (!isNaN(quantity) && quantity > 0 && cardName) {
+                results.push({ quantity, cardName });
+            }
+        }
+    }
+
+    return results;
+}

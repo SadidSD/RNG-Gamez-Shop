@@ -6,9 +6,9 @@ import { useRouter } from 'next/navigation';
 
 import BulkPreview from '@/components/buylist/BulkPreview';
 import { BulkParseResult } from '@/types';
-import { parseTextInput, parseFile } from '@/lib/BulkParser';
-import { mockCards } from '@/lib/mockData';
+import { parseRawTextInput, parseRawFile } from '@/lib/BulkParser';
 import { useCart } from '@/context/BuylistCartContext';
+import axios from 'axios';
 
 export default function BulkPage() {
   // const router = useRouter();
@@ -20,7 +20,7 @@ export default function BulkPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleParseText = () => {
+  const handleParseText = async () => {
     if (!textInput.trim()) {
       setError('Please enter some card data');
       return;
@@ -30,14 +30,36 @@ export default function BulkPage() {
     setError(null);
 
     try {
-      const results = parseTextInput(textInput, mockCards);
+      const rawEntries = parseRawTextInput(textInput);
+      if (rawEntries.length === 0) {
+        setError('No valid card entries found. Please check the format.');
+        setIsProcessing(false);
+        return;
+      }
+
+      const names = rawEntries.map(e => e.cardName);
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/buylist/search/bulk`, { names }, {
+        headers: { 'x-api-key': process.env.NEXT_PUBLIC_API_KEY }
+      });
+
+      const backendResults = res.data;
+      const results = rawEntries.map((entry, idx) => {
+        const match = backendResults[idx];
+        return {
+          quantity: entry.quantity,
+          cardName: entry.cardName,
+          matchedCard: match?.matchedCard,
+          confidence: match?.confidence,
+        };
+      });
+
       setParseResults(results);
 
       if (results.length === 0) {
         setError('No valid card entries found. Please check the format.');
       }
     } catch (err) {
-      setError('Failed to parse input. Please check the format.');
+      setError('Failed to parse input or connect to database. Please check the format and try again.');
       console.error(err);
     } finally {
       setIsProcessing(false);
@@ -52,14 +74,36 @@ export default function BulkPage() {
     setError(null);
 
     try {
-      const results = await parseFile(file, mockCards);
+      const rawEntries = await parseRawFile(file);
+      if (rawEntries.length === 0) {
+        setError('No valid card entries found in file. Please check the format.');
+        setIsProcessing(false);
+        return;
+      }
+
+      const names = rawEntries.map(e => e.cardName);
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/buylist/search/bulk`, { names }, {
+        headers: { 'x-api-key': process.env.NEXT_PUBLIC_API_KEY }
+      });
+
+      const backendResults = res.data;
+      const results = rawEntries.map((entry, idx) => {
+        const match = backendResults[idx];
+        return {
+          quantity: entry.quantity,
+          cardName: entry.cardName,
+          matchedCard: match?.matchedCard,
+          confidence: match?.confidence,
+        };
+      });
+
       setParseResults(results);
 
       if (results.length === 0) {
         setError('No valid card entries found in file. Please check the format.');
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to parse file');
+      setError(err instanceof Error ? err.message : 'Failed to parse file or connect to database.');
       console.error(err);
     } finally {
       setIsProcessing(false);
