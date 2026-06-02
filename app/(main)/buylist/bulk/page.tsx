@@ -37,8 +37,8 @@ export default function BulkPage() {
         return;
       }
 
-      const names = rawEntries.map(e => e.cardName);
-      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/buylist/search/bulk`, { names }, {
+           const cards = rawEntries.map(e => ({ name: e.cardName, set: e.set }));
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/buylist/search/bulk`, { cards }, {
         headers: { 'x-api-key': process.env.NEXT_PUBLIC_API_KEY }
       });
 
@@ -50,7 +50,7 @@ export default function BulkPage() {
           cardName: entry.cardName,
           matchedCard: match?.matchedCard,
           confidence: match?.confidence,
-          condition: 'Near Mint' as const,
+          condition: entry.condition || ('Near Mint' as const),
         };
       });
 
@@ -82,8 +82,8 @@ export default function BulkPage() {
         return;
       }
 
-      const names = rawEntries.map(e => e.cardName);
-      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/buylist/search/bulk`, { names }, {
+      const cards = rawEntries.map(e => ({ name: e.cardName, set: e.set }));
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/buylist/search/bulk`, { cards }, {
         headers: { 'x-api-key': process.env.NEXT_PUBLIC_API_KEY }
       });
 
@@ -95,7 +95,7 @@ export default function BulkPage() {
           cardName: entry.cardName,
           matchedCard: match?.matchedCard,
           confidence: match?.confidence,
-          condition: 'Near Mint' as const,
+          condition: entry.condition || ('Near Mint' as const),
         };
       });
 
@@ -170,17 +170,18 @@ export default function BulkPage() {
             <SectionTitle>Enter Card List</SectionTitle>
             <FormatInstructions>
               <InstructionTitle>Format:</InstructionTitle>
-              <InstructionText>[Quantity] [Card Name]</InstructionText>
+              <InstructionText>[Quantity] [Card Name] [Set] [Condition]</InstructionText>
               <InstructionExample>
-                Example:<br />
-                5 Charizard<br />
-                3 Pikachu<br />
-                1 Black Lotus
+                Format is flexible. Set and condition are optional (put in square brackets):<br />
+                - 1 Black Lotus [Alpha Edition] [Near Mint]<br />
+                - 5 Charizard [Base Set] [LP]<br />
+                - 3 Pikachu [NM]<br />
+                - 2 Sol Ring
               </InstructionExample>
             </FormatInstructions>
 
             <TextArea
-              placeholder="Enter your card list here...&#10;Example:&#10;5 Charizard&#10;3 Pikachu&#10;1 Black Lotus"
+              placeholder="Enter your card list here...&#10;Example:&#10;1 Black Lotus [Alpha Edition] [Near Mint]&#10;5 Charizard [Base Set] [LP]&#10;3 Pikachu [NM]&#10;2 Sol Ring"
               value={textInput}
               onChange={(e) => setTextInput(e.target.value)}
             />

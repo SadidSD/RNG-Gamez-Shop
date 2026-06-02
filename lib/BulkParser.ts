@@ -58,10 +58,40 @@ export function fuzzyMatchCard(
 
 /**
  * Parse a single line of text input
- * Expected format: [Quantity] [Card Name]
- * Examples: "5 Charizard", "1 Black Lotus"
+ * Expected format: [Quantity] [Card Name] [Set] [Condition]
+ * Examples: "5 Charizard [Base Set] [LP]", "1 Black Lotus [Alpha Edition] [Near Mint]"
  */
-function parseLine(line: string): { quantity: number; cardName: string } | null {
+const CONDITIONS_MAP: Record<string, 'Near Mint' | 'Lightly Played' | 'Moderately Played' | 'Heavily Played' | 'Damaged'> = {
+    'nm': 'Near Mint',
+    'near mint': 'Near Mint',
+    'nearmint': 'Near Mint',
+    'lp': 'Lightly Played',
+    'lightly played': 'Lightly Played',
+    'lightlyplayed': 'Lightly Played',
+    'mp': 'Moderately Played',
+    'moderately played': 'Moderately Played',
+    'moderatelyplayed': 'Moderately Played',
+    'hp': 'Heavily Played',
+    'heavily played': 'Heavily Played',
+    'heavilyplayed': 'Heavily Played',
+    'dmg': 'Damaged',
+    'd': 'Damaged',
+    'damaged': 'Damaged'
+};
+
+function normalizeCondition(val: string): 'Near Mint' | 'Lightly Played' | 'Moderately Played' | 'Heavily Played' | 'Damaged' | null {
+    const clean = val.trim().toLowerCase();
+    return CONDITIONS_MAP[clean] || null;
+}
+
+export interface ParsedLine {
+    quantity: number;
+    cardName: string;
+    set?: string;
+    condition?: 'Near Mint' | 'Lightly Played' | 'Moderately Played' | 'Heavily Played' | 'Damaged';
+}
+
+function parseLine(line: string): ParsedLine | null {
     const trimmed = line.trim();
 
     // Skip empty lines
@@ -69,24 +99,63 @@ function parseLine(line: string): { quantity: number; cardName: string } | null 
         return null;
     }
 
-    // Match pattern: number followed by space and card name
-    const match = trimmed.match(/^(\d+)\s+(.+)$/);
+    let quantity = 1;
+    let remainingText = trimmed;
 
-    if (match) {
-        const quantity = parseInt(match[1], 10);
-        const cardName = match[2].trim();
+    // Match pattern: number followed by space and the rest of the text
+    const qtyMatch = trimmed.match(/^(\d+)\s+(.+)$/);
+    if (qtyMatch) {
+        quantity = parseInt(qtyMatch[1], 10);
+        remainingText = qtyMatch[2].trim();
+    }
 
-        if (quantity > 0 && cardName) {
-            return { quantity, cardName };
+    // Extract all bracketed content [...] from remainingText
+    const bracketRegex = /\[([^\]]+)\]/g;
+    const brackets: string[] = [];
+    let match;
+    while ((match = bracketRegex.exec(remainingText)) !== null) {
+        brackets.push(match[1].trim());
+    }
+
+    // Clean card name by removing bracketed segments
+    const cardName = remainingText.replace(/\[[^\]]+\]/g, '').replace(/\s+/g, ' ').trim();
+    if (!cardName) {
+        return null;
+    }
+
+    let set: string | undefined;
+    let condition: 'Near Mint' | 'Lightly Played' | 'Moderately Played' | 'Heavily Played' | 'Damaged' | undefined;
+
+    if (brackets.length >= 2) {
+        // First bracket is set, second is condition (or check if either is condition)
+        const cond1 = normalizeCondition(brackets[0]);
+        const cond2 = normalizeCondition(brackets[1]);
+
+        if (cond2) {
+            condition = cond2;
+            set = brackets[0];
+        } else if (cond1) {
+            condition = cond1;
+            set = brackets[1];
+        } else {
+            // Neither is standard condition, default first as set
+            set = brackets[0];
+        }
+    } else if (brackets.length === 1) {
+        const cond = normalizeCondition(brackets[0]);
+        if (cond) {
+            condition = cond;
+        } else {
+            set = brackets[0];
         }
     }
 
-    // If no quantity found, assume quantity of 1
-    if (trimmed && !/^\d+$/.test(trimmed)) {
-        return { quantity: 1, cardName: trimmed };
-    }
-
-    return null;
+    return {
+        quantity,
+        cardName,
+        ...(set ? { set } : {}),
+        ...(condition ? { condition } : {})
+    };
 }
 
 /**
@@ -110,6 +179,7 @@ export function parseTextInput(
                 cardName: parsed.cardName,
                 matchedCard: match?.card,
                 confidence: match?.confidence,
+                condition: parsed.condition
             });
         }
     }
@@ -142,7 +212,7 @@ export async function parseFile(
 
 /**
  * Parse CSV format
- * Expected columns: quantity, name (or similar variations)
+ * Expected columns: quantity, name, set, condition (or similar variations)
  */
 function parseCSV(text: string, cardDatabase: Card[]): BulkParseResult[] {
     const lines = text.split('\n');
@@ -160,11 +230,15 @@ function parseCSV(text: string, cardDatabase: Card[]): BulkParseResult[] {
     // Detect column indices
     let quantityIndex = 0;
     let nameIndex = 1;
+    let setIndex = -1;
+    let conditionIndex = -1;
 
     if (hasHeader) {
         const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
         quantityIndex = headers.findIndex(h => h.includes('quantity') || h.includes('qty') || h.includes('count'));
         nameIndex = headers.findIndex(h => h.includes('name') || h.includes('card'));
+        setIndex = headers.findIndex(h => h.includes('set') || h.includes('edition'));
+        conditionIndex = headers.findIndex(h => h.includes('condition') || h.includes('cond') || h.includes('status'));
 
         if (quantityIndex === -1) quantityIndex = 0;
         if (nameIndex === -1) nameIndex = 1;
@@ -177,12 +251,16 @@ function parseCSV(text: string, cardDatabase: Card[]): BulkParseResult[] {
 
         const columns = line.split(',').map(c => c.trim());
 
-        if (columns.length >= 2) {
+        if (columns.length > Math.max(quantityIndex, nameIndex)) {
             const quantityStr = columns[quantityIndex];
             const cardName = columns[nameIndex];
             const quantity = parseInt(quantityStr, 10);
 
             if (!isNaN(quantity) && quantity > 0 && cardName) {
+                const setVal = setIndex !== -1 && columns[setIndex] ? columns[setIndex] : undefined;
+                const condValRaw = conditionIndex !== -1 && columns[conditionIndex] ? columns[conditionIndex] : undefined;
+                const condVal = condValRaw ? (normalizeCondition(condValRaw) || undefined) : undefined;
+
                 const match = fuzzyMatchCard(cardName, cardDatabase);
 
                 results.push({
@@ -190,6 +268,7 @@ function parseCSV(text: string, cardDatabase: Card[]): BulkParseResult[] {
                     cardName,
                     matchedCard: match?.card,
                     confidence: match?.confidence,
+                    condition: condVal
                 });
             }
         }
@@ -198,9 +277,9 @@ function parseCSV(text: string, cardDatabase: Card[]): BulkParseResult[] {
     return results;
 }
 
-export function parseRawTextInput(text: string): { quantity: number; cardName: string }[] {
+export function parseRawTextInput(text: string): ParsedLine[] {
     const lines = text.split('\n');
-    const results: { quantity: number; cardName: string }[] = [];
+    const results: ParsedLine[] = [];
 
     for (const line of lines) {
         const parsed = parseLine(line);
@@ -212,7 +291,7 @@ export function parseRawTextInput(text: string): { quantity: number; cardName: s
     return results;
 }
 
-export async function parseRawFile(file: File): Promise<{ quantity: number; cardName: string }[]> {
+export async function parseRawFile(file: File): Promise<ParsedLine[]> {
     try {
         const text = await file.text();
 
@@ -227,9 +306,9 @@ export async function parseRawFile(file: File): Promise<{ quantity: number; card
     }
 }
 
-function parseRawCSV(text: string): { quantity: number; cardName: string }[] {
+function parseRawCSV(text: string): ParsedLine[] {
     const lines = text.split('\n');
-    const results: { quantity: number; cardName: string }[] = [];
+    const results: ParsedLine[] = [];
 
     if (lines.length === 0) {
         return results;
@@ -241,11 +320,15 @@ function parseRawCSV(text: string): { quantity: number; cardName: string }[] {
 
     let quantityIndex = 0;
     let nameIndex = 1;
+    let setIndex = -1;
+    let conditionIndex = -1;
 
     if (hasHeader) {
         const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
         quantityIndex = headers.findIndex(h => h.includes('quantity') || h.includes('qty') || h.includes('count'));
         nameIndex = headers.findIndex(h => h.includes('name') || h.includes('card'));
+        setIndex = headers.findIndex(h => h.includes('set') || h.includes('edition'));
+        conditionIndex = headers.findIndex(h => h.includes('condition') || h.includes('cond') || h.includes('status'));
 
         if (quantityIndex === -1) quantityIndex = 0;
         if (nameIndex === -1) nameIndex = 1;
@@ -257,13 +340,22 @@ function parseRawCSV(text: string): { quantity: number; cardName: string }[] {
 
         const columns = line.split(',').map(c => c.trim());
 
-        if (columns.length >= 2) {
+        if (columns.length > Math.max(quantityIndex, nameIndex)) {
             const quantityStr = columns[quantityIndex];
             const cardName = columns[nameIndex];
             const quantity = parseInt(quantityStr, 10);
 
             if (!isNaN(quantity) && quantity > 0 && cardName) {
-                results.push({ quantity, cardName });
+                const setVal = setIndex !== -1 && columns[setIndex] ? columns[setIndex] : undefined;
+                const condValRaw = conditionIndex !== -1 && columns[conditionIndex] ? columns[conditionIndex] : undefined;
+                const condVal = condValRaw ? (normalizeCondition(condValRaw) || undefined) : undefined;
+
+                results.push({
+                    quantity,
+                    cardName,
+                    ...(setVal ? { set: setVal } : {}),
+                    ...(condVal ? { condition: condVal } : {})
+                });
             }
         }
     }
