@@ -115,7 +115,7 @@ export default function Home() {
 
         {/* Gradient Box Overlay */}
         <div
-          className="absolute bottom-8 right-6 md:right-12 xl:right-80 xl:top-[80%] xl:bottom-auto xl:-translate-y-1/2 w-[240px] sm:w-[280px] xl:w-[340px] h-[180px] sm:h-[210px] xl:h-[250px] rounded-[25px] xl:rounded-[35px] overflow-hidden hidden sm:block"
+          className="absolute bottom-8 right-16 md:right-24 xl:right-96 xl:top-[80%] xl:bottom-auto xl:-translate-y-1/2 w-[240px] sm:w-[280px] xl:w-[340px] h-[180px] sm:h-[210px] xl:h-[250px] rounded-[25px] xl:rounded-[35px] overflow-hidden hidden sm:block"
           style={{
             background: 'rgba(255, 255, 255, 0.05)',
             backdropFilter: 'blur(20px) saturate(180%)',
