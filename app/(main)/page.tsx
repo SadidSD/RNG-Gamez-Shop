@@ -115,24 +115,51 @@ export default function Home() {
 
         {/* Gradient Box Overlay */}
         <div
-          className="absolute bottom-8 right-6 md:right-12 xl:right-80 xl:top-[80%] xl:bottom-auto xl:-translate-y-1/2 w-[240px] sm:w-[280px] xl:w-[340px] h-[180px] sm:h-[210px] xl:h-[250px] rounded-[25px] xl:rounded-[35px] overflow-hidden hidden sm:block"
+          className="absolute bottom-8 right-6 md:right-12 xl:right-80 xl:top-[80%] xl:bottom-auto xl:-translate-y-1/2 w-[240px] sm:w-[280px] xl:w-[320px] rounded-[25px] xl:rounded-[30px] overflow-hidden hidden sm:block"
           style={{
-            background: 'rgba(255, 255, 255, 0.05)',
-            backdropFilter: 'blur(20px) saturate(180%)',
-            WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-            border: '1px solid rgba(255, 255, 255, 0.2)',
-            boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.1)'
+            background: 'rgba(15, 10, 30, 0.55)',
+            backdropFilter: 'blur(24px) saturate(160%)',
+            WebkitBackdropFilter: 'blur(24px) saturate(160%)',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            boxShadow: '0 12px 40px 0 rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255,255,255,0.12)'
           }}
         >
-          <div className="flex flex-col justify-center h-full px-8">
-            <h3 className="text-6xl font-bold text-white tracking-wide" style={{ fontFamily: 'Europa Grotesk SH' }}>200k+</h3>
-            <p className="text-lg text-gray-200 font-medium tracking-wide mt-2 mb-4">SATISFIED BUYERS ON</p>
-            <div className="flex items-center -space-x-4">
-              <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center overflow-hidden border-4 border-[#FFFFFF20] relative z-10">
-                <img src="/RNG-logo.png" alt="RNG" className="w-full h-full object-cover" />
-              </div>
-              <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center overflow-hidden border-4 border-[#FFFFFF20] relative z-20">
-                <img src="/images/tcgplayer-logo-v2.jpg" alt="TCGPlayer" className="w-full h-auto object-cover" />
+          <div className="flex flex-col px-6 py-5 gap-3">
+            {/* Stat */}
+            <div>
+              <span className="text-5xl font-extrabold text-white leading-none" style={{ fontFamily: 'Europa Grotesk SH, sans-serif', letterSpacing: '-1px' }}>200k+</span>
+              <p className="text-xs font-semibold text-gray-300 tracking-[0.15em] mt-1 uppercase">Satisfied Buyers</p>
+            </div>
+
+            {/* Star rating */}
+            <div className="flex items-center gap-1.5">
+              {[1,2,3,4,5].map(i => (
+                <svg key={i} width="14" height="14" viewBox="0 0 24 24" fill="#FBBF24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+              ))}
+              <span className="text-xs text-gray-300 ml-1 font-medium">4.9 / 5.0</span>
+            </div>
+
+            {/* Divider */}
+            <div style={{ height: '1px', background: 'rgba(255,255,255,0.1)' }} />
+
+            {/* Marketplace logos */}
+            <div className="flex flex-col gap-2">
+              <p className="text-[10px] font-semibold text-gray-400 tracking-[0.12em] uppercase">Shop us on</p>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 rounded-lg px-3 py-1.5" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  <div className="w-5 h-5 rounded-full overflow-hidden bg-white flex-shrink-0">
+                    <img src="/RNG-logo.png" alt="RNG" className="w-full h-full object-cover" />
+                  </div>
+                  <span className="text-xs font-semibold text-white whitespace-nowrap">RNG Gamez</span>
+                </div>
+                <div className="flex items-center gap-2 rounded-lg px-3 py-1.5" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  <div className="w-5 h-5 rounded overflow-hidden bg-white flex-shrink-0 flex items-center justify-center">
+                    <img src="/images/tcgplayer-logo.png" alt="TCGPlayer" className="w-full h-full object-contain" />
+                  </div>
+                  <span className="text-xs font-semibold text-white whitespace-nowrap">TCGPlayer</span>
+                </div>
               </div>
             </div>
           </div>
