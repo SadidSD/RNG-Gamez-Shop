@@ -8,9 +8,10 @@ interface BulkPreviewProps {
     results: BulkParseResult[];
     onRemove: (index: number) => void;
     onQuantityChange: (index: number, quantity: number) => void;
+    onConditionChange: (index: number, condition: 'Near Mint' | 'Lightly Played' | 'Moderately Played' | 'Heavily Played' | 'Damaged') => void;
 }
 
-const BulkPreview: React.FC<BulkPreviewProps> = ({ results, onRemove, onQuantityChange }) => {
+const BulkPreview: React.FC<BulkPreviewProps> = ({ results, onRemove, onQuantityChange, onConditionChange }) => {
     if (results.length === 0) {
         return null;
     }
@@ -54,6 +55,18 @@ const BulkPreview: React.FC<BulkPreviewProps> = ({ results, onRemove, onQuantity
                                             <PriceValue className="credit">${result.matchedCard.creditPrice.toFixed(2)}</PriceValue>
                                         </PriceItem>
                                     </PriceRow>
+                                    <ConditionContainer>
+                                        <ConditionSelect
+                                            value={result.condition || 'Near Mint'}
+                                            onChange={(e) => onConditionChange(index, e.target.value as any)}
+                                        >
+                                            <option value="Near Mint">Near Mint</option>
+                                            <option value="Lightly Played">Lightly Played</option>
+                                            <option value="Moderately Played">Moderately Played</option>
+                                            <option value="Heavily Played">Heavily Played</option>
+                                            <option value="Damaged">Damaged</option>
+                                        </ConditionSelect>
+                                    </ConditionContainer>
                                 </CardDetails>
                             </>
                         ) : (
@@ -300,9 +313,30 @@ const RemoveButton = styled.button`
   align-items: center;
   justify-content: center;
 
-  &:hover {
+   &:hover {
     background: rgba(239, 68, 68, 0.1);
     border-color: #EF4444;
+  }
+`;
+
+const ConditionContainer = styled.div`
+  margin-top: 0.5rem;
+`;
+
+const ConditionSelect = styled.select`
+  padding: 0.375rem 0.75rem;
+  background: #FFFFFF;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 0.375rem;
+  color: #1a1a1a;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  transition: all 200ms ease;
+
+  &:focus {
+    border-color: #B473FF;
   }
 `;
 

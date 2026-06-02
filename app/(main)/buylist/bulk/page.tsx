@@ -50,6 +50,7 @@ export default function BulkPage() {
           cardName: entry.cardName,
           matchedCard: match?.matchedCard,
           confidence: match?.confidence,
+          condition: 'Near Mint' as const,
         };
       });
 
@@ -94,6 +95,7 @@ export default function BulkPage() {
           cardName: entry.cardName,
           matchedCard: match?.matchedCard,
           confidence: match?.confidence,
+          condition: 'Near Mint' as const,
         };
       });
 
@@ -120,6 +122,12 @@ export default function BulkPage() {
     ));
   };
 
+  const handleConditionChange = (index: number, condition: 'Near Mint' | 'Lightly Played' | 'Moderately Played' | 'Heavily Played' | 'Damaged') => {
+    setParseResults(prev => prev.map((result, i) =>
+      i === index ? { ...result, condition } : result
+    ));
+  };
+
   const handleAddToCart = () => {
     const matchedResults = parseResults.filter(r => r.matchedCard);
 
@@ -128,10 +136,10 @@ export default function BulkPage() {
       return;
     }
 
-    // Add all matched cards to cart
+    // Add all matched cards with their selected condition to cart
     matchedResults.forEach(result => {
       if (result.matchedCard) {
-        addItem(result.matchedCard, result.quantity);
+        addItem({ ...result.matchedCard, condition: result.condition || 'Near Mint' }, result.quantity);
       }
     });
 
@@ -217,6 +225,7 @@ export default function BulkPage() {
                   results={parseResults}
                   onRemove={handleRemoveResult}
                   onQuantityChange={handleQuantityChange}
+                  onConditionChange={handleConditionChange}
                 />
 
                 <AddToCartButton

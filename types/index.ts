@@ -43,4 +43,5 @@ export interface BulkParseResult {
     cardName: string;
     matchedCard?: Card;
     confidence?: number;
+    condition?: 'Near Mint' | 'Lightly Played' | 'Moderately Played' | 'Heavily Played' | 'Damaged';
 }
