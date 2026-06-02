@@ -17,6 +17,8 @@ export default function SignupPage() {
     const [error, setError] = useState('')
     const [isSuccess, setIsSuccess] = useState(false)
     const [confirmPassword, setConfirmPassword] = useState('')
+    const [resendLoading, setResendLoading] = useState(false)
+    const [resendMessage, setResendMessage] = useState('')
 
     const [formData, setFormData] = useState({
         firstName: "",
@@ -25,6 +27,21 @@ export default function SignupPage() {
         password: "",
         storeName: "Customer Store"
     })
+
+    const handleResendVerification = async () => {
+        setResendLoading(true)
+        setResendMessage('')
+        setError('')
+        try {
+            const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/resend-verification`, { email: formData.email })
+            setResendMessage(res.data.message || 'Verification email resent successfully.')
+        } catch (err: any) {
+            console.error('Resend verification error', err)
+            setError(err.response?.data?.message || 'Failed to resend verification email. Please try again.')
+        } finally {
+            setResendLoading(false)
+        }
+    }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -93,11 +110,26 @@ export default function SignupPage() {
                             <div className="bg-purple-500/10 border border-purple-500/20 text-purple-200 p-4 rounded-xl text-sm">
                                 A verification email has been sent to <span className="font-semibold text-white">{formData.email}</span>. Please click the link in the email to verify your account.
                             </div>
-                            <Link href="/login" className="inline-block w-full">
-                                <Button className="w-full bg-white hover:bg-neutral-200 text-black font-semibold h-11 rounded-xl shadow-lg border-none text-sm transition-all flex items-center justify-center">
-                                    Return to Login
-                                </Button>
-                            </Link>
+                            {resendMessage && (
+                                <div className="bg-green-500/10 border border-green-500/20 text-green-200 text-xs p-3 rounded-xl">
+                                    {resendMessage}
+                                </div>
+                            )}
+                            <div className="space-y-3">
+                                <Link href="/login" className="inline-block w-full">
+                                    <Button className="w-full bg-white hover:bg-neutral-200 text-black font-semibold h-11 rounded-xl shadow-lg border-none text-sm transition-all flex items-center justify-center">
+                                        Return to Login
+                                    </Button>
+                                </Link>
+                                <button
+                                    type="button"
+                                    onClick={handleResendVerification}
+                                    disabled={resendLoading}
+                                    className="text-xs text-purple-400 hover:text-purple-300 font-medium transition-colors underline disabled:opacity-50 mt-2 block mx-auto"
+                                >
+                                    {resendLoading ? 'Resending...' : 'Resend verification email'}
+                                </button>
+                            </div>
                         </div>
                     ) : (
                         <form onSubmit={handleSubmit} className="space-y-4">
