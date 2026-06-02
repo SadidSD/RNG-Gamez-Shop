@@ -1,15 +1,19 @@
 "use client"
 
-import { useState } from "react"
+import { useState, Suspense } from "react"
 import { useAuth } from "@/context/AuthContext"
 import Button from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
 import { Label } from "@/components/ui/Label"
 import Link from "next/link"
 import { Loader2, ArrowLeft } from "lucide-react"
+import { useSearchParams } from "next/navigation"
 
-export default function LoginPage() {
+function LoginContent() {
     const { login } = useAuth()
+    const searchParams = useSearchParams()
+    const verified = searchParams.get('verified') === 'true'
+    
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
     const [formData, setFormData] = useState({
@@ -60,6 +64,11 @@ export default function LoginPage() {
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-5">
+                        {verified && (
+                            <div className="bg-green-500/10 border border-green-500/20 text-green-200 text-xs p-3 rounded-xl mb-1">
+                                Welcome to RNG Gamez! Your email has been verified. Please log in to access your account.
+                            </div>
+                        )}
                         {error && (
                             <div className="bg-red-500/10 border border-red-500/20 text-red-200 text-xs p-3 rounded-xl">
                                 {error}
@@ -123,5 +132,13 @@ export default function LoginPage() {
                 <span>Minimal Checkout Enforced</span>
             </footer>
         </div>
+    )
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen w-full flex items-center justify-center bg-[#09090B] text-white"><Loader2 className="h-8 w-8 animate-spin text-purple-500" /></div>}>
+            <LoginContent />
+        </Suspense>
     )
 }

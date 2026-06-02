@@ -53,7 +53,7 @@ function VerifyEmailContent() {
                     </div>
                     <h2 className="text-2xl font-bold text-white">Verified!</h2>
                     <p className="text-neutral-400 text-sm mb-6">{message}</p>
-                    <Link href="/login" className="w-full inline-block mt-4">
+                    <Link href="/login?verified=true" className="w-full inline-block mt-4">
                         <Button className="w-full bg-white hover:bg-neutral-200 text-black font-semibold h-11 rounded-xl shadow-lg border-none text-sm transition-all flex items-center justify-center">
                             Sign In to Your Account
                         </Button>
