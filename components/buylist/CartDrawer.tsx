@@ -86,6 +86,7 @@ const CartDrawer: React.FC = () => {
   };
 
   const handleCheckout = async () => {
+    console.log('👉 [Buylist] Complete Buylist Submission clicked!', { customerName, email, itemCount: items.length });
     if (!customerName || !email) {
       showToast('Please enter your name and email.', 'warning');
       return;
