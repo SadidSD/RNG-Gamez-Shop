@@ -190,10 +190,6 @@ const CartDrawer: React.FC = () => {
                       </ItemSet>
                       <ItemPrices>
                         <PriceTag>
-                          <PriceLabel>Cash:</PriceLabel>
-                          <PriceValue>${(item.card.cashPrice * item.quantity).toFixed(2)}</PriceValue>
-                        </PriceTag>
-                        <PriceTag>
                           <PriceLabel>Credit:</PriceLabel>
                           <PriceValue className="credit">${(item.card.creditPrice * item.quantity).toFixed(2)}</PriceValue>
                         </PriceTag>
@@ -290,10 +286,6 @@ const CartDrawer: React.FC = () => {
                     )}
                 </FormGroup>
 
-                <TotalRow className="cash">
-                  <TotalLabel>Total Cash Payout</TotalLabel>
-                  <TotalValue>${totals.totalCash.toFixed(2)}</TotalValue>
-                </TotalRow>
                 <TotalRow className="credit">
                   <TotalLabel>Total Store Credit <BonusBadge>+20%</BonusBadge></TotalLabel>
                   <TotalValue>${totals.totalCredit.toFixed(2)}</TotalValue>

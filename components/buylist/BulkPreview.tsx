@@ -47,10 +47,6 @@ const BulkPreview: React.FC<BulkPreviewProps> = ({ results, onRemove, onQuantity
                                     )}
                                     <PriceRow>
                                         <PriceItem>
-                                            <PriceLabel>Cash:</PriceLabel>
-                                            <PriceValue className="cash">${result.matchedCard.cashPrice.toFixed(2)}</PriceValue>
-                                        </PriceItem>
-                                        <PriceItem>
                                             <PriceLabel>Credit:</PriceLabel>
                                             <PriceValue className="credit">${result.matchedCard.creditPrice.toFixed(2)}</PriceValue>
                                         </PriceItem>

@@ -51,10 +51,6 @@ const CardResult: React.FC<CardResultProps> = ({ card }) => {
 
         <PriceSection>
           <PriceRow>
-            <PriceLabel>Cash</PriceLabel>
-            <PriceValue className="cash">${card.cashPrice.toFixed(2)}</PriceValue>
-          </PriceRow>
-          <PriceRow>
             <PriceLabel>Credit</PriceLabel>
             <PriceValue className="credit">${card.creditPrice.toFixed(2)}</PriceValue>
           </PriceRow>
