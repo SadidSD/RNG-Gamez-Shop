@@ -91,6 +91,12 @@ const CartDrawer: React.FC = () => {
       return;
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      showToast('Please enter a valid email address.', 'warning');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const payload = {
@@ -113,12 +119,14 @@ const CartDrawer: React.FC = () => {
           const validConditions = ['NM', 'LP', 'MP', 'HP', 'DAMAGED', 'SEALED'];
           if (!validConditions.includes(cond)) cond = 'NM';
 
+          const price = Number(item.card.creditPrice);
+
           return {
             cardName: item.card.name,
             condition: cond,
             isFoil: Boolean(item.card.isFoil || false),
-            offerPrice: Number(item.card.creditPrice), // Ensure number
-            quantity: Number(item.quantity),
+            offerPrice: isNaN(price) ? 0 : price, // Ensure valid number
+            quantity: Number(item.quantity) || 1,
             imageUrl: item.card.image,
             setName: item.card.set
           };
@@ -145,7 +153,17 @@ const CartDrawer: React.FC = () => {
     } catch (error) {
       console.error('Checkout failed:', error);
       setSubmitStatus('error');
-      showToast('Failed to submit offer. Please try again.', 'error');
+      
+      let errMsg = 'Failed to submit offer. Please try again.';
+      if (axios.isAxiosError(error) && error.response?.data?.message) {
+        const backendMsg = error.response.data.message;
+        if (Array.isArray(backendMsg)) {
+          errMsg = `Submission error: ${backendMsg.join(', ')}`;
+        } else if (typeof backendMsg === 'string') {
+          errMsg = `Submission error: ${backendMsg}`;
+        }
+      }
+      showToast(errMsg, 'error');
     } finally {
       setIsSubmitting(false);
     }
