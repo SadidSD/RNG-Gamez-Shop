@@ -20,6 +20,9 @@ interface Order {
     orderNumber: number;
     status: string;
     paymentStatus: string;
+    subtotal: string;
+    taxAmount: string;
+    shippingCost: string;
     total: string;
     createdAt: string;
     shippingName: string;
@@ -285,15 +288,18 @@ export default function OrderTrackingPage() {
                                 <div className="space-y-2 text-sm text-gray-400">
                                     <div className="flex justify-between">
                                         <span>Subtotal</span>
-                                        <span className="text-white">${Number(order.total).toFixed(2)}</span>
+                                        <span className="text-white">${Number(order.subtotal || order.total).toFixed(2)}</span>
                                     </div>
                                     <div className="flex justify-between">
                                         <span>Shipping</span>
-                                        <span className="text-white">$0.00</span>
+                                        {Number(order.shippingCost) === 0
+                                            ? <span className="text-green-400 font-semibold">FREE</span>
+                                            : <span className="text-white">${Number(order.shippingCost).toFixed(2)}</span>
+                                        }
                                     </div>
                                     <div className="flex justify-between">
-                                        <span>Tax</span>
-                                        <span className="text-white">$0.00</span>
+                                        <span>NJ Tax (6.625%)</span>
+                                        <span className="text-white">${Number(order.taxAmount).toFixed(2)}</span>
                                     </div>
                                 </div>
                                 <hr className="border-white/10" />
