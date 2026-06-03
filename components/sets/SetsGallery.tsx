@@ -160,27 +160,29 @@ export default function SetsGallery() {
                 </div>
 
                 {/* Type Filter Pills */}
-                <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
-                    {FILTER_TYPES.map((type) => {
-                        const config = getConfig(type);
-                        const isActive = filterType === type;
-                        return (
-                            <button
-                                key={type}
-                                onClick={() => setFilterType(type)}
-                                className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 border
-                                    ${isActive
-                                        ? 'bg-purple-500 text-white border-purple-500 shadow-md shadow-purple-200'
-                                        : 'bg-white text-gray-500 border-gray-200 hover:border-purple-300 hover:text-purple-600'
-                                    }`}
-                            >
-                                {type === 'all' ? 'All Sets' : config.label}
-                            </button>
-                        );
-                    })}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex flex-wrap gap-1.5 sm:gap-2 max-w-full">
+                        {FILTER_TYPES.map((type) => {
+                            const config = getConfig(type);
+                            const isActive = filterType === type;
+                            return (
+                                <button
+                                    key={type}
+                                    onClick={() => setFilterType(type)}
+                                    className={`px-3 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold transition-all duration-200 border whitespace-nowrap
+                                        ${isActive
+                                            ? 'bg-purple-500 text-white border-purple-500 shadow-md shadow-purple-200'
+                                            : 'bg-white text-gray-500 border-gray-200 hover:border-purple-300 hover:text-purple-600'
+                                        }`}
+                                >
+                                    {type === 'all' ? 'All Sets' : config.label}
+                                </button>
+                            );
+                        })}
+                    </div>
 
                     {/* Result Count */}
-                    <span className="ml-auto shrink-0 text-xs text-gray-400 tabular-nums font-medium">
+                    <span className="text-[11px] sm:text-xs text-gray-400 tabular-nums font-medium self-end sm:self-center">
                         {filteredSets.length} sets
                     </span>
                 </div>
