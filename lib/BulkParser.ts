@@ -99,62 +99,26 @@ function parseLine(line: string): ParsedLine | null {
         return null;
     }
 
-    let quantity = 1;
-    let remainingText = trimmed;
-
-    // Match pattern: number followed by space and the rest of the text
-    const qtyMatch = trimmed.match(/^(\d+)\s+(.+)$/);
-    if (qtyMatch) {
-        quantity = parseInt(qtyMatch[1], 10);
-        remainingText = qtyMatch[2].trim();
+    // Strict format matching: <Quantity> <Card Name> [<Set>] [<Condition>]
+    const strictPattern = /^(\d+)\s+(.+?)\s+\[([^\]]+)\]\s+\[([^\]]+)\]$/;
+    const match = trimmed.match(strictPattern);
+    
+    if (!match) {
+        return null; // Reject lines that don't match the strict format
     }
 
-    // Extract all bracketed content [...] from remainingText
-    const bracketRegex = /\[([^\]]+)\]/g;
-    const brackets: string[] = [];
-    let match;
-    while ((match = bracketRegex.exec(remainingText)) !== null) {
-        brackets.push(match[1].trim());
-    }
-
-    // Clean card name by removing bracketed segments
-    const cardName = remainingText.replace(/\[[^\]]+\]/g, '').replace(/\s+/g, ' ').trim();
-    if (!cardName) {
-        return null;
-    }
-
-    let set: string | undefined;
-    let condition: 'Near Mint' | 'Lightly Played' | 'Moderately Played' | 'Heavily Played' | 'Damaged' | undefined;
-
-    if (brackets.length >= 2) {
-        // First bracket is set, second is condition (or check if either is condition)
-        const cond1 = normalizeCondition(brackets[0]);
-        const cond2 = normalizeCondition(brackets[1]);
-
-        if (cond2) {
-            condition = cond2;
-            set = brackets[0];
-        } else if (cond1) {
-            condition = cond1;
-            set = brackets[1];
-        } else {
-            // Neither is standard condition, default first as set
-            set = brackets[0];
-        }
-    } else if (brackets.length === 1) {
-        const cond = normalizeCondition(brackets[0]);
-        if (cond) {
-            condition = cond;
-        } else {
-            set = brackets[0];
-        }
-    }
+    const quantity = parseInt(match[1], 10);
+    const cardName = match[2].trim();
+    const set = match[3].trim();
+    const conditionRaw = match[4].trim();
+    
+    const condition = normalizeCondition(conditionRaw) || 'Near Mint';
 
     return {
         quantity,
         cardName,
-        ...(set ? { set } : {}),
-        ...(condition ? { condition } : {})
+        set,
+        condition
     };
 }
 

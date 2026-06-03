@@ -171,19 +171,18 @@ export default function BulkPage() {
           <InputSection>
             <SectionTitle>Enter Card List</SectionTitle>
             <FormatInstructions>
-              <InstructionTitle>Format:</InstructionTitle>
-              <InstructionText>[Quantity] [Card Name] [Set] [Condition]</InstructionText>
+              <InstructionTitle>Required Format:</InstructionTitle>
+              <InstructionText>Quantity Card Name [Set] [Condition]</InstructionText>
               <InstructionExample>
-                Format is flexible. Set and condition are optional (put in square brackets):<br />
+                Every line must follow this exact format with brackets for set and condition:<br />
                 - 1 Black Lotus [Alpha Edition] [Near Mint]<br />
-                - 5 Charizard [Base Set] [LP]<br />
-                - 3 Pikachu [NM]<br />
-                - 2 Sol Ring
+                - 5 Charizard [Base Set] [Lightly Played]<br />
+                - 3 Sol Ring [Beta Edition] [Near Mint]
               </InstructionExample>
             </FormatInstructions>
 
             <TextArea
-              placeholder="Enter your card list here...&#10;Example:&#10;1 Black Lotus [Alpha Edition] [Near Mint]&#10;5 Charizard [Base Set] [LP]&#10;3 Pikachu [NM]&#10;2 Sol Ring"
+              placeholder="Enter your card list here...&#10;Example:&#10;1 Black Lotus [Alpha Edition] [Near Mint]&#10;5 Charizard [Base Set] [Lightly Played]&#10;3 Sol Ring [Beta Edition] [Near Mint]"
               value={textInput}
               onChange={(e) => setTextInput(e.target.value)}
             />
