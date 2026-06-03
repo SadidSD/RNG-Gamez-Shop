@@ -8,11 +8,13 @@ import BulkPreview from '@/components/buylist/BulkPreview';
 import { BulkParseResult } from '@/types';
 import { parseRawTextInput, parseRawFile } from '@/lib/BulkParser';
 import { useCart } from '@/context/BuylistCartContext';
+import { useToast } from '@/context/ToastContext';
 import axios from 'axios';
 
 export default function BulkPage() {
   // const router = useRouter();
   const { addItem } = useCart();
+  const { showToast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [textInput, setTextInput] = useState('');
@@ -148,8 +150,8 @@ export default function BulkPage() {
     setParseResults([]);
     setError(null);
 
-    // Show success message (you could add a toast notification here)
-    alert(`Successfully added ${matchedResults.length} card(s) to cart!`);
+    // Show success message using the premium toast notification
+    showToast(`Successfully added ${matchedResults.length} card(s) to cart!`, 'success');
   };
 
   const handleClear = () => {

@@ -4,6 +4,7 @@ import React, { useState, useMemo } from 'react';
 import styled from 'styled-components';
 import { useShopCart } from '@/context/ShopCartContext';
 import { useAuth } from '@/context/AuthContext';
+import { useToast } from '@/context/ToastContext';
 import axios from 'axios';
 import { X, Trash2, ShoppingBag, Truck, Tag } from 'lucide-react';
 
@@ -15,6 +16,7 @@ const SHIPPING_FREE_THRESHOLD = 75;
 export default function ShopCartDrawer() {
     const { isOpen, closeCart, items, removeItem, updateQuantity, total, clearCart } = useShopCart();
     const { user } = useAuth();
+    const { showToast } = useToast();
     const [step, setStep] = useState<'cart' | 'checkout' | 'success'>('cart');
     const [loading, setLoading] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'store_credit'>('stripe');
@@ -66,7 +68,7 @@ export default function ShopCartDrawer() {
 
     const handleCheckout = async () => {
         if (paymentMethod === 'stripe' && grandTotal < 0.50) {
-            alert('Stripe requires a minimum order amount of $0.50. Please add more items to your cart.');
+            showToast('Stripe requires a minimum order amount of $0.50. Please add more items to your cart.', 'warning');
             return;
         }
 
@@ -103,7 +105,7 @@ export default function ShopCartDrawer() {
         } catch (error: any) {
             console.error('Checkout failed', error);
             const msg = error.response?.data?.message || 'Failed to place order.';
-            alert(`Order Failed: ${Array.isArray(msg) ? msg.join(', ') : msg}`);
+            showToast(`Order Failed: ${Array.isArray(msg) ? msg.join(', ') : msg}`, 'error');
         } finally {
             setLoading(false);
         }
@@ -198,7 +200,7 @@ export default function ShopCartDrawer() {
                             </TotalRow>
                             <CheckoutButton onClick={() => {
                                 if (!user) {
-                                    alert('Please log in or sign up to complete your checkout.');
+                                    showToast('Please log in or sign up to complete your checkout.', 'warning');
                                     window.location.href = '/login';
                                     return;
                                 }

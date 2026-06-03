@@ -4,10 +4,12 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '@/context/BuylistCartContext';
+import { useToast } from '@/context/ToastContext';
 import axios from 'axios';
 
 const CartDrawer: React.FC = () => {
   const { items, removeItem, updateQuantity, totals, isOpen, closeCart, clearCart, images, setImages } = useCart();
+  const { showToast } = useToast();
   // const [paymentMethod, setPaymentMethod] = useState<'cash' | 'credit'>('cash'); // Removed: Credit Only
   const [customerName, setCustomerName] = useState('');
   const [email, setEmail] = useState('');
@@ -74,7 +76,7 @@ const CartDrawer: React.FC = () => {
 
   const handleCheckout = async () => {
     if (!customerName || !email) {
-      alert('Please enter your name and email.');
+      showToast('Please enter your name and email.', 'warning');
       return;
     }
 
@@ -132,7 +134,7 @@ const CartDrawer: React.FC = () => {
     } catch (error) {
       console.error('Checkout failed:', error);
       setSubmitStatus('error');
-      alert('Failed to submit offer. Please try again.');
+      showToast('Failed to submit offer. Please try again.', 'error');
     } finally {
       setIsSubmitting(false);
     }
