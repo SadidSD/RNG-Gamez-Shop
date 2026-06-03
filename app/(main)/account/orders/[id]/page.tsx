@@ -186,33 +186,51 @@ export default function OrderTrackingPage() {
                     )}
 
                     {/* Tracking Code Card */}
-                    {order.trackingNumber && (
-                        <div className="bg-gradient-to-br from-purple-500/10 to-indigo-500/10 border border-purple-500/20 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400">
-                                    <Package size={24} />
+                    {order.trackingNumber && (() => {
+                        const clean = order.trackingNumber.trim().replace(/\s+/g, '').toUpperCase();
+                        let carrierName = "USPS";
+                        let carrierFullName = "USPS (United States Postal Service)";
+                        let trackingUrl = `https://tools.usps.com/go/TrackConfirmAction?tLabels=${clean}`;
+
+                        if (clean.startsWith('1Z')) {
+                            carrierName = "UPS";
+                            carrierFullName = "UPS (United Parcel Service)";
+                            trackingUrl = `https://www.ups.com/track?tracknum=${clean}`;
+                        } else if (/^\d{12}$|^\d{15}$/.test(clean)) {
+                            carrierName = "FedEx";
+                            carrierFullName = "FedEx";
+                            trackingUrl = `https://www.fedex.com/fedextrack/?trknbr=${clean}`;
+                        }
+
+                        return (
+                            <div className="bg-gradient-to-br from-purple-500/10 to-indigo-500/10 border border-purple-500/20 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400">
+                                        <Package size={24} />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-white font-semibold">Track Your Package</h3>
+                                        <p className="text-sm text-gray-400">Carrier: {carrierFullName}</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h3 className="text-white font-semibold">Track Your Package</h3>
-                                    <p className="text-sm text-gray-400">Carrier: USPS (United States Postal Service)</p>
+                                <div className="flex flex-col sm:items-end gap-2 w-full sm:w-auto">
+                                    <span className="font-mono text-lg text-white font-bold bg-black/40 border border-white/5 px-4 py-2 rounded-lg text-center sm:text-left">
+                                        {order.trackingNumber}
+                                    </span>
+                                    <a 
+                                        href={trackingUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center justify-center gap-1.5 px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white text-sm font-semibold rounded-xl transition-colors text-center"
+                                    >
+                                        <span>Track on {carrierName}</span>
+                                        <ExternalLink size={14} />
+                                    </a>
                                 </div>
                             </div>
-                            <div className="flex flex-col sm:items-end gap-2 w-full sm:w-auto">
-                                <span className="font-mono text-lg text-white font-bold bg-black/40 border border-white/5 px-4 py-2 rounded-lg text-center sm:text-left">
-                                    {order.trackingNumber}
-                                </span>
-                                <a 
-                                    href={`https://tools.usps.com/go/TrackConfirmAction?qtc_tcd1=${order.trackingNumber}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex items-center justify-center gap-1.5 px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white text-sm font-semibold rounded-xl transition-colors text-center"
-                                >
-                                    <span>Track on USPS</span>
-                                    <ExternalLink size={14} />
-                                </a>
-                            </div>
-                        </div>
-                    )}
+                        );
+                    })()}
+
 
                     {/* Order Details & Summary Split */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
