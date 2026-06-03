@@ -24,31 +24,36 @@ const CartDrawer: React.FC = () => {
         const img = new Image();
         img.src = event.target?.result as string;
         img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const MAX_WIDTH = 1200;
-          const MAX_HEIGHT = 1200;
-          let width = img.width;
-          let height = img.height;
+          const getCompressedDataUrl = (q: number, s: number): string => {
+            const canvas = document.createElement('canvas');
+            const targetWidth = Math.max(1, Math.round(img.width * s));
+            const targetHeight = Math.max(1, Math.round(img.height * s));
+            canvas.width = targetWidth;
+            canvas.height = targetHeight;
+            const ctx = canvas.getContext('2d');
+            ctx?.drawImage(img, 0, 0, targetWidth, targetHeight);
+            return canvas.toDataURL('image/jpeg', q);
+          };
 
-          if (width > height) {
-            if (width > MAX_WIDTH) {
-              height *= MAX_WIDTH / width;
-              width = MAX_WIDTH;
-            }
-          } else {
-            if (height > MAX_HEIGHT) {
-              width *= MAX_HEIGHT / height;
-              height = MAX_HEIGHT;
-            }
+          let scale = 1.0;
+          let quality = 0.75;
+          const maxDimension = 1200;
+          const currentMax = Math.max(img.width, img.height);
+          if (currentMax > maxDimension) {
+            scale = maxDimension / currentMax;
           }
 
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx?.drawImage(img, 0, 0, width, height);
-          
-          // Compress to JPEG with 0.7 quality
-          const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+          let dataUrl = getCompressedDataUrl(quality, scale);
+          let iterations = 0;
+
+          // Iteratively reduce quality and scale if base64 string exceeds backend @MaxLength constraint (1048576)
+          while (dataUrl.length > 1048576 && iterations < 5) {
+            quality = Math.max(0.1, quality - 0.15);
+            scale = Math.max(0.3, scale - 0.15);
+            dataUrl = getCompressedDataUrl(quality, scale);
+            iterations++;
+          }
+
           resolve(dataUrl);
         };
       };
@@ -59,15 +64,21 @@ const CartDrawer: React.FC = () => {
     const files = e.target.files;
     if (!files) return;
 
-    const maxFiles = 20; // Prevent huge payloads
-    const newImages: string[] = [];
+    const maxFiles = 5; // Backend only supports maximum of 5 images
+    if (images.length + files.length > maxFiles) {
+      showToast(`Maximum of ${maxFiles} images allowed. Only the first ${maxFiles - images.length} will be added.`, 'warning');
+    }
 
-    for (const file of Array.from(files)) {
+    const newImages: string[] = [];
+    const spaceLeft = maxFiles - images.length;
+    const filesToAdd = Array.from(files).slice(0, spaceLeft);
+
+    for (const file of filesToAdd) {
       const compressedDataUrl = await compressImage(file);
       newImages.push(compressedDataUrl);
     }
     
-    setImages(prev => [...prev, ...newImages].slice(0, maxFiles));
+    setImages(prev => [...prev, ...newImages]);
   };
 
   const removeImage = (index: number) => {
