@@ -149,7 +149,7 @@ export default function QuickBrowseSection() {
                                             href={item.href}
                                             className="group relative flex flex-col overflow-hidden bg-white border border-black/5 rounded-2xl hover:border-black/20 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full"
                                         >
-                                            <div className="relative h-48 w-full overflow-hidden bg-gray-100">
+                                            <div className="relative h-36 sm:h-48 w-full overflow-hidden bg-gray-100">
                                                 {item.imageSrc ? (
                                                     <Image
                                                         src={item.imageSrc}
@@ -171,18 +171,20 @@ export default function QuickBrowseSection() {
                                                 </div>
                                             </div>
 
-                                            <div className="p-6 flex-1 flex flex-col">
-                                                <div className="flex items-center gap-3 mb-2">
-                                                    <div className="p-2 rounded-lg bg-black/5 text-black group-hover:text-[#B266FF] transition-colors">
-                                                        <ItemIcon size={18} />
+                                            <div className="p-4 sm:p-6 flex-1 flex flex-col justify-between">
+                                                <div>
+                                                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
+                                                        <div className="p-2 rounded-lg bg-black/5 text-black group-hover:text-[#B266FF] transition-colors w-fit">
+                                                            <ItemIcon size={18} />
+                                                        </div>
+                                                        <h3 className="text-base sm:text-lg font-bold text-black group-hover:text-[#B266FF] transition-colors break-words">
+                                                            {item.label}
+                                                        </h3>
                                                     </div>
-                                                    <h3 className="text-lg font-bold text-black group-hover:text-[#B266FF] transition-colors">
-                                                        {item.label}
-                                                    </h3>
                                                 </div>
 
                                                 {item.description && (
-                                                    <p className="text-sm text-gray-500 mt-auto">
+                                                    <p className="text-xs sm:text-sm text-gray-500 mt-2">
                                                         {item.description}
                                                     </p>
                                                 )}
