@@ -104,8 +104,8 @@ export default function QuickBrowseSection() {
                 </div>
 
                 <div className="flex flex-col gap-12">
-                    <div className="w-full flex justify-center overflow-x-auto pb-4 md:pb-0 scrollbar-hide">
-                        <div className="flex gap-2 bg-white/50 backdrop-blur-sm p-1.5 rounded-2xl border border-black/5">
+                    <div className="w-full flex justify-center pb-4 md:pb-0">
+                        <div className="flex flex-wrap md:flex-nowrap justify-center gap-2 bg-white/50 backdrop-blur-sm p-1.5 rounded-2xl border border-black/5 max-w-full">
                             {QUICK_BROWSE_DATA.map((section) => {
                                 const Icon = section.icon;
                                 const isActive = activeTab === section.id;
@@ -115,15 +115,15 @@ export default function QuickBrowseSection() {
                                         key={section.id}
                                         onClick={() => setActiveTab(section.id)}
                                         className={`
-                                            flex items-center gap-2 px-6 py-3 rounded-xl transition-all duration-300 whitespace-nowrap
+                                            flex items-center gap-1.5 sm:gap-2 px-3 py-2 sm:px-6 sm:py-3 rounded-xl transition-all duration-300 text-sm sm:text-base whitespace-nowrap
                                             ${isActive
                                                 ? 'bg-black text-white font-bold shadow-lg shadow-black/10'
                                                 : 'text-gray-600 hover:bg-black/5 hover:text-black'
                                             }
                                         `}
                                     >
-                                        <Icon size={18} className={isActive ? "text-[#B266FF]" : "text-current"} />
-                                        <span className="text-base">{section.label}</span>
+                                        <Icon className={`w-4 h-4 sm:w-[18px] sm:h-[18px] ${isActive ? "text-[#B266FF]" : "text-current"}`} />
+                                        <span>{section.label}</span>
                                     </button>
                                 );
                             })}
