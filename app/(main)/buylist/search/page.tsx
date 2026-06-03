@@ -176,7 +176,11 @@ const LoadingState = styled.div`
 const PageContainer = styled.div`
   min-height: 100vh;
   background: #F1F1F1;
-  padding-top: 60px;
+  padding-top: 112px;
+
+  @media (min-width: 768px) {
+    padding-top: 160px;
+  }
 `;
 
 const MainContent = styled.main`
