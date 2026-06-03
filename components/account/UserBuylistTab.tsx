@@ -55,7 +55,7 @@ export default function UserBuylistTab() {
                             {new Date(offer.createdAt).toLocaleDateString()}
                         </p>
                         <div className="text-sm text-gray-300">
-                            {offer.items?.length || 0} cards submitted
+                            {offer.items?.reduce((sum: number, item: any) => sum + (item.quantity || 0), 0) || 0} cards submitted
                         </div>
                     </div>
                     <div className="flex flex-col md:items-end justify-between">

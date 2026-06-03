@@ -22,7 +22,7 @@ const BulkPreview: React.FC<BulkPreviewProps> = ({ results, onRemove, onQuantity
     return (
         <PreviewContainer>
             <PreviewHeader>
-                <PreviewTitle>Preview ({results.length} cards)</PreviewTitle>
+                <PreviewTitle>Preview ({results.reduce((sum: number, r: any) => sum + (r.quantity || 0), 0)} cards)</PreviewTitle>
                 <PreviewStats>
                     <StatItem className="success">✓ {matchedCount} matched</StatItem>
                     {unmatchedCount > 0 && (
