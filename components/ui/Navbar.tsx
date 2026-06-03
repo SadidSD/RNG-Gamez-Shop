@@ -65,8 +65,16 @@ export default function Navbar() {
 
     return (
         <>
+            {/* Free Shipping Announcement Bar */}
+            <div className={`fixed top-0 left-0 right-0 z-[60] transition-transform duration-300 ${isVisible ? "translate-y-0" : "-translate-y-full"}`}>
+                <div className="bg-gradient-to-r from-purple-700 via-purple-600 to-purple-700 text-white text-center py-2 px-4 text-xs sm:text-sm font-medium tracking-wide flex items-center justify-center gap-2">
+                    <span>🚚</span>
+                    <span>FREE SHIPPING on orders over <strong>$75</strong> — Flat rate <strong>$4.99</strong> under $75 · NJ Sales Tax (6.625%) applied at checkout</span>
+                </div>
+            </div>
+
             <nav
-                className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 md:px-6 py-2 bg-purple-900/20 backdrop-blur-md border-b border-white/10 transition-transform duration-300 ${
+                className={`fixed top-[33px] left-0 right-0 z-50 flex items-center justify-between px-4 md:px-6 py-2 bg-purple-900/20 backdrop-blur-md border-b border-white/10 transition-transform duration-300 ${
                     isVisible ? "translate-y-0" : "-translate-y-full"
                 }`}
             >
