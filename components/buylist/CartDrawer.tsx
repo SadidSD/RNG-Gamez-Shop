@@ -1,20 +1,32 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '@/context/BuylistCartContext';
 import { useToast } from '@/context/ToastContext';
+import { useAuth } from '@/context/AuthContext';
 import axios from 'axios';
 
 const CartDrawer: React.FC = () => {
   const { items, removeItem, updateQuantity, totals, isOpen, closeCart, clearCart, images, setImages } = useCart();
   const { showToast } = useToast();
+  const { user } = useAuth();
   // const [paymentMethod, setPaymentMethod] = useState<'cash' | 'credit'>('cash'); // Removed: Credit Only
   const [customerName, setCustomerName] = useState('');
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+  useEffect(() => {
+    if (user) {
+      setCustomerName(`${user.firstName || ''} ${user.lastName || ''}`.trim());
+      setEmail(user.email || '');
+    } else {
+      setCustomerName('');
+      setEmail('');
+    }
+  }, [user, isOpen]);
 
   const compressImage = (file: File): Promise<string> => {
     return new Promise((resolve) => {
@@ -257,12 +269,14 @@ const CartDrawer: React.FC = () => {
                     placeholder="Full Name"
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
+                    disabled={!!user}
                   />
                   <Input
                     type="email"
                     placeholder="Email Address"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    disabled={!!user}
                   />
                 </FormGroup>
 
@@ -357,6 +371,12 @@ const Input = styled.input`
     &:focus {
         outline: none;
         border-color: #B473FF;
+    }
+    &:disabled {
+        background-color: #f3f4f6;
+        color: #9ca3af;
+        cursor: not-allowed;
+        border-color: #e5e7eb;
     }
 `;
 
