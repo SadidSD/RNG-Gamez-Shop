@@ -20,7 +20,9 @@ const CartDrawer: React.FC = () => {
 
   useEffect(() => {
     if (user) {
-      setCustomerName(`${user.firstName || ''} ${user.lastName || ''}`.trim());
+      // Build name from firstName/lastName; fall back to the part before @ in the email
+      const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+      setCustomerName(fullName || (user.email ? user.email.split('@')[0] : ''));
       setEmail(user.email || '');
     } else {
       setCustomerName('');
@@ -269,7 +271,7 @@ const CartDrawer: React.FC = () => {
                     placeholder="Full Name"
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
-                    disabled={!!user}
+                    disabled={!!user && !!customerName}
                   />
                   <Input
                     type="email"
