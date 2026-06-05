@@ -37,8 +37,10 @@ const Footer = () => {
 
                 {/* Bottom Section */}
                 <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-sm text-gray-400">
-                    <div>
-                        © 2025 RNG-Gamez. All rights reserved.
+                    <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
+                        <span>© 2025 RNG-Gamez. All rights reserved.</span>
+                        <span className="hidden sm:inline text-gray-700">|</span>
+                        <span>Developed by <a href="https://bleertcg.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#B266FF] transition-colors underline underline-offset-4 font-semibold">bleertcg.com</a></span>
                     </div>
 
                     <div className="flex items-center gap-6">
