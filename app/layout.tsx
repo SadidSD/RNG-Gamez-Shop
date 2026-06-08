@@ -16,8 +16,37 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  title: "RNG Gamez",
-  description: "RNG Gamez - The Ultimate TCG Store",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://rnggamez.com'),
+  title: {
+    default: "RNG Gamez | The Ultimate TCG Store",
+    template: "%s | RNG Gamez"
+  },
+  description: "Buy and sell Magic: The Gathering and Pokémon cards, booster boxes, and card accessories. Best trade-in value on our buylist!",
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title: "RNG Gamez | The Ultimate TCG Store",
+    description: "Buy and sell Magic: The Gathering and Pokémon cards, booster boxes, and card accessories.",
+    url: "https://rnggamez.com",
+    siteName: "RNG Gamez",
+    images: [
+      {
+        url: "/images/og-default.jpg",
+        width: 1200,
+        height: 630,
+        alt: "RNG Gamez Storefront"
+      }
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "RNG Gamez | The Ultimate TCG Store",
+    description: "Buy and sell Magic: The Gathering and Pokémon cards.",
+    images: ["/images/og-default.jpg"],
+  }
 };
 
 
