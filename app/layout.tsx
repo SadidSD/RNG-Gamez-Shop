@@ -16,7 +16,7 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://rnggamez.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://www.rng-gamez.com'),
   title: {
     default: "RNG Gamez | The Ultimate TCG Store",
     template: "%s | RNG Gamez"
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "RNG Gamez | The Ultimate TCG Store",
     description: "Buy and sell Magic: The Gathering and Pokémon cards, booster boxes, and card accessories.",
-    url: "https://rnggamez.com",
+    url: "https://www.rng-gamez.com",
     siteName: "RNG Gamez",
     images: [
       {

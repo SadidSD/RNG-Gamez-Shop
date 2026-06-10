@@ -3,7 +3,7 @@ import { MetadataRoute } from 'next';
 export const dynamic = 'force-dynamic';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://rnggamez.com';
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.rng-gamez.com';
     
     // 1. Define Static Routes
     const staticRoutes = ['', '/about', '/shop', '/singles', '/sealed', '/buylist', '/events'].map(route => ({
