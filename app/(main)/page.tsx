@@ -75,8 +75,52 @@ export default function Home() {
     fetchSealed();
   }, []);
 
+  const businessSchema = {
+    "@context": "https://schema.org",
+    "@type": "HobbyShop",
+    "name": "RNG Gamez",
+    "url": "https://www.rng-gamez.com",
+    "logo": "https://www.rng-gamez.com/icon.png",
+    "image": "https://www.rng-gamez.com/hero-bg-final.jpg",
+    "description": "Premium hobby shop and TCG specialist store in South Plainfield, NJ. Buy and sell Magic: The Gathering, Pokémon cards, sealed booster boxes, and accessories.",
+    "telephone": "(908) 483-2730",
+    "email": "rnggameztcg@gmail.com",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "2325 Plainfield Ave",
+      "addressLocality": "South Plainfield",
+      "addressRegion": "NJ",
+      "postalCode": "07080",
+      "addressCountry": "US"
+    },
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Tuesday", "Wednesday", "Thursday", "Friday"],
+        "opens": "14:00",
+        "closes": "22:00"
+      },
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Saturday", "Sunday"],
+        "opens": "13:00",
+        "closes": "22:00"
+      }
+    ],
+    "sameAs": [
+      "https://instagram.com/rng_gamez_tcg",
+      "https://www.facebook.com/rnggamestore",
+      "https://patreon.com/RNG_GAMEZ",
+      "https://www.youtube.com/watch?v=djZhGbDuqpk"
+    ]
+  };
+
   return (
     <main className="min-h-screen overflow-x-hidden">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(businessSchema) }}
+      />
       <div className="relative h-screen w-full bg-black">
         <Image
           src="/hero-bg-final.jpg"
