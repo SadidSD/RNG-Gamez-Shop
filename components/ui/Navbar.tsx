@@ -60,6 +60,7 @@ export default function Navbar() {
         { name: "Sealed", href: "/sealed" },
         { name: "Sets", href: "/sets" },
         { name: "Formats", href: "/shop" },
+        { name: "Events", href: "/events" },
         { name: "New Arrivals", href: "/shop?sort=newest" },
     ];
 
