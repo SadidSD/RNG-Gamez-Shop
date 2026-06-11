@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, MapPin, Users, Trophy, Clock, Filter, ArrowRight } from 'lucide-react';
+import { Calendar, MapPin, Users, Trophy, Clock, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/UiCard';
 
@@ -25,22 +25,29 @@ interface Event {
     };
 }
 
+type ModalState = 'idle' | 'submitting' | 'success' | 'waitlisted' | 'redirecting' | 'error';
+
 export default function EventsPage() {
     const [selectedGame, setSelectedGame] = useState("All");
     const [events, setEvents] = useState<Event[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    // Modal State
-    const [isRegistering, setIsRegistering] = useState<boolean>(false);
-    const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
-    const [playerName, setPlayerName] = useState<string>('');
-    const [playerEmail, setPlayerEmail] = useState<string>('');
-    const [regSuccess, setRegSuccess] = useState<string | null>(null);
-    const [regError, setRegError] = useState<string | null>(null);
-    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+    // Modal state
+    const [isOpen, setIsOpen] = useState<boolean>(false);
+    const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+    const [playerName, setPlayerName] = useState('');
+    const [playerEmail, setPlayerEmail] = useState('');
+    const [modalState, setModalState] = useState<ModalState>('idle');
+    const [modalMessage, setModalMessage] = useState('');
 
     React.useEffect(() => {
+        const searchParams = new URLSearchParams(window.location.search);
+        const paymentStatus = searchParams.get('payment');
+        if (paymentStatus === 'success') {
+            // Optionally show a toast here
+        }
+
         const fetchEvents = async () => {
             try {
                 const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/events`, {
@@ -54,8 +61,8 @@ export default function EventsPage() {
                 } else {
                     setError("Failed to fetch events from server.");
                 }
-            } catch (error) {
-                console.error("Failed to fetch events", error);
+            } catch (err) {
+                console.error("Failed to fetch events", err);
                 setError("Network error. Please try again later.");
             } finally {
                 setLoading(false);
@@ -74,68 +81,93 @@ export default function EventsPage() {
         });
     }, [events, selectedGame]);
 
-    const handleOpenRegister = (eventId: string) => {
-        setSelectedEventId(eventId);
-        setIsRegistering(true);
+    const handleOpenModal = (event: Event) => {
+        setSelectedEvent(event);
+        setIsOpen(true);
         setPlayerName('');
         setPlayerEmail('');
-        setRegSuccess(null);
-        setRegError(null);
+        setModalState('idle');
+        setModalMessage('');
     };
 
-    const handleRegisterSubmit = async (e: React.FormEvent) => {
+    const handleCloseModal = () => {
+        if (modalState === 'submitting' || modalState === 'redirecting') return;
+        setIsOpen(false);
+        setSelectedEvent(null);
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setRegError(null);
-        setRegSuccess(null);
-        setIsSubmitting(true);
-        
+        if (!selectedEvent) return;
+
+        setModalState('submitting');
+        const isPaid = Number(selectedEvent.entryFee) > 0;
+
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/events/${selectedEventId}/register`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-api-key': process.env.NEXT_PUBLIC_API_KEY || ''
-                },
-                body: JSON.stringify({
-                    playerName,
-                    playerEmail: playerEmail || undefined
-                })
-            });
-            
-            if (res.ok) {
-                setRegSuccess("Successfully registered! We can't wait to see you.");
-                // Refresh events list to show updated player count
-                const updatedEvents = events.map(event => {
-                    if (event.id === selectedEventId) {
-                        return {
-                            ...event,
-                            _count: {
-                                players: (event._count?.players || 0) + 1
-                            }
-                        };
-                    }
-                    return event;
-                });
-                setEvents(updatedEvents);
-                
-                setTimeout(() => {
-                    setIsRegistering(false);
-                }, 2000);
-            } else {
-                const data = await res.json();
-                const message = data.message || "Failed to register. Please try again.";
-                if (res.status === 400 && message.toLowerCase().includes("full")) {
-                    setRegError("Sorry, this event is already full.");
-                } else if (res.status === 409 && message.toLowerCase().includes("already")) {
-                    setRegError("You are already registered for this event.");
-                } else {
-                    setRegError(message);
+            const endpoint = isPaid ? 'checkout' : 'register';
+            const res = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL}/events/${selectedEvent.id}/${endpoint}`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': process.env.NEXT_PUBLIC_API_KEY || ''
+                    },
+                    body: JSON.stringify({
+                        playerName,
+                        playerEmail: playerEmail || undefined,
+                        successUrl: `${window.location.origin}/events?payment=success`,
+                        cancelUrl: `${window.location.origin}/events?payment=cancelled`,
+                    })
                 }
+            );
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                const msg = data.message || 'Registration failed. Please try again.';
+                setModalState('error');
+                setModalMessage(
+                    res.status === 409 && msg.toLowerCase().includes('already')
+                        ? 'You are already registered for this event.'
+                        : msg
+                );
+                return;
             }
+
+            // Waitlisted
+            if (data.waitlisted) {
+                setModalState('waitlisted');
+                setModalMessage(`You've been added to the waitlist at position #${data.position}. We'll notify you if a spot opens up!`);
+                return;
+            }
+
+            // Paid event → redirect to Stripe
+            if (data.checkoutUrl) {
+                setModalState('redirecting');
+                setModalMessage('Redirecting you to secure checkout...');
+                setTimeout(() => {
+                    window.location.href = data.checkoutUrl;
+                }, 800);
+                return;
+            }
+
+            // Free event — registered successfully
+            setModalState('success');
+            setModalMessage("You're registered! A QR ticket will be emailed if you provided your email. See you there! 🎴");
+
+            // Optimistically update player count
+            setEvents(prev => prev.map(ev =>
+                ev.id === selectedEvent.id
+                    ? { ...ev, _count: { players: (ev._count?.players || 0) + 1 } }
+                    : ev
+            ));
+
+            setTimeout(() => setIsOpen(false), 3000);
+
         } catch (err) {
-            setRegError("Network error. Please check your connection and try again.");
-        } finally {
-            setIsSubmitting(false);
+            setModalState('error');
+            setModalMessage('Network error. Please check your connection and try again.');
         }
     };
 
@@ -162,7 +194,7 @@ export default function EventsPage() {
 
     return (
         <div className="min-h-screen bg-[#F1F1F1] pb-20">
-            {/* Hero Section */}
+            {/* Hero */}
             <div className="relative h-[40vh] bg-black overflow-hidden flex items-center justify-center">
                 <div className="absolute inset-0 opacity-60">
                     <img
@@ -214,6 +246,7 @@ export default function EventsPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {filteredEvents.map((event, index) => {
                         const isFull = event.maxPlayers ? (event._count?.players || 0) >= event.maxPlayers : false;
+                        const isPaid = Number(event.entryFee) > 0;
                         return (
                             <motion.div
                                 key={event.id}
@@ -222,15 +255,18 @@ export default function EventsPage() {
                                 transition={{ delay: index * 0.1 }}
                             >
                                 <Card className="overflow-hidden hover:shadow-2xl transition-shadow duration-300 bg-white border-0 h-full flex flex-col group">
-                                    {/* Image Badge */}
+                                    {/* Image */}
                                     <div className="relative h-48 overflow-hidden bg-gray-200">
                                         <div className="absolute top-4 right-4 z-10 bg-black/70 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
                                             {event.game || 'TCG'}
                                         </div>
                                         <img
-                                            src={event.image || "https://images.unsplash.com/photo-1613771404784-3a5686aa2be3?w=800&q=80"}
+                                            src={event.image || "/images/event-placeholder.jpg"}
                                             alt={event.name}
                                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                            onError={(e) => {
+                                                (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1613771404784-3a5686aa2be3?w=800&q=80";
+                                            }}
                                         />
                                         {/* Date Overlay */}
                                         <div className="absolute bottom-0 left-0 bg-white/90 backdrop-blur px-4 py-2 rounded-tr-xl">
@@ -239,6 +275,11 @@ export default function EventsPage() {
                                                 {new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                                             </div>
                                         </div>
+                                        {isFull && (
+                                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                                                <span className="text-white font-bold text-lg bg-black/60 px-4 py-2 rounded-full">WAITLIST AVAILABLE</span>
+                                            </div>
+                                        )}
                                     </div>
 
                                     <CardContent className="p-6 flex-1 flex flex-col space-y-4">
@@ -250,9 +291,7 @@ export default function EventsPage() {
                                         </div>
 
                                         {event.description && (
-                                            <p className="text-gray-600 text-sm line-clamp-2">
-                                                {event.description}
-                                            </p>
+                                            <p className="text-gray-600 text-sm line-clamp-2">{event.description}</p>
                                         )}
 
                                         <div className="space-y-3 flex-1">
@@ -264,9 +303,7 @@ export default function EventsPage() {
                                             </div>
                                             <div className="flex items-center gap-3 text-gray-600">
                                                 <MapPin size={16} />
-                                                <span className="text-sm line-clamp-1">
-                                                    {event.location || 'In-Store'}
-                                                </span>
+                                                <span className="text-sm line-clamp-1">{event.location || 'In-Store'}</span>
                                             </div>
                                             <div className="flex items-center gap-3 text-gray-600">
                                                 <Trophy size={16} />
@@ -284,12 +321,11 @@ export default function EventsPage() {
                                             <div className="text-xl font-bold">
                                                 {Number(event.entryFee) === 0 ? "Free" : `$${Number(event.entryFee).toFixed(2)}`}
                                             </div>
-                                            <Button 
-                                                className="!py-2 !px-6" 
-                                                disabled={isFull}
-                                                onClick={() => handleOpenRegister(event.id)}
+                                            <Button
+                                                className="!py-2 !px-6"
+                                                onClick={() => handleOpenModal(event)}
                                             >
-                                                {isFull ? "Event Full" : "Join Now"}
+                                                {isFull ? "Join Waitlist" : (isPaid ? "Buy Ticket" : "Join Now")}
                                             </Button>
                                         </div>
                                     </CardContent>
@@ -306,90 +342,143 @@ export default function EventsPage() {
                 )}
             </div>
 
-            {/* Registration Modal */}
+            {/* Registration / Checkout Modal */}
             <AnimatePresence>
-                {isRegistering && selectedEventId && (
+                {isOpen && selectedEvent && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                         {/* Backdrop */}
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            onClick={() => setIsRegistering(false)}
+                            onClick={handleCloseModal}
                             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
                         />
-                        
-                        {/* Modal Content */}
-                        <motion.div 
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.95 }}
+
+                        {/* Modal */}
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 10 }}
                             className="relative bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl z-10 border border-gray-100"
                         >
-                            <button 
-                                onClick={() => setIsRegistering(false)}
-                                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
-                            >
-                                ✕
-                            </button>
-                            <h3 className="text-2xl font-bold mb-2 text-black">Register for Event</h3>
-                            <p className="text-gray-600 mb-6 text-sm">
-                                Fill in your details below to secure your spot in <span className="font-semibold text-black">{events.find(e => e.id === selectedEventId)?.name}</span>.
-                            </p>
-                            
-                            <form onSubmit={handleRegisterSubmit} className="space-y-4">
-                                <div className="space-y-1">
-                                    <label className="text-sm font-semibold text-gray-700">Player Name <span className="text-red-500">*</span></label>
-                                    <input 
-                                        type="text"
-                                        required
-                                        value={playerName}
-                                        onChange={(e) => setPlayerName(e.target.value)}
-                                        placeholder="John Doe"
-                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A855F7] text-black"
-                                    />
+                            {/* Close button */}
+                            {modalState !== 'submitting' && modalState !== 'redirecting' && (
+                                <button
+                                    onClick={handleCloseModal}
+                                    className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors text-xl font-light"
+                                >
+                                    ✕
+                                </button>
+                            )}
+
+                            {/* Success / Waitlisted / Redirecting states */}
+                            {(modalState === 'success' || modalState === 'waitlisted' || modalState === 'redirecting') ? (
+                                <div className="text-center space-y-4 py-4">
+                                    {modalState === 'success' && (
+                                        <CheckCircle2 size={56} className="text-green-500 mx-auto" />
+                                    )}
+                                    {modalState === 'waitlisted' && (
+                                        <div className="text-5xl">⏳</div>
+                                    )}
+                                    {modalState === 'redirecting' && (
+                                        <Loader2 size={48} className="text-[#A855F7] mx-auto animate-spin" />
+                                    )}
+                                    <h3 className="text-xl font-bold text-black">
+                                        {modalState === 'success' && "You're In! 🎴"}
+                                        {modalState === 'waitlisted' && "Added to Waitlist!"}
+                                        {modalState === 'redirecting' && "Redirecting to Checkout..."}
+                                    </h3>
+                                    <p className="text-gray-600 text-sm">{modalMessage}</p>
                                 </div>
-                                <div className="space-y-1">
-                                    <label className="text-sm font-semibold text-gray-700">Email Address <span className="text-gray-400 font-normal">(optional)</span></label>
-                                    <input 
-                                        type="email"
-                                        value={playerEmail}
-                                        onChange={(e) => setPlayerEmail(e.target.value)}
-                                        placeholder="john@example.com"
-                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A855F7] text-black"
-                                    />
-                                </div>
-                                
-                                {regError && (
-                                    <div className="p-3 bg-red-50 text-red-600 rounded-lg text-sm font-medium border border-red-100">
-                                        {regError}
+                            ) : (
+                                <>
+                                    <div className="mb-6">
+                                        <h3 className="text-2xl font-bold text-black">
+                                            {Number(selectedEvent.entryFee) > 0 ? "Buy Your Ticket" : "Register for Event"}
+                                        </h3>
+                                        <p className="text-gray-500 text-sm mt-1">
+                                            <span className="font-semibold text-black">{selectedEvent.name}</span>
+                                            {" — "}
+                                            {new Date(selectedEvent.date).toLocaleDateString('en-US', {
+                                                weekday: 'short', month: 'long', day: 'numeric'
+                                            })}
+                                        </p>
+                                        {Number(selectedEvent.entryFee) > 0 && (
+                                            <div className="mt-3 p-3 bg-purple-50 rounded-xl border border-purple-100 text-sm text-purple-700">
+                                                🔒 You'll be redirected to secure Stripe checkout to pay <strong>${Number(selectedEvent.entryFee).toFixed(2)}</strong>. Your ticket QR code will be emailed after payment.
+                                            </div>
+                                        )}
                                     </div>
-                                )}
-                                
-                                {regSuccess && (
-                                    <div className="p-3 bg-green-50 text-green-600 rounded-lg text-sm font-medium border border-green-100">
-                                        {regSuccess}
-                                    </div>
-                                )}
-                                
-                                <div className="pt-4 flex justify-end gap-3">
-                                    <button 
-                                        type="button"
-                                        onClick={() => setIsRegistering(false)}
-                                        className="px-5 py-2 border border-gray-200 rounded-full text-gray-600 hover:bg-gray-50 transition-colors font-semibold"
-                                        disabled={isSubmitting}
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button 
-                                        type="submit"
-                                        disabled={isSubmitting || !!regSuccess}
-                                        className="px-6 py-2 bg-black hover:bg-[#A855F7] text-white rounded-full transition-colors font-semibold disabled:opacity-50"
-                                    >
-                                        {isSubmitting ? "Registering..." : "Confirm Spot"}
-                                    </button>
-                                </div>
-                            </form>
+
+                                    <form onSubmit={handleSubmit} className="space-y-4">
+                                        <div className="space-y-1">
+                                            <label className="text-sm font-semibold text-gray-700">
+                                                Player Name <span className="text-red-500">*</span>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                required
+                                                value={playerName}
+                                                onChange={(e) => setPlayerName(e.target.value)}
+                                                placeholder="John Doe"
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A855F7] text-black"
+                                            />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-sm font-semibold text-gray-700">
+                                                Email Address{' '}
+                                                {Number(selectedEvent.entryFee) > 0
+                                                    ? <span className="text-red-500">*</span>
+                                                    : <span className="text-gray-400 font-normal">(optional — for ticket)</span>
+                                                }
+                                            </label>
+                                            <input
+                                                type="email"
+                                                required={Number(selectedEvent.entryFee) > 0}
+                                                value={playerEmail}
+                                                onChange={(e) => setPlayerEmail(e.target.value)}
+                                                placeholder="john@example.com"
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A855F7] text-black"
+                                            />
+                                        </div>
+
+                                        {modalState === 'error' && (
+                                            <div className="p-3 bg-red-50 text-red-600 rounded-lg text-sm font-medium border border-red-100 flex items-start gap-2">
+                                                <AlertCircle size={16} className="mt-0.5 shrink-0" />
+                                                {modalMessage}
+                                            </div>
+                                        )}
+
+                                        <div className="pt-4 flex justify-end gap-3">
+                                            <button
+                                                type="button"
+                                                onClick={handleCloseModal}
+                                                className="px-5 py-2 border border-gray-200 rounded-full text-gray-600 hover:bg-gray-50 transition-colors font-semibold"
+                                                disabled={modalState === 'submitting'}
+                                            >
+                                                Cancel
+                                            </button>
+                                            <button
+                                                type="submit"
+                                                disabled={modalState === 'submitting'}
+                                                className="px-6 py-2 bg-black hover:bg-[#A855F7] text-white rounded-full transition-colors font-semibold disabled:opacity-50 flex items-center gap-2"
+                                            >
+                                                {modalState === 'submitting' ? (
+                                                    <>
+                                                        <Loader2 size={16} className="animate-spin" />
+                                                        Processing...
+                                                    </>
+                                                ) : Number(selectedEvent.entryFee) > 0 ? (
+                                                    `Pay $${Number(selectedEvent.entryFee).toFixed(2)}`
+                                                ) : (
+                                                    'Confirm Spot'
+                                                )}
+                                            </button>
+                                        </div>
+                                    </form>
+                                </>
+                            )}
                         </motion.div>
                     </div>
                 )}
