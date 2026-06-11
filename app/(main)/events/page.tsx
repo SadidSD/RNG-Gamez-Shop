@@ -1,10 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, MapPin, Users, Trophy, Clock, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
+import { Calendar, MapPin, Users, Trophy, Clock, CheckCircle2, AlertCircle, Loader2, LogIn } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/UiCard';
+import { useAuth } from '@/context/AuthContext';
 
 const FILTERS = ["All", "MTG", "Pokemon", "Yu-Gi-Oh!", "Lorcana", "One Piece"];
 
@@ -28,6 +30,8 @@ interface Event {
 type ModalState = 'idle' | 'submitting' | 'success' | 'waitlisted' | 'redirecting' | 'error';
 
 export default function EventsPage() {
+    const { user } = useAuth();
+    const router = useRouter();
     const [selectedGame, setSelectedGame] = useState("All");
     const [events, setEvents] = useState<Event[]>([]);
     const [loading, setLoading] = useState(true);
@@ -82,10 +86,17 @@ export default function EventsPage() {
     }, [events, selectedGame]);
 
     const handleOpenModal = (event: Event) => {
+        // Require login to register or buy a ticket
+        if (!user) {
+            router.push(`/login?redirect=/events`);
+            return;
+        }
+
         setSelectedEvent(event);
         setIsOpen(true);
-        setPlayerName('');
-        setPlayerEmail('');
+        // Pre-fill from logged-in user profile
+        setPlayerName(user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : '');
+        setPlayerEmail(user.email || '');
         setModalState('idle');
         setModalMessage('');
     };
@@ -322,9 +333,10 @@ export default function EventsPage() {
                                                 {Number(event.entryFee) === 0 ? "Free" : `$${Number(event.entryFee).toFixed(2)}`}
                                             </div>
                                             <Button
-                                                className="!py-2 !px-6"
+                                                className="!py-2 !px-6 flex items-center gap-2"
                                                 onClick={() => handleOpenModal(event)}
                                             >
+                                                {!user && <LogIn size={15} />}
                                                 {isFull ? "Join Waitlist" : (isPaid ? "Buy Ticket" : "Join Now")}
                                             </Button>
                                         </div>
@@ -412,6 +424,14 @@ export default function EventsPage() {
                                     </div>
 
                                     <form onSubmit={handleSubmit} className="space-y-4">
+                                        {/* Logged in badge */}
+                                        {user && (
+                                            <div className="flex items-center gap-2 p-2.5 bg-green-50 border border-green-100 rounded-lg text-sm text-green-700">
+                                                <CheckCircle2 size={14} className="shrink-0" />
+                                                <span>Registering as <strong>{user.email}</strong></span>
+                                            </div>
+                                        )}
+
                                         <div className="space-y-1">
                                             <label className="text-sm font-semibold text-gray-700">
                                                 Player Name <span className="text-red-500">*</span>
@@ -430,7 +450,7 @@ export default function EventsPage() {
                                                 Email Address{' '}
                                                 {Number(selectedEvent.entryFee) > 0
                                                     ? <span className="text-red-500">*</span>
-                                                    : <span className="text-gray-400 font-normal">(optional — for ticket)</span>
+                                                    : <span className="text-gray-400 font-normal">(for ticket delivery)</span>
                                                 }
                                             </label>
                                             <input
@@ -439,7 +459,8 @@ export default function EventsPage() {
                                                 value={playerEmail}
                                                 onChange={(e) => setPlayerEmail(e.target.value)}
                                                 placeholder="john@example.com"
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A855F7] text-black"
+                                                readOnly={!!user?.email}
+                                                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A855F7] text-black ${user?.email ? 'bg-gray-50 text-gray-500 cursor-default' : ''}`}
                                             />
                                         </div>
 
