@@ -44,7 +44,7 @@ const SellYourCardsSection = () => {
                 {/* Box 1 */}
                 <div className="relative h-[500px] bg-gray-300 rounded-[30px] overflow-hidden group">
                     <Image
-                        src="/sellYourCards.png"
+                        src="/sellYourCards.png?v=2"
                         alt="Sell Your Cards"
                         fill
                         className="object-cover transition-transform duration-500 group-hover:scale-110"
@@ -63,7 +63,7 @@ const SellYourCardsSection = () => {
                 {/* Box 2 */}
                 <div className="relative h-[500px] bg-gray-300 rounded-[30px] overflow-hidden group">
                     <Image
-                        src="/getCreditScore.jpg"
+                        src="/getCreditScore.jpg?v=2"
                         alt="Get Credit Scores"
                         fill
                         className="object-cover transition-transform duration-500 group-hover:scale-110"
@@ -82,7 +82,7 @@ const SellYourCardsSection = () => {
                 {/* Box 3 */}
                 <div className="relative h-[500px] bg-gray-300 rounded-[30px] overflow-hidden group">
                     <Image
-                        src="/buyNewCards.jpg"
+                        src="/buyNewCards.jpg?v=2"
                         alt="Buy New Cards"
                         fill
                         className="object-cover transition-transform duration-500 group-hover:scale-110"
