@@ -3,9 +3,10 @@
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import { CreditCard, Package, Settings, LogOut, Loader2 } from "lucide-react";
+import { CreditCard, Package, Settings, LogOut, Loader2, Ticket } from "lucide-react";
 import UserOrdersTab from "@/components/account/UserOrdersTab";
 import UserBuylistTab from "@/components/account/UserBuylistTab";
+import UserTicketsTab from "@/components/account/UserTicketsTab";
 
 export default function AccountPage() {
     const { user, loading, logout } = useAuth();
@@ -74,6 +75,15 @@ export default function AccountPage() {
                                 >
                                     <CreditCard size={18} />
                                     Buylist History
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab("tickets")}
+                                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
+                                        activeTab === "tickets" ? "bg-purple-500/20 text-purple-300 font-medium border border-purple-500/20" : "text-gray-400 hover:text-white hover:bg-white/5 border border-transparent"
+                                    }`}
+                                >
+                                    <Ticket size={18} />
+                                    My Tickets
                                 </button>
                                 <hr className="border-white/10 my-4" />
                                 <button
@@ -147,6 +157,12 @@ export default function AccountPage() {
                                     <h2 className="text-2xl font-semibold text-white mb-2">Buylist Offers</h2>
                                     <p className="text-gray-400 mb-6">Track the status of your submitted cards.</p>
                                     <UserBuylistTab />
+                                </div>
+                            )}
+
+                            {activeTab === "tickets" && (
+                                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                                    <UserTicketsTab />
                                 </div>
                             )}
                         </div>

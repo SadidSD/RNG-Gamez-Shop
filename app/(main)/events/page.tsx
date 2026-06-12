@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, MapPin, Users, Trophy, Clock, CheckCircle2, AlertCircle, Loader2, LogIn } from 'lucide-react';
+import { Calendar, MapPin, Users, Trophy, Clock, CheckCircle2, AlertCircle, Loader2, LogIn, Grid, ChevronLeft, ChevronRight, CalendarDays } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/UiCard';
 import { useAuth } from '@/context/AuthContext';
@@ -33,6 +33,12 @@ export default function EventsPage() {
     const { user } = useAuth();
     const router = useRouter();
     const [selectedGame, setSelectedGame] = useState("All");
+    const [selectedType, setSelectedType] = useState("All");
+    const [selectedDay, setSelectedDay] = useState("All");
+    const [viewMode, setViewMode] = useState<"grid" | "calendar">("grid");
+    const [currentCalendarDate, setCurrentCalendarDate] = useState(new Date());
+    const [selectedCalendarDate, setSelectedCalendarDate] = useState<Date | null>(null);
+
     const [events, setEvents] = useState<Event[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -76,14 +82,68 @@ export default function EventsPage() {
     }, []);
 
     const filteredEvents = React.useMemo(() => {
-        if (selectedGame === "All") return events;
         return events.filter(e => {
-            if (!e.game) return false;
-            const normalizedGame = e.game.toLowerCase().replace(/\s+/g, '');
-            const normalizedSelected = selectedGame.toLowerCase().replace(/\s+/g, '');
-            return normalizedGame === normalizedSelected;
+            // Game filter
+            if (selectedGame !== "All") {
+                if (!e.game) return false;
+                const normalizedGame = e.game.toLowerCase().replace(/\s+/g, '');
+                const normalizedSelected = selectedGame.toLowerCase().replace(/\s+/g, '');
+                if (normalizedGame !== normalizedSelected) return false;
+            }
+
+            // Type filter
+            if (selectedType !== "All") {
+                const isPaid = Number(e.entryFee) > 0;
+                if (selectedType === "Tournament" && !isPaid) return false;
+                if (selectedType === "Casual" && isPaid) return false;
+            }
+
+            // Day of Week filter
+            if (selectedDay !== "All") {
+                const eventDay = new Date(e.date).toLocaleDateString('en-US', { weekday: 'long' });
+                if (eventDay !== selectedDay) return false;
+            }
+
+            return true;
         });
-    }, [events, selectedGame]);
+    }, [events, selectedGame, selectedType, selectedDay]);
+
+    const getEventsForDate = (date: Date) => {
+        return filteredEvents.filter(e => {
+            const eDate = new Date(e.date);
+            return eDate.getFullYear() === date.getFullYear() &&
+                   eDate.getMonth() === date.getMonth() &&
+                   eDate.getDate() === date.getDate();
+        });
+    };
+
+    const handlePrevMonth = () => {
+        setCurrentCalendarDate(prev => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
+        setSelectedCalendarDate(null);
+    };
+
+    const handleNextMonth = () => {
+        setCurrentCalendarDate(prev => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
+        setSelectedCalendarDate(null);
+    };
+
+    const calendarMonthEvents = React.useMemo(() => {
+        return filteredEvents.filter(e => {
+            const eDate = new Date(e.date);
+            return eDate.getFullYear() === currentCalendarDate.getFullYear() &&
+                   eDate.getMonth() === currentCalendarDate.getMonth();
+        });
+    }, [filteredEvents, currentCalendarDate]);
+
+    const activeCalendarEvents = React.useMemo(() => {
+        if (!selectedCalendarDate) return calendarMonthEvents;
+        return calendarMonthEvents.filter(e => {
+            const eDate = new Date(e.date);
+            return eDate.getFullYear() === selectedCalendarDate.getFullYear() &&
+                   eDate.getMonth() === selectedCalendarDate.getMonth() &&
+                   eDate.getDate() === selectedCalendarDate.getDate();
+        });
+    }, [calendarMonthEvents, selectedCalendarDate]);
 
     const handleOpenModal = (event: Event) => {
         // Require login to register or buy a ticket
@@ -252,104 +312,366 @@ export default function EventsPage() {
                 </div>
             </div>
 
-            {/* Events Grid */}
-            <div className="container mx-auto px-4 mt-16">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {filteredEvents.map((event, index) => {
-                        const isFull = event.maxPlayers ? (event._count?.players || 0) >= event.maxPlayers : false;
-                        const isPaid = Number(event.entryFee) > 0;
-                        return (
-                            <motion.div
-                                key={event.id}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: index * 0.1 }}
+            {/* View and Advanced Filters Control Panel */}
+            <div className="container mx-auto px-4 mt-8 max-w-5xl">
+                <div className="bg-white rounded-2xl shadow-md p-5 border border-gray-100 flex flex-col md:flex-row justify-between items-center gap-6">
+                    {/* View Toggle */}
+                    <div className="flex bg-gray-100 p-1.5 rounded-xl border w-full md:w-auto">
+                        <button
+                            onClick={() => setViewMode("grid")}
+                            className={`flex-1 md:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${viewMode === "grid" ? "bg-white text-black shadow-sm" : "text-gray-500 hover:text-gray-800"}`}
+                        >
+                            <Grid size={16} />
+                            Grid View
+                        </button>
+                        <button
+                            onClick={() => setViewMode("calendar")}
+                            className={`flex-1 md:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${viewMode === "calendar" ? "bg-white text-black shadow-sm" : "text-gray-500 hover:text-gray-800"}`}
+                        >
+                            <CalendarDays size={16} />
+                            Calendar View
+                        </button>
+                    </div>
+
+                    {/* Advanced Filters */}
+                    <div className="flex flex-wrap items-center gap-4 w-full md:w-auto justify-start md:justify-end">
+                        {/* Event Type Filter */}
+                        <div className="flex items-center gap-2">
+                            <span className="text-xs font-bold text-gray-400 uppercase">Type:</span>
+                            <select
+                                value={selectedType}
+                                onChange={(e) => setSelectedType(e.target.value)}
+                                className="bg-gray-50 border border-gray-200 rounded-xl px-3 py-1.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#A855F7]/30 text-gray-700"
                             >
-                                <Card className="overflow-hidden hover:shadow-2xl transition-shadow duration-300 bg-white border-0 h-full flex flex-col group">
-                                    {/* Image */}
-                                    <div className="relative h-48 overflow-hidden bg-gray-200">
-                                        <div className="absolute top-4 right-4 z-10 bg-black/70 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
-                                            {event.game || 'TCG'}
-                                        </div>
-                                        <img
-                                            src={event.image || "/images/event-placeholder.jpg"}
-                                            alt={event.name}
-                                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                            onError={(e) => {
-                                                (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1613771404784-3a5686aa2be3?w=800&q=80";
-                                            }}
-                                        />
-                                        {/* Date Overlay */}
-                                        <div className="absolute bottom-0 left-0 bg-white/90 backdrop-blur px-4 py-2 rounded-tr-xl">
-                                            <div className="flex items-center gap-2 font-bold text-lg">
-                                                <Calendar size={18} className="text-[#A855F7]" />
-                                                {new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                                            </div>
-                                        </div>
-                                        {isFull && (
-                                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                                                <span className="text-white font-bold text-lg bg-black/60 px-4 py-2 rounded-full">WAITLIST AVAILABLE</span>
-                                            </div>
-                                        )}
-                                    </div>
+                                <option value="All">All Types</option>
+                                <option value="Tournament">Tournament (Paid)</option>
+                                <option value="Casual">Casual (Free)</option>
+                            </select>
+                        </div>
 
-                                    <CardContent className="p-6 flex-1 flex flex-col space-y-4">
-                                        <div>
-                                            <h3 className="text-2xl font-bold mb-1 group-hover:text-[#A855F7] transition-colors line-clamp-1">
-                                                {event.name}
-                                            </h3>
-                                            <p className="text-gray-500 font-medium">{event.format || 'Standard'}</p>
-                                        </div>
-
-                                        {event.description && (
-                                            <p className="text-gray-600 text-sm line-clamp-2">{event.description}</p>
-                                        )}
-
-                                        <div className="space-y-3 flex-1">
-                                            <div className="flex items-center gap-3 text-gray-600">
-                                                <Clock size={16} />
-                                                <span className="text-sm">
-                                                    {new Date(event.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                </span>
-                                            </div>
-                                            <div className="flex items-center gap-3 text-gray-600">
-                                                <MapPin size={16} />
-                                                <span className="text-sm line-clamp-1">{event.location || 'In-Store'}</span>
-                                            </div>
-                                            <div className="flex items-center gap-3 text-gray-600">
-                                                <Trophy size={16} />
-                                                <span className="text-sm line-clamp-1">{event.prizes || 'No prizes listed'}</span>
-                                            </div>
-                                            <div className="flex items-center gap-3 text-gray-600">
-                                                <Users size={16} />
-                                                <span className="text-sm">
-                                                    {event._count?.players || 0} / {event.maxPlayers || '∞'} Registered
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        <div className="pt-4 border-t flex items-center justify-between">
-                                            <div className="text-xl font-bold">
-                                                {Number(event.entryFee) === 0 ? "Free" : `$${Number(event.entryFee).toFixed(2)}`}
-                                            </div>
-                                            <Button
-                                                className="!py-2 !px-6 flex items-center gap-2"
-                                                onClick={() => handleOpenModal(event)}
-                                            >
-                                                {!user && <LogIn size={15} />}
-                                                {isFull ? "Join Waitlist" : (isPaid ? "Buy Ticket" : "Join Now")}
-                                            </Button>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            </motion.div>
-                        );
-                    })}
+                        {/* Day of Week Filter */}
+                        <div className="flex items-center gap-2">
+                            <span className="text-xs font-bold text-gray-400 uppercase">Day:</span>
+                            <select
+                                value={selectedDay}
+                                onChange={(e) => setSelectedDay(e.target.value)}
+                                className="bg-gray-50 border border-gray-200 rounded-xl px-3 py-1.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#A855F7]/30 text-gray-700"
+                            >
+                                <option value="All">All Days</option>
+                                <option value="Monday">Monday</option>
+                                <option value="Tuesday">Tuesday</option>
+                                <option value="Wednesday">Wednesday</option>
+                                <option value="Thursday">Thursday</option>
+                                <option value="Friday">Friday</option>
+                                <option value="Saturday">Saturday</option>
+                                <option value="Sunday">Sunday</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
+            </div>
 
-                {filteredEvents.length === 0 && (
-                    <div className="text-center py-20">
-                        <p className="text-gray-400 text-xl">No upcoming events for {selectedGame}. Check back soon!</p>
+            {/* Main Content Area */}
+            <div className="container mx-auto px-4 mt-12 max-w-5xl">
+                {viewMode === "grid" ? (
+                    /* GRID VIEW */
+                    <>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {filteredEvents.map((event, index) => {
+                                const isFull = event.maxPlayers ? (event._count?.players || 0) >= event.maxPlayers : false;
+                                const isPaid = Number(event.entryFee) > 0;
+                                return (
+                                    <motion.div
+                                        key={event.id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: index * 0.1 }}
+                                    >
+                                        <Card className="overflow-hidden hover:shadow-2xl transition-shadow duration-300 bg-white border-0 h-full flex flex-col group">
+                                            {/* Image */}
+                                            <div className="relative h-48 overflow-hidden bg-gray-200">
+                                                <div className="absolute top-4 right-4 z-10 bg-black/70 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                                                    {event.game || 'TCG'}
+                                                </div>
+                                                <img
+                                                    src={event.image || "/images/event-placeholder.jpg"}
+                                                    alt={event.name}
+                                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                                    onError={(e) => {
+                                                        (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1613771404784-3a5686aa2be3?w=800&q=80";
+                                                    }}
+                                                />
+                                                {/* Date Overlay */}
+                                                <div className="absolute bottom-0 left-0 bg-white/90 backdrop-blur px-4 py-2 rounded-tr-xl">
+                                                    <div className="flex items-center gap-2 font-bold text-lg">
+                                                        <Calendar size={18} className="text-[#A855F7]" />
+                                                        {new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                                    </div>
+                                                </div>
+                                                {isFull && (
+                                                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                                                        <span className="text-white font-bold text-lg bg-black/60 px-4 py-2 rounded-full">WAITLIST AVAILABLE</span>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            <CardContent className="p-6 flex-1 flex flex-col space-y-4">
+                                                <div>
+                                                    <h3 className="text-2xl font-bold mb-1 group-hover:text-[#A855F7] transition-colors line-clamp-1">
+                                                        {event.name}
+                                                    </h3>
+                                                    <p className="text-gray-500 font-medium">{event.format || 'Standard'}</p>
+                                                </div>
+
+                                                {event.description && (
+                                                    <p className="text-gray-600 text-sm line-clamp-2">{event.description}</p>
+                                                )}
+
+                                                <div className="space-y-3 flex-1">
+                                                    <div className="flex items-center gap-3 text-gray-600">
+                                                        <Clock size={16} />
+                                                        <span className="text-sm">
+                                                            {new Date(event.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex items-center gap-3 text-gray-600">
+                                                        <MapPin size={16} />
+                                                        <span className="text-sm line-clamp-1">{event.location || 'In-Store'}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-3 text-gray-600">
+                                                        <Trophy size={16} />
+                                                        <span className="text-sm line-clamp-1">{event.prizes || 'No prizes listed'}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-3 text-gray-600">
+                                                        <Users size={16} />
+                                                        <span className="text-sm">
+                                                            {event._count?.players || 0} / {event.maxPlayers || '∞'} Registered
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                <div className="pt-4 border-t flex items-center justify-between">
+                                                    <div className="text-xl font-bold">
+                                                        {Number(event.entryFee) === 0 ? "Free" : `$${Number(event.entryFee).toFixed(2)}`}
+                                                    </div>
+                                                    <Button
+                                                        className="!py-2 !px-6 flex items-center gap-2"
+                                                        onClick={() => handleOpenModal(event)}
+                                                    >
+                                                        {!user && <LogIn size={15} />}
+                                                        {isFull ? "Join Waitlist" : (isPaid ? "Buy Ticket" : "Join Now")}
+                                                    </Button>
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    </motion.div>
+                                );
+                            })}
+                        </div>
+                        {filteredEvents.length === 0 && (
+                            <div className="text-center py-20">
+                                <p className="text-gray-400 text-xl">No upcoming events matching filters. Check back soon!</p>
+                            </div>
+                        )}
+                    </>
+                ) : (
+                    /* CALENDAR VIEW */
+                    <div className="space-y-8">
+                        {/* Month Navigator */}
+                        <div className="flex justify-between items-center">
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={handlePrevMonth}
+                                    className="p-2 bg-white rounded-xl shadow-sm border hover:bg-gray-50 transition-colors"
+                                    type="button"
+                                >
+                                    <ChevronLeft size={20} className="text-gray-600" />
+                                </button>
+                                <button
+                                    onClick={handleNextMonth}
+                                    className="p-2 bg-white rounded-xl shadow-sm border hover:bg-gray-50 transition-colors"
+                                    type="button"
+                                >
+                                    <ChevronRight size={20} className="text-gray-600" />
+                                </button>
+                                <h2 className="text-xl md:text-2xl font-bold text-gray-800 capitalize ml-2">
+                                    {currentCalendarDate.toLocaleString('en-US', { month: 'long', year: 'numeric' })}
+                                </h2>
+                            </div>
+                            {selectedCalendarDate && (
+                                <button
+                                    onClick={() => setSelectedCalendarDate(null)}
+                                    className="text-sm font-semibold text-[#A855F7] hover:underline"
+                                    type="button"
+                                >
+                                    Show All Month Events
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Calendar Grid */}
+                        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                            {/* Weekdays Header */}
+                            <div className="grid grid-cols-7 bg-gray-50 border-b border-gray-100 py-3 text-center">
+                                {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(day => (
+                                    <span key={day} className="text-xs font-bold text-gray-400 uppercase tracking-wider">{day}</span>
+                                ))}
+                            </div>
+
+                            {/* Calendar Days */}
+                            <div className="grid grid-cols-7 divide-x divide-y divide-gray-100 bg-gray-100">
+                                {(() => {
+                                    const year = currentCalendarDate.getFullYear();
+                                    const month = currentCalendarDate.getMonth();
+                                    const firstDayIndex = new Date(year, month, 1).getDay();
+                                    const lastDay = new Date(year, month + 1, 0).getDate();
+                                    const prevLastDay = new Date(year, month, 0).getDate();
+
+                                    const cells = [];
+                                    // Prev month days
+                                    for (let i = firstDayIndex; i > 0; i--) {
+                                        const dayNum = prevLastDay - i + 1;
+                                        const cellDate = new Date(year, month - 1, dayNum);
+                                        cells.push({ dayNum, isCurrentMonth: false, date: cellDate });
+                                    }
+                                    // Current month days
+                                    for (let i = 1; i <= lastDay; i++) {
+                                        const cellDate = new Date(year, month, i);
+                                        cells.push({ dayNum: i, isCurrentMonth: true, date: cellDate });
+                                    }
+                                    // Next month days
+                                    const remaining = 42 - cells.length;
+                                    for (let i = 1; i <= remaining; i++) {
+                                        const cellDate = new Date(year, month + 1, i);
+                                        cells.push({ dayNum: i, isCurrentMonth: false, date: cellDate });
+                                    }
+
+                                    return cells.map((cell, idx) => {
+                                        const cellEvents = getEventsForDate(cell.date);
+                                        const isSelected = selectedCalendarDate &&
+                                            selectedCalendarDate.getFullYear() === cell.date.getFullYear() &&
+                                            selectedCalendarDate.getMonth() === cell.date.getMonth() &&
+                                            selectedCalendarDate.getDate() === cell.date.getDate();
+                                        const isToday = new Date().toDateString() === cell.date.toDateString();
+
+                                        return (
+                                            <div
+                                                key={idx}
+                                                onClick={() => cell.isCurrentMonth && setSelectedCalendarDate(cell.date)}
+                                                className={`min-h-[90px] md:min-h-[110px] p-2 bg-white flex flex-col justify-between transition-all group ${cell.isCurrentMonth ? 'cursor-pointer hover:bg-violet-50/20' : 'bg-gray-50/50 text-gray-300 pointer-events-none'} ${isSelected ? 'ring-2 ring-[#A855F7] ring-inset bg-violet-50/30' : ''}`}
+                                            >
+                                                <div className="flex justify-between items-center">
+                                                    <span className={`text-sm font-bold ${isToday ? 'bg-[#A855F7] text-white rounded-full w-6 h-6 flex items-center justify-center' : cell.isCurrentMonth ? 'text-gray-700' : 'text-gray-300'}`}>
+                                                        {cell.dayNum}
+                                                    </span>
+                                                    {cellEvents.length > 0 && cell.isCurrentMonth && (
+                                                        <span className="text-[10px] font-bold text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-full">
+                                                            {cellEvents.length}
+                                                        </span>
+                                                    )}
+                                                </div>
+
+                                                {/* Events list in day */}
+                                                <div className="mt-2 space-y-1 overflow-hidden flex-grow flex flex-col justify-end">
+                                                    {cellEvents.slice(0, 2).map((ev) => {
+                                                        let badgeColor = "bg-gray-100 text-gray-700";
+                                                        const game = ev.game ? ev.game.toUpperCase() : "";
+                                                        if (game.includes("MTG")) badgeColor = "bg-red-50 text-red-600 border border-red-100";
+                                                        else if (game.includes("POKE")) badgeColor = "bg-yellow-50 text-yellow-700 border border-yellow-100";
+                                                        else if (game.includes("YU")) badgeColor = "bg-blue-50 text-blue-600 border border-blue-100";
+                                                        else if (game.includes("LOR")) badgeColor = "bg-purple-50 text-purple-600 border border-purple-100";
+                                                        else if (game.includes("PIECE")) badgeColor = "bg-orange-50 text-orange-600 border border-orange-100";
+
+                                                        return (
+                                                            <div
+                                                                key={ev.id}
+                                                                className={`text-[9px] font-bold py-0.5 px-1 rounded truncate max-w-full hidden sm:block ${badgeColor}`}
+                                                                title={ev.name}
+                                                            >
+                                                                {ev.name}
+                                                            </div>
+                                                        );
+                                                    })}
+                                                    {cellEvents.length > 0 && (
+                                                        <div className="sm:hidden flex justify-center gap-1">
+                                                            {cellEvents.map((_, dotIdx) => (
+                                                                <span key={dotIdx} className="w-1.5 h-1.5 rounded-full bg-[#A855F7]" />
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                    {cellEvents.length > 2 && (
+                                                        <div className="text-[8px] font-extrabold text-[#A855F7] pl-1 uppercase hidden sm:block">
+                                                            + {cellEvents.length - 2} more
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        );
+                                    });
+                                })()}
+                            </div>
+                        </div>
+
+                        {/* Events list below Calendar */}
+                        <div className="space-y-4">
+                            <h3 className="text-xl font-bold text-gray-800">
+                                {selectedCalendarDate ? (
+                                    `Events on ${selectedCalendarDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}`
+                                ) : (
+                                    `All Events in ${currentCalendarDate.toLocaleString('en-US', { month: 'long' })}`
+                                )}
+                            </h3>
+
+                            {activeCalendarEvents.length === 0 ? (
+                                <div className="bg-white rounded-2xl p-8 border text-center text-gray-400">
+                                    No events scheduled for this period matching filters.
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {activeCalendarEvents.map((event) => {
+                                        const isFull = event.maxPlayers ? (event._count?.players || 0) >= event.maxPlayers : false;
+                                        const isPaid = Number(event.entryFee) > 0;
+                                        return (
+                                            <Card key={event.id} className="bg-white border hover:shadow-lg transition-shadow flex flex-col sm:flex-row gap-4 p-4 overflow-hidden rounded-2xl group">
+                                                <div className="relative w-full sm:w-36 h-28 bg-gray-100 rounded-xl overflow-hidden shrink-0">
+                                                    <img
+                                                        src={event.image || "/images/event-placeholder.jpg"}
+                                                        alt={event.name}
+                                                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                                        onError={(e) => {
+                                                            (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1613771404784-3a5686aa2be3?w=800&q=80";
+                                                        }}
+                                                    />
+                                                </div>
+                                                <div className="flex-1 flex flex-col justify-between space-y-3">
+                                                    <div>
+                                                        <h4 className="font-bold text-lg line-clamp-1 group-hover:text-[#A855F7] transition-colors">{event.name}</h4>
+                                                        <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider">{event.game} • {event.format || 'Standard'}</p>
+                                                    </div>
+                                                    <div className="grid grid-cols-2 gap-y-1 gap-x-3 text-xs text-gray-500">
+                                                        <div className="flex items-center gap-1.5"><Clock size={12} /> {new Date(event.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                                                        <div className="flex items-center gap-1.5"><MapPin size={12} className="shrink-0" /> <span className="truncate">{event.location || 'In-Store'}</span></div>
+                                                        <div className="flex items-center gap-1.5"><Users size={12} /> {event._count?.players || 0}/{event.maxPlayers || '∞'}</div>
+                                                        <div className="flex items-center gap-1.5 font-bold text-gray-800">
+                                                            {Number(event.entryFee) === 0 ? "Free" : `$${Number(event.entryFee).toFixed(2)}`}
+                                                        </div>
+                                                    </div>
+                                                    <div className="pt-2 border-t flex justify-end">
+                                                        <Button
+                                                            className="!py-1.5 !px-4 !text-xs flex items-center gap-1.5"
+                                                            onClick={() => handleOpenModal(event)}
+                                                        >
+                                                            {!user && <LogIn size={12} />}
+                                                            {isFull ? "Join Waitlist" : (isPaid ? "Buy Ticket" : "Join Now")}
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                            </Card>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </div>
                     </div>
                 )}
             </div>
