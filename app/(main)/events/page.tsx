@@ -10,6 +10,38 @@ import { useAuth } from '@/context/AuthContext';
 
 const FILTERS = ["All", "MTG", "Pokemon", "Yu-Gi-Oh!", "Lorcana", "One Piece"];
 
+const getEventImageUrl = (image: string | null | undefined) => {
+    if (!image) return "https://images.unsplash.com/photo-1613771404784-3a5686aa2be3?w=800&q=80";
+    if (image.startsWith('http://') || image.startsWith('https://')) {
+        if (image.includes('/uploads/')) {
+            try {
+                const url = new URL(image);
+                let cleanPath = url.pathname;
+                if (cleanPath.startsWith('/api/uploads/')) {
+                    cleanPath = cleanPath.substring(4);
+                }
+                const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+                const apiBaseWithoutApi = apiBase.replace(/\/api$/, '');
+                return `${apiBaseWithoutApi}${cleanPath}`;
+            } catch (e) {
+                return image;
+            }
+        }
+        return image;
+    }
+    // relative path
+    let cleanPath = image;
+    if (cleanPath.startsWith('/api/uploads/')) {
+        cleanPath = cleanPath.substring(4);
+    }
+    if (!cleanPath.startsWith('/')) {
+        cleanPath = '/' + cleanPath;
+    }
+    const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+    const apiBaseWithoutApi = apiBase.replace(/\/api$/, '');
+    return `${apiBaseWithoutApi}${cleanPath}`;
+};
+
 interface Event {
     id: string;
     name: string;
@@ -394,7 +426,7 @@ export default function EventsPage() {
                                                     {event.game || 'TCG'}
                                                 </div>
                                                 <img
-                                                    src={event.image || "/images/event-placeholder.jpg"}
+                                                    src={getEventImageUrl(event.image)}
                                                     alt={event.name}
                                                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                                                     onError={(e) => {
@@ -635,7 +667,7 @@ export default function EventsPage() {
                                             <Card key={event.id} className="bg-white border hover:shadow-lg transition-shadow flex flex-col sm:flex-row gap-4 p-4 overflow-hidden rounded-2xl group">
                                                 <div className="relative w-full sm:w-36 h-28 bg-gray-100 rounded-xl overflow-hidden shrink-0">
                                                     <img
-                                                        src={event.image || "/images/event-placeholder.jpg"}
+                                                        src={getEventImageUrl(event.image)}
                                                         alt={event.name}
                                                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                                                         onError={(e) => {
