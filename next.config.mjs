@@ -18,6 +18,10 @@ const nextConfig = {
             {
                 protocol: 'https',
                 hostname: 'rng-game-backend-cx6f.onrender.com',
+            },
+            {
+                protocol: 'https',
+                hostname: 'ezajawfinnfzqoqitzwo.supabase.co',
             }
         ],
     },

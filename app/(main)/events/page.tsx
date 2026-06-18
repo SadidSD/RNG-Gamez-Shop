@@ -12,24 +12,11 @@ const FILTERS = ["All", "MTG", "Pokemon", "Yu-Gi-Oh!", "Lorcana", "One Piece"];
 
 const getEventImageUrl = (image: string | null | undefined) => {
     if (!image) return "https://images.unsplash.com/photo-1613771404784-3a5686aa2be3?w=800&q=80";
+    // Supabase CDN URLs are always full https:// URLs — use directly
     if (image.startsWith('http://') || image.startsWith('https://')) {
-        if (image.includes('/uploads/')) {
-            try {
-                const url = new URL(image);
-                let cleanPath = url.pathname;
-                if (cleanPath.startsWith('/api/uploads/')) {
-                    cleanPath = cleanPath.substring(4);
-                }
-                const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
-                const apiBaseWithoutApi = apiBase.replace(/\/api$/, '');
-                return `${apiBaseWithoutApi}${cleanPath}`;
-            } catch (e) {
-                return image;
-            }
-        }
         return image;
     }
-    // relative path
+    // Backward compat: legacy relative path from local filesystem
     let cleanPath = image;
     if (cleanPath.startsWith('/api/uploads/')) {
         cleanPath = cleanPath.substring(4);
@@ -41,6 +28,7 @@ const getEventImageUrl = (image: string | null | undefined) => {
     const apiBaseWithoutApi = apiBase.replace(/\/api$/, '');
     return `${apiBaseWithoutApi}${cleanPath}`;
 };
+
 
 interface Event {
     id: string;
