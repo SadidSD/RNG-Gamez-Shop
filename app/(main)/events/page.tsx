@@ -422,7 +422,7 @@ export default function EventsPage() {
                                                     }}
                                                 />
                                                 {/* Date Overlay */}
-                                                <div className="absolute bottom-0 left-0 bg-white/90 backdrop-blur px-4 py-2 rounded-tr-xl">
+                                                <div className="absolute bottom-0 left-0 bg-white/90 backdrop-blur px-4 py-2 rounded-tr-xl" suppressHydrationWarning>
                                                     <div className="flex items-center gap-2 font-bold text-lg">
                                                         <Calendar size={18} className="text-[#A855F7]" />
                                                         {new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
@@ -448,7 +448,7 @@ export default function EventsPage() {
                                                 )}
 
                                                 <div className="space-y-3 flex-1">
-                                                    <div className="flex items-center gap-3 text-gray-600">
+                                                    <div className="flex items-center gap-3 text-gray-600" suppressHydrationWarning>
                                                         <Clock size={16} />
                                                         <span className="text-sm">
                                                             {new Date(event.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -514,7 +514,7 @@ export default function EventsPage() {
                                 >
                                     <ChevronRight size={20} className="text-gray-600" />
                                 </button>
-                                <h2 className="text-xl md:text-2xl font-bold text-gray-800 capitalize ml-2">
+                                <h2 className="text-xl md:text-2xl font-bold text-gray-800 capitalize ml-2" suppressHydrationWarning>
                                     {currentCalendarDate.toLocaleString('en-US', { month: 'long', year: 'numeric' })}
                                 </h2>
                             </div>
@@ -580,8 +580,8 @@ export default function EventsPage() {
                                                 onClick={() => cell.isCurrentMonth && setSelectedCalendarDate(cell.date)}
                                                 className={`min-h-[90px] md:min-h-[110px] p-2 bg-white flex flex-col justify-between transition-all group ${cell.isCurrentMonth ? 'cursor-pointer hover:bg-violet-50/20' : 'bg-gray-50/50 text-gray-300 pointer-events-none'} ${isSelected ? 'ring-2 ring-[#A855F7] ring-inset bg-violet-50/30' : ''}`}
                                             >
-                                                <div className="flex justify-between items-center">
-                                                    <span className={`text-sm font-bold ${isToday ? 'bg-[#A855F7] text-white rounded-full w-6 h-6 flex items-center justify-center' : cell.isCurrentMonth ? 'text-gray-700' : 'text-gray-300'}`}>
+                                                <div className="flex justify-between items-center" suppressHydrationWarning>
+                                                    <span className={`text-sm font-bold ${isToday ? 'bg-[#A855F7] text-white rounded-full w-6 h-6 flex items-center justify-center' : cell.isCurrentMonth ? 'text-gray-700' : 'text-gray-300'}`} suppressHydrationWarning>
                                                         {cell.dayNum}
                                                     </span>
                                                     {cellEvents.length > 0 && cell.isCurrentMonth && (
@@ -634,7 +634,7 @@ export default function EventsPage() {
 
                         {/* Events list below Calendar */}
                         <div className="space-y-4">
-                            <h3 className="text-xl font-bold text-gray-800">
+                            <h3 className="text-xl font-bold text-gray-800" suppressHydrationWarning>
                                 {selectedCalendarDate ? (
                                     `Events on ${selectedCalendarDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}`
                                 ) : (
@@ -668,8 +668,8 @@ export default function EventsPage() {
                                                         <h4 className="font-bold text-lg line-clamp-1 group-hover:text-[#A855F7] transition-colors">{event.name}</h4>
                                                         <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider">{event.game} • {event.format || 'Standard'}</p>
                                                     </div>
-                                                    <div className="grid grid-cols-2 gap-y-1 gap-x-3 text-xs text-gray-500">
-                                                        <div className="flex items-center gap-1.5"><Clock size={12} /> {new Date(event.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                                                    <div className="grid grid-cols-2 gap-y-1 gap-x-3 text-xs text-gray-500" suppressHydrationWarning>
+                                                        <div className="flex items-center gap-1.5" suppressHydrationWarning> <Clock size={12} /> {new Date(event.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                                                         <div className="flex items-center gap-1.5"><MapPin size={12} className="shrink-0" /> <span className="truncate">{event.location || 'In-Store'}</span></div>
                                                         <div className="flex items-center gap-1.5"><Users size={12} /> {event._count?.players || 0}/{event.maxPlayers || '∞'}</div>
                                                         <div className="flex items-center gap-1.5 font-bold text-gray-800">
@@ -751,7 +751,7 @@ export default function EventsPage() {
                                         <h3 className="text-2xl font-bold text-black">
                                             {Number(selectedEvent.entryFee) > 0 ? "Buy Your Ticket" : "Register for Event"}
                                         </h3>
-                                        <p className="text-gray-500 text-sm mt-1">
+                                        <p className="text-gray-500 text-sm mt-1" suppressHydrationWarning>
                                             <span className="font-semibold text-black">{selectedEvent.name}</span>
                                             {" — "}
                                             {new Date(selectedEvent.date).toLocaleDateString('en-US', {
