@@ -52,6 +52,7 @@ export const metadata: Metadata = {
 
 import { AuthProvider } from "@/context/AuthContext";
 import { ToastProvider } from "@/context/ToastContext";
+import { AnalyticsTracker } from "@/components/analytics-tracker";
 
 export default function RootLayout({
   children,
@@ -65,6 +66,7 @@ export default function RootLayout({
       >
         <AuthProvider>
           <ToastProvider>
+            <AnalyticsTracker />
             {children}
           </ToastProvider>
         </AuthProvider>
