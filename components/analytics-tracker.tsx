@@ -78,11 +78,26 @@ export function AnalyticsTracker() {
       if (!target) return;
 
       const actionBtn = target.closest('[data-analytics-event]') as HTMLElement | null;
-      if (!actionBtn) return;
+      const anchor = target.closest('a') as HTMLAnchorElement | null;
+      const button = target.closest('button') as HTMLButtonElement | null;
 
-      const eventName = actionBtn.getAttribute('data-analytics-event') || 'click';
-      const targetLabel = actionBtn.getAttribute('data-analytics-target') || 
-        actionBtn.innerText?.trim().substring(0, 50) || '';
+      let eventName = '';
+      let targetLabel = '';
+
+      if (actionBtn) {
+        eventName = actionBtn.getAttribute('data-analytics-event') || 'click';
+        targetLabel = actionBtn.getAttribute('data-analytics-target') || actionBtn.innerText?.trim().substring(0, 50) || '';
+      } else if (anchor) {
+        const href = anchor.getAttribute('href') || '';
+        const isExternal = href.startsWith('http://') || href.startsWith('https://');
+        eventName = isExternal ? 'outbound_click' : 'link_click';
+        targetLabel = anchor.innerText?.trim().substring(0, 50) || href || 'link';
+      } else if (button) {
+        eventName = 'button_click';
+        targetLabel = button.innerText?.trim().substring(0, 50) || 'button';
+      } else {
+        return;
+      }
 
       const sessionId = getSessionId();
 
