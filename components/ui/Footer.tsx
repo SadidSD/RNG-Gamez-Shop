@@ -40,7 +40,7 @@ const Footer = () => {
                     <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
                         <span>© 2025 RNG-Gamez. All rights reserved.</span>
                         <span className="hidden sm:inline text-gray-700">|</span>
-                        <span>Developed by <a href="https://aeethod.com/?utm_source=rng-gamez.com&utm_medium=referral&utm_campaign=footer_credit" target="_blank" rel="noopener noreferrer" data-analytics-event="outbound_click" data-analytics-target="aeethod.com" className="hover:text-[#B266FF] transition-colors underline underline-offset-4 font-semibold">aeethod.com</a></span>
+                        <span>Developed by <a href="https://aeethod.com/?ref=rng-gamez" target="_blank" rel="noopener noreferrer" data-analytics-event="outbound_click" data-analytics-target="aeethod.com" className="hover:text-[#B266FF] transition-colors underline underline-offset-4 font-semibold">aeethod.com</a></span>
                     </div>
 
                     <div className="flex items-center gap-6">
